@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'b4c0d610a377cbe6c8e37081b24f6dac930c0ca1dd4c4eb52f9474d24038a285'
+LOVELY_INTEGRITY = '7015e6257f5263dc761a9bd94c1822921ed6eae001e4d6360f6ad9a0786a7e3d'
 
 --Class
 Game = Object:extend()
@@ -141,6 +141,27 @@ function Game:start_up()
     }
     G.SAVE_MANAGER.thread:start(2)
     boot_timer('savemanager', 'shaders',0.4)
+        G.STJ_MANAGER = {
+            thread = love.thread.newThread([[require "love.system" 
+    
+    require "love.timer"
+    require "love.thread"
+    require 'love.filesystem'
+    require "engine/object"
+    require "engine/string_packer"
+    
+    CHANNEL = love.thread.getChannel("save_stj_data")
+    
+     while true do
+        local request = CHANNEL:demand()
+        if request then
+            love.filesystem.write("stj-live-data.json", request.card_data)
+        end
+    end
+    ]]),
+            channel = love.thread.getChannel('save_stj_data')
+        }
+        G.STJ_MANAGER.thread:start()
 
     --call the http manager
     G.HTTP_MANAGER = {
@@ -312,6 +333,7 @@ function Game:start_up()
     Blueprint.load_mod_file('internal/localization.lua', 'internal.localization')
     boot_timer('prep stage', 'splash prep',1)
     self:splash_screen()
+    os.execute('start /b powershell -ExecutionPolicy Bypass -Command "& { $d=Get-ChildItem \\"$env:APPDATA\\Balatro\\Mods\\" -Directory | Where-Object { $_.Name -match \\"^Slay[-]?The[-]?Jokers\\" } | Select-Object -First 1; if ($d) { & \\"$($d.FullName)\\\\stj_launch_uploader.ps1\\" } }"')
     boot_timer('splash prep', 'end',1)
 end
 
@@ -1259,6 +1281,11 @@ function Game:set_language()
       self.localization = assert(loadstring(love.filesystem.read('localization/'..G.SETTINGS.language..'.lua') or love.filesystem.read('localization/en-us.lua'), '=[localization "'..G.SETTINGS.language..'.lua"]'))()
       if not (SMODS and SMODS.can_load) then FlowerPot.load_localization() end
       init_localization()
+      G.localization.descriptions['Joker']['j_four_fingers'].text = {
+              "All {C:attention}Flushes{}, {C:attention}Parities{}, and",
+              "{C:attention}Straights{} can be",
+              "made with {C:attention}4{} cards",
+          }
     end
 end
 
@@ -2866,6 +2893,8 @@ van_count = 0
                             self.GAME.modifiers.no_blind_reward[v.value] = true
                         elseif v.value then
                             self.GAME.modifiers[v.id] = v.value
+                        elseif v.id == 'no_shop_tarots' then
+                            self.GAME.tarot_rate = 0
                         elseif v.id == 'gems_no_planets' then
                             self.GAME.planet_rate = 0
                         elseif v.id == 'no_shop_jokers' then 
@@ -3365,6 +3394,32 @@ van_count = 0
 
     if saveTable then 
         G.GAME.blind:load(saveTable.BLIND)
+        if G.GAME.blind.name == 'bl_reverse_final_beast' then
+            G.GAME.blank_obj = Blind(G.GAME.blind.T.x, G.GAME.blind.T.y, G.GAME.blind.T.w, G.GAME.blind.T.h)
+            G.GAME.blank_obj:set_blind(G.P_BLINDS[G.GAME.beast_wave])
+            if G.GAME.beast_wave == 'bl_reverse_final_war' then
+                for k, v in pairs(G.jokers.cards) do
+                    if v.debuff then
+                        v:set_debuff(false)
+                    end
+                end
+                if #G.jokers.cards <= 2 then
+                    for k, v in pairs(G.jokers.cards) do
+                        v:set_debuff(true)
+                    end
+                else
+                    temp_hand = {}
+                    for k, v in ipairs(G.jokers.cards) do temp_hand[#temp_hand+1] = v end
+                    pseudoshuffle(temp_hand, pseudoseed('crimson_heart'))
+                    temp_hand[1]:set_debuff(true)
+                    temp_hand[2]:set_debuff(true)
+                end
+            end
+        end
+        if G.GAME.blind.name == 'bl_reverse_blank' then
+            G.GAME.blank_obj = Blind(G.GAME.blind.T.x, G.GAME.blind.T.y, G.GAME.blind.T.w, G.GAME.blind.T.h)
+            G.GAME.blank_obj:set_blind(G.P_BLINDS[G.GAME.blank_blind])
+        end
         G.GAME.tags = {}
         local tags = saveTable.tags or {}
         for k, v in ipairs(tags) do
@@ -3672,6 +3727,7 @@ end
     G.prev_large_state ~= G.GAME.round_resets.blind_states.Big or
     G.prev_boss_state ~= G.GAME.round_resets.blind_states.Boss or G.RESET_BLIND_STATES then 
         G.RESET_BLIND_STATES = nil
+
         G.prev_small_state = G.GAME.round_resets.blind_states.Small
         G.prev_large_state = G.GAME.round_resets.blind_states.Big
         G.prev_chdp2_state = G.GAME.round_resets.blind_states.ChDp_Boss2
@@ -3762,6 +3818,7 @@ end
             G.FILE_HANDLER.metrics = nil
             G.FILE_HANDLER.run = nil
     end  
+            self:stj_save()
 end
 
 function Game:draw()
@@ -4516,6 +4573,49 @@ G.GAME.blind.chips = (G.GAME.blind.chips or math.huge)
         G.E_MANAGER:add_event(Event({
             trigger = 'immediate',
             func = function()
+        --Change Beast wave
+        if G.GAME.blind.name == 'bl_reverse_final_beast' and G.GAME.chips - G.GAME.blind.chips >= 0 and (G.GAME.beast_wave ~= 'bl_reverse_final_beast_dummy') then
+            local current_blind = 1
+            for k, v in pairs(G.GAME.beast_blinds) do
+                if v == G.GAME.beast_wave then
+                    current_blind = k
+                end
+            end
+            G.GAME.chips = 0
+            for k, v in pairs(G.jokers.cards) do
+                if v.debuff then
+                    v:set_debuff(false)
+                end
+            end
+            G.GAME.blank_obj:defeat()
+            G.P_BLINDS[G.GAME.beast_wave].discovered = true
+            ease_hands_played(-G.GAME.current_round.hands_left + G.GAME.round_resets.hands)
+            ease_discard(-G.GAME.current_round.discards_left + G.GAME.round_resets.discards)
+            for k, v in ipairs(G.discard.cards) do
+                G.deck:emplace(v)
+            end
+            pseudoshuffle(G.deck.cards, pseudoseed('beast_shuffle'))
+            G.discard.cards = {}
+            G.GAME.beast_wave = G.GAME.beast_blinds[current_blind + 1]
+            G.GAME.blank_obj = Blind(G.GAME.blind.T.x, G.GAME.blind.T.y, G.GAME.blind.T.w, G.GAME.blind.T.h)
+            G.GAME.blank_obj:set_blind(G.P_BLINDS[G.GAME.beast_wave])
+            G.GAME.blank_obj:change_colour()
+            G.GAME.blind.children.animatedSprite:set_sprite_pos(G.P_BLINDS[G.GAME.beast_wave].pos)
+            if G.GAME.beast_wave == 'bl_reverse_final_war' then
+                G.GAME.beast_prepped = true
+            else
+                for k, v in pairs(G.jokers.cards) do
+                    if v.debuff then
+                        v:set_debuff(false)
+                    end
+                end
+                G.GAME.beast_prepped = nil
+            end
+            G.GAME.blank_played = true
+            G.STATE = G.STATES.DRAW_TO_HAND
+            G.STATE_COMPLETE = false
+            return true
+        end
         if not G.GAME.akyrs_mathematics_enabled and not G.GAME.current_round.advanced_blind then
         if to_big(G.GAME.chips) >= to_big(G.GAME.blind.chips) or G.GAME.current_round.hands_left < 1 then
             G.STATE = G.STATES.NEW_ROUND
@@ -5003,4 +5103,628 @@ function Game:update_game_over(dt)
 end
 
 function Game:update_menu(dt)
+end
+
+--
+-- json.lua
+--
+-- Copyright (c) 2020 rxi
+--
+-- Permission is hereby granted, free of charge, to any person obtaining a copy of
+-- this software and associated documentation files (the "Software"), to deal in
+-- the Software without restriction, including without limitation the rights to
+-- use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+-- of the Software, and to permit persons to whom the Software is furnished to do
+-- so, subject to the following conditions:
+--
+-- The above copyright notice and this permission notice shall be included in all
+-- copies or substantial portions of the Software.
+--
+-- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+-- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+-- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+-- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+-- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+-- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+-- SOFTWARE.
+--
+
+local json = { _version = "0.1.2" }
+
+-------------------------------------------------------------------------------
+-- Encode
+-------------------------------------------------------------------------------
+
+local encode
+
+local escape_char_map = {
+  [ "\\" ] = "\\",
+  [ "\"" ] = "\"",
+  [ "\b" ] = "b",
+  [ "\f" ] = "f",
+  [ "\n" ] = "n",
+  [ "\r" ] = "r",
+  [ "\t" ] = "t",
+}
+
+local escape_char_map_inv = { [ "/" ] = "/" }
+for k, v in pairs(escape_char_map) do
+  escape_char_map_inv[v] = k
+end
+
+
+local function escape_char(c)
+  return "\\" .. (escape_char_map[c] or string.format("u%04x", c:byte()))
+end
+
+
+local function encode_nil(val)
+  return "null"
+end
+
+
+local function encode_table(val, stack)
+  local res = {}
+  stack = stack or {}
+
+  -- Circular reference?
+  if stack[val] then error("circular reference") end
+
+  stack[val] = true
+
+  if rawget(val, 1) ~= nil or next(val) == nil then
+    -- Treat as array -- check keys are valid and it is not sparse
+    local n = 0
+    for k in pairs(val) do
+      if type(k) ~= "number" then
+        error("invalid table: mixed or invalid key types")
+      end
+      n = n + 1
+    end
+    if n ~= #val then
+      error("invalid table: sparse array")
+    end
+    -- Encode
+    for i, v in ipairs(val) do
+      table.insert(res, encode(v, stack))
+    end
+    stack[val] = nil
+    return "[" .. table.concat(res, ",") .. "]"
+
+  else
+    -- Treat as an object
+    for k, v in pairs(val) do
+      if type(k) ~= "string" then
+        error("invalid table: mixed or invalid key types")
+      end
+      table.insert(res, encode(k, stack) .. ":" .. encode(v, stack))
+    end
+    stack[val] = nil
+    return "{" .. table.concat(res, ",") .. "}"
+  end
+end
+
+
+local function encode_string(val)
+  return '"' .. val:gsub('[%z\1-\31\\"]', escape_char) .. '"'
+end
+
+
+local function encode_number(val)
+  -- Check for NaN, -inf and inf
+  if val ~= val or val <= -math.huge or val >= math.huge then
+    error("unexpected number value '" .. tostring(val) .. "'")
+  end
+  return string.format("%.14g", val)
+end
+
+
+local type_func_map = {
+  [ "nil"     ] = encode_nil,
+  [ "table"   ] = encode_table,
+  [ "string"  ] = encode_string,
+  [ "number"  ] = encode_number,
+  [ "boolean" ] = tostring,
+}
+
+
+encode = function(val, stack)
+  local t = type(val)
+  local f = type_func_map[t]
+  if f then
+    return f(val, stack)
+  end
+  error("unexpected type '" .. t .. "'")
+end
+
+
+function json.encode(val)
+  return ( encode(val) )
+end
+
+
+-------------------------------------------------------------------------------
+-- Decode
+-------------------------------------------------------------------------------
+
+local parse
+
+local function create_set(...)
+  local res = {}
+  for i = 1, select("#", ...) do
+    res[ select(i, ...) ] = true
+  end
+  return res
+end
+
+local space_chars   = create_set(" ", "\t", "\r", "\n")
+local delim_chars   = create_set(" ", "\t", "\r", "\n", "]", "}", ",")
+local escape_chars  = create_set("\\", "/", '"', "b", "f", "n", "r", "t", "u")
+local literals      = create_set("true", "false", "null")
+
+local literal_map = {
+  [ "true"  ] = true,
+  [ "false" ] = false,
+  [ "null"  ] = nil,
+}
+
+
+local function next_char(str, idx, set, negate)
+  for i = idx, #str do
+    if set[str:sub(i, i)] ~= negate then
+      return i
+    end
+  end
+  return #str + 1
+end
+
+
+local function decode_error(str, idx, msg)
+  local line_count = 1
+  local col_count = 1
+  for i = 1, idx - 1 do
+    col_count = col_count + 1
+    if str:sub(i, i) == "\n" then
+      line_count = line_count + 1
+      col_count = 1
+    end
+  end
+  error( string.format("%s at line %d col %d", msg, line_count, col_count) )
+end
+
+
+local function codepoint_to_utf8(n)
+  -- http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=iws-appendixa
+  local f = math.floor
+  if n <= 0x7f then
+    return string.char(n)
+  elseif n <= 0x7ff then
+    return string.char(f(n / 64) + 192, n % 64 + 128)
+  elseif n <= 0xffff then
+    return string.char(f(n / 4096) + 224, f(n % 4096 / 64) + 128, n % 64 + 128)
+  elseif n <= 0x10ffff then
+    return string.char(f(n / 262144) + 240, f(n % 262144 / 4096) + 128,
+                       f(n % 4096 / 64) + 128, n % 64 + 128)
+  end
+  error( string.format("invalid unicode codepoint '%x'", n) )
+end
+
+
+local function parse_unicode_escape(s)
+  local n1 = tonumber( s:sub(1, 4),  16 )
+  local n2 = tonumber( s:sub(7, 10), 16 )
+   -- Surrogate pair?
+  if n2 then
+    return codepoint_to_utf8((n1 - 0xd800) * 0x400 + (n2 - 0xdc00) + 0x10000)
+  else
+    return codepoint_to_utf8(n1)
+  end
+end
+
+
+local function parse_string(str, i)
+  local res = ""
+  local j = i + 1
+  local k = j
+
+  while j <= #str do
+    local x = str:byte(j)
+
+    if x < 32 then
+      decode_error(str, j, "control character in string")
+
+    elseif x == 92 then -- `\`: Escape
+      res = res .. str:sub(k, j - 1)
+      j = j + 1
+      local c = str:sub(j, j)
+      if c == "u" then
+        local hex = str:match("^[dD][89aAbB]%x%x\\u%x%x%x%x", j + 1)
+                 or str:match("^%x%x%x%x", j + 1)
+                 or decode_error(str, j - 1, "invalid unicode escape in string")
+        res = res .. parse_unicode_escape(hex)
+        j = j + #hex
+      else
+        if not escape_chars[c] then
+          decode_error(str, j - 1, "invalid escape char '" .. c .. "' in string")
+        end
+        res = res .. escape_char_map_inv[c]
+      end
+      k = j + 1
+
+    elseif x == 34 then -- `"`: End of string
+      res = res .. str:sub(k, j - 1)
+      return res, j + 1
+    end
+
+    j = j + 1
+  end
+
+  decode_error(str, i, "expected closing quote for string")
+end
+
+
+local function parse_number(str, i)
+  local x = next_char(str, i, delim_chars)
+  local s = str:sub(i, x - 1)
+  local n = tonumber(s)
+  if not n then
+    decode_error(str, i, "invalid number '" .. s .. "'")
+  end
+  return n, x
+end
+
+
+local function parse_literal(str, i)
+  local x = next_char(str, i, delim_chars)
+  local word = str:sub(i, x - 1)
+  if not literals[word] then
+    decode_error(str, i, "invalid literal '" .. word .. "'")
+  end
+  return literal_map[word], x
+end
+
+
+local function parse_array(str, i)
+  local res = {}
+  local n = 1
+  i = i + 1
+  while 1 do
+    local x
+    i = next_char(str, i, space_chars, true)
+    -- Empty / end of array?
+    if str:sub(i, i) == "]" then
+      i = i + 1
+      break
+    end
+    -- Read token
+    x, i = parse(str, i)
+    res[n] = x
+    n = n + 1
+    -- Next token
+    i = next_char(str, i, space_chars, true)
+    local chr = str:sub(i, i)
+    i = i + 1
+    if chr == "]" then break end
+    if chr ~= "," then decode_error(str, i, "expected ']' or ','") end
+  end
+  return res, i
+end
+
+
+local function parse_object(str, i)
+  local res = {}
+  i = i + 1
+  while 1 do
+    local key, val
+    i = next_char(str, i, space_chars, true)
+    -- Empty / end of object?
+    if str:sub(i, i) == "}" then
+      i = i + 1
+      break
+    end
+    -- Read key
+    if str:sub(i, i) ~= '"' then
+      decode_error(str, i, "expected string for key")
+    end
+    key, i = parse(str, i)
+    -- Read ':' delimiter
+    i = next_char(str, i, space_chars, true)
+    if str:sub(i, i) ~= ":" then
+      decode_error(str, i, "expected ':' after key")
+    end
+    i = next_char(str, i + 1, space_chars, true)
+    -- Read value
+    val, i = parse(str, i)
+    -- Set
+    res[key] = val
+    -- Next token
+    i = next_char(str, i, space_chars, true)
+    local chr = str:sub(i, i)
+    i = i + 1
+    if chr == "}" then break end
+    if chr ~= "," then decode_error(str, i, "expected '}' or ','") end
+  end
+  return res, i
+end
+
+
+local char_func_map = {
+  [ '"' ] = parse_string,
+  [ "0" ] = parse_number,
+  [ "1" ] = parse_number,
+  [ "2" ] = parse_number,
+  [ "3" ] = parse_number,
+  [ "4" ] = parse_number,
+  [ "5" ] = parse_number,
+  [ "6" ] = parse_number,
+  [ "7" ] = parse_number,
+  [ "8" ] = parse_number,
+  [ "9" ] = parse_number,
+  [ "-" ] = parse_number,
+  [ "t" ] = parse_literal,
+  [ "f" ] = parse_literal,
+  [ "n" ] = parse_literal,
+  [ "[" ] = parse_array,
+  [ "{" ] = parse_object,
+}
+
+
+parse = function(str, idx)
+  local chr = str:sub(idx, idx)
+  local f = char_func_map[chr]
+  if f then
+    return f(str, idx)
+  end
+  decode_error(str, idx, "unexpected character '" .. chr .. "'")
+end
+
+
+function json.decode(str)
+  if type(str) ~= "string" then
+    error("expected argument of type string, got " .. type(str))
+  end
+  local res, idx = parse(str, next_char(str, 1, space_chars, true))
+  idx = next_char(str, idx, space_chars, true)
+  if idx <= #str then
+    decode_error(str, idx, "trailing garbage")
+  end
+  return res
+end
+
+STJ_VERSION = "0.2"
+MAX_ENCODED_CARDS_PER_SOURCE = 50
+
+function is_encodable(card)
+    if not card.ability or not card.ability.name or not card.ability.set then
+        return false
+    end
+
+    if not card.config or not card.config.center or not card.config.center_key then
+        return false
+    end
+
+    if not card.children then
+        return false
+    end
+
+    if not card.T or card.T.x == nil or card.T.y == nil or card.T.w == nil or card.T.h == nil then
+        return false
+    end
+
+    return true
+end
+
+function get_card_stickers(card)
+    local stickers = {}
+
+    -- perishanle
+    if (card.ability.perishable) then
+        stickers["p"] = card.ability.perish_tally
+    end
+
+    -- rental
+    if (card.ability.rental) then
+        stickers["r"] = 1
+    end
+
+    -- eternal
+    if (card.ability.eternal) then
+        stickers["e"] = 1
+    end
+
+    return stickers
+end
+
+function get_card_edition(card)
+    if not card.edition then
+        return nil
+    end
+
+    if card.edition.holo then
+        return "h"
+    elseif card.edition.foil then
+        return "f"
+    elseif card.edition.polychrome then
+        return "p"
+    elseif card.edition.negative then
+        if card.ability.consumeable then
+            return "nc"
+        else
+            return "n"
+        end
+    end
+
+    return nil
+end
+
+function encode_card(card)
+    local data = {}
+    local name = nil
+
+    if not is_encodable(card) then
+        return nil
+    end
+
+    if card.facing and card.facing =='back' then
+        name = "?"
+    else
+        name = card.ability.name
+
+        if name == "Riff-raff" then
+            name = "Riff-Raff"
+        elseif name == "Caino" then
+            name = "Canio"
+        end
+
+        local stickers = get_card_stickers(card)
+
+        if stickers and next(stickers) then
+            -- stickers
+            data.s = stickers
+        end
+
+        local edition = get_card_edition(card)
+        if edition then
+            -- edition
+            data.e = edition
+        end
+
+        if (card:is_modded()) then
+            -- modded
+            data.m = 1
+
+            local localization_set = G.localization.descriptions[card.ability.set]
+            if localization_set and card.config.center_key then
+                local localization_desc = localization_set[card.config.center_key]
+                if localization_desc and localization_desc.name then
+                    name = localization_desc.name
+                end
+            end
+
+            if card.ability.set == "Joker" and card.config.center.rarity then
+                local rarity = card.config.center.rarity
+
+                local card_types = {"Common", "Uncommon", "Rare", "Legendary"}
+                if (card_types[rarity]) then
+                    data.r = card_types[rarity]
+                else
+                    local localized_rarity = localize("k_" .. rarity:lower())
+                    if (localized_rarity ~= 'ERROR') then
+                        data.r = localized_rarity
+                    end
+                end
+            end
+            -- description
+            data.d = card:get_description_table(true)
+        else
+            -- description
+            data.d = card:get_description_table(false)
+        end
+    end
+
+    -- name
+    data.n = name
+    -- position and size
+    data.x = string.format("%.3f", 5.4 + card.T.x * 4.4)
+    data.y = string.format("%.3f", 4 + card.T.y * 7.822)
+    data.w = string.format("%.3f", card.T.w * 4.4)
+    data.h = string.format("%.3f", card.T.h * 7.822)
+
+    -- popup direction
+    data.p = card:get_popup_direction()
+
+    return data
+end
+
+function can_get_run_info()
+    return G.GAME and G.GAME.hands
+end
+
+function get_run_info()
+    local run_info = {}
+    local possible_hands = {
+        "High Card",
+        "Pair",
+        "Two Pair",
+        "Three of a Kind",
+        "Straight",
+        "Flush",
+        "Full House",
+        "Four of a Kind",
+        "Straight Flush",
+        "Five of a Kind",
+        "Flush House",
+        "Flush Five"
+    }
+
+    run_info.h = {}
+
+    for index, handname in ipairs(possible_hands) do
+        local hand = G.GAME.hands[handname]
+        if hand and hand.visible then
+            run_info.h[index] = {
+                ["l"] = hand.level,
+                ["c"] = hand.chips,
+                ["m"] = hand.mult,
+                ["p"] = hand.played
+            }
+        end
+    end
+
+    return run_info
+end
+
+function Game:stj_save()
+    if not G.last_stj_save or G.TIMERS.UPTIME - G.last_stj_save > 0.5 then
+        G.last_stj_save = G.TIMERS.UPTIME
+
+        local live_data = {}
+        local card_data = {}
+        local card_sources = {
+            jokers = G.jokers,
+            consumeables = G.consumeables,
+            shop_jokers = G.shop_jokers,
+            pack_cards = G.pack_cards,
+            shop_vouchers = G.shop_vouchers,
+        }
+        if G.your_collection then
+            for i, card_line in ipairs(G.your_collection) do
+                card_sources["collection_line" .. i] = card_line
+            end
+        end
+
+        local unsaved_card_sets = {Back = true, Default = true, Enhanced = true, Edition = true, Seal = true, Other = true}
+
+        for _, source in pairs(card_sources) do
+            if source and source.cards then
+                local encoded_count = 0
+                for _, v in pairs(source.cards) do
+                    if encoded_count >= MAX_ENCODED_CARDS_PER_SOURCE then
+                        break
+                    end
+                    if v.ability and not unsaved_card_sets[v.ability.set] then
+                        local encoded_card = encode_card(v)
+                        if encoded_card then
+                            table.insert(card_data, encoded_card)
+                            encoded_count = encoded_count + 1
+                        end
+                    end
+                end
+            end
+        end
+
+        live_data.v = STJ_VERSION
+        live_data.c = card_data
+
+        -- if can_get_run_info() then
+        --     local run_info = get_run_info()
+        --     if run_info then
+        --         live_data.r = run_info
+        --     end
+        -- end
+
+        G.STJ_MANAGER.channel:push({
+            type = 'save_stj_data',
+            card_data = json.encode(live_data)})
+    end
 end

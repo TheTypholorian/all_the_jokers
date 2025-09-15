@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'b582901db8e6033ffba3082363a91999ff53610cc1763d06a0b0f0d8f892107b'
+LOVELY_INTEGRITY = '80376c6c2a10f5b1125cfd797c4b4ac13c6ba50a798026181d96dd164b205253'
 
 --Moves the tutorial to the next step in queue
 --
@@ -3724,8 +3724,10 @@ if Handy.insta_cash_out.is_skipped and e.config.button then return end
               if not G.GAME.modifiers["no_hand_discard_reset"] then
               if not G.GAME.modifiers["ante_hand_discard_reset"] or boss_ded then
               if not G.GAME.modifiers.carryover_discards then
-                  G.GAME.current_round.discards_left = math.max(0, G.GAME.round_resets.discards + G.GAME.round_bonus.discards)
-                  G.GAME.current_round.bunc_actual_discards_left = G.GAME.current_round.discards_left
+                  if G.GAME.selected_back.name ~= "b_ruina_hokma" then
+                      G.GAME.current_round.discards_left = math.max(0, G.GAME.round_resets.discards + G.GAME.round_bonus.discards)
+                      G.GAME.current_round.bunc_actual_discards_left = G.GAME.current_round.discards_left
+                  end
               end
               if not G.GAME.modifiers.carryover_hands then
                   G.GAME.current_round.hands_left = (math.max(1, G.GAME.round_resets.hands + G.GAME.round_bonus.next_hands))

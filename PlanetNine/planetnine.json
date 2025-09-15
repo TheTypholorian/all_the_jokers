@@ -1,0 +1,10 @@
+{
+    "id": "planetnine",
+    "name": "Planet Nine",
+    "author": ["DarkAutumn2618"],
+    "description": "Renames Planet X to Planet Nine",
+    "prefix": "planetnine",
+    "main_file": "main.lua",
+    "version": "2.0.0",
+    "dependencies": ["malverk (>=1.1.3~)"]
+}

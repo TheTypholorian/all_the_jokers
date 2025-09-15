@@ -1,0 +1,1 @@
+=[SMODS Neato_Jokers "cards/frostedprimerib.lua"]

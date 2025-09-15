@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '5bfa60e3406cf984f9beb793a6a75795892eb500aa7ac3f92edfa68e0592fd5a'
+LOVELY_INTEGRITY = 'c1c85bc7c4e0af8667205d662ad9e0277b70758fd700ff0673522ec6c1c3bf97'
 
 --Class
 DynaText = Moveable:extend()
@@ -20,6 +20,9 @@ function DynaText:init(config)
         y = self.font.TEXT_OFFSET.y*self.scale + (self.config.y_offset or 0),
     }
     self.colours = config.colours or {G.C.RED}
+        if G.DENY_DYNAMIC_TEXT then
+            return
+        end
     self.created_time = G.TIMERS.REAL
     self.silent = (config.silent)
     self.config.marquee = self.config.marquee and not G.SETTINGS.reduced_motion

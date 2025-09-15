@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '246ddf7d66c24d90fc101ddcd89c7a0104c6ac1e9f3152b4be692690c96e6ff9'
+LOVELY_INTEGRITY = '2aa523ba47972d92561319c2b38fc0ed4a02e24a78278483eefe1b34d9df2d47'
 
 function win_game()
     if (not G.GAME.seeded and not G.GAME.challenge) or SMODS.config.seeded_unlocks then
@@ -901,26 +901,28 @@ function new_round()
             if not G.GAME.modifiers["no_hand_discard_reset"] then
             if not G.GAME.modifiers["ante_hand_discard_reset"] then
             if not G.GAME.modifiers.carryover_discards then
-                
-                local deck_size = 0
-                
-                G.GAME.last_deck_size = G.GAME.last_deck_size
-                
-                for k, v in pairs(G.playing_cards) do
-                    deck_size = deck_size + 1
+                if G.GAME.selected_back.name ~= "b_ruina_hokma" then
+                    
+                    local deck_size = 0
+                    
+                    G.GAME.last_deck_size = G.GAME.last_deck_size
+                    
+                    for k, v in pairs(G.playing_cards) do
+                        deck_size = deck_size + 1
+                    end
+                    
+                    if G.GAME.last_deck_size ~= deck_size then
+                        local difference = deck_size - G.GAME.last_deck_size
+                    
+                        check_for_unlock({type = 'round_deck_size', round_deck_size_diff = difference})
+                    end
+                    
+                    G.GAME.last_deck_size = deck_size
+                    
+                    G.GAME.bunc_money_spend_this_round = 0
+                    G.GAME.current_round.discards_left = math.max(0, G.GAME.round_resets.discards + G.GAME.round_bonus.discards)
+                    G.GAME.current_round.bunc_actual_discards_left = G.GAME.current_round.discards_left
                 end
-                
-                if G.GAME.last_deck_size ~= deck_size then
-                    local difference = deck_size - G.GAME.last_deck_size
-                
-                    check_for_unlock({type = 'round_deck_size', round_deck_size_diff = difference})
-                end
-                
-                G.GAME.last_deck_size = deck_size
-                
-                G.GAME.bunc_money_spend_this_round = 0
-                G.GAME.current_round.discards_left = math.max(0, G.GAME.round_resets.discards + G.GAME.round_bonus.discards)
-                G.GAME.current_round.bunc_actual_discards_left = G.GAME.current_round.discards_left
             end
             if not G.GAME.modifiers.carryover_hands then
                 G.GAME.current_round.hands_left = (math.max(1, G.GAME.round_resets.hands + G.GAME.round_bonus.next_hands))
@@ -1146,19 +1148,7 @@ G.FUNCS.draw_from_deck_to_hand = function(e)
     	SMODS.calculate_context({insomnia_awake = true})
     	return
     end
-    if G.GAME.blind.name ~= 'The Serpent' then
-        local miami = G.FUNCS.find_activated_tape('c_csau_miami')
-        if miami then
-            miami:juice_up()
-            hand_space = hand_space + miami.ability.extra.draw_mod
-            miami.ability.extra.uses = miami.ability.extra.uses+1
-            if to_big(miami.ability.extra.uses) >= to_big(miami.ability.extra.runtime) then
-                G.FUNCS.destroy_tape(miami)
-                miami.ability.destroyed = true
-            end
-        end
-    end
-    if G.GAME.blind.name == 'The Serpent' and
+    if ((G.GAME.blind.name == 'The Serpent') or (G.GAME.blind.name == 'bl_reverse_blank' and G.GAME.blank_blind == 'bl_serpent')) and
         not G.GAME.blind.disabled and
         (G.GAME.current_round.hands_played > 0 or
         G.GAME.current_round.discards_used > 0) then
@@ -1842,6 +1832,40 @@ function evaluate_play_intro()
     G.GAME.hands[text].visible = true
 
     local final_scoring_hand = {}
+    -- insert this BEFORE card scoring?
+            local cards_destroyed = {}
+            -- The Reaper effect
+            if G.GAME.beast_wave == 'bl_reverse_final_death' or G.GAME.blind.name == 'bl_reverse_final_death' then
+                if SMODS.shatters(G.play.cards[1]) then
+                    G.play.cards[1].shattered = true
+                else
+                    G.play.cards[1].destroyed = true
+                end
+                cards_destroyed[#cards_destroyed+1] = G.play.cards[1]
+                if cards_destroyed[1] then
+                    SMODS.calculate_context({scoring_hand = scoring_hand, remove_playing_cards = true, removed = cards_destroyed})
+                end
+                
+                local glass_shattered = {}
+                for k, v in ipairs(cards_destroyed) do
+                    if v.shattered then glass_shattered[#glass_shattered+1] = v end
+                end
+                
+                for i=1, #cards_destroyed do
+                    G.E_MANAGER:add_event(Event({
+                        func = function()
+                            if cards_destroyed[i].shattered then
+                                cards_destroyed[i]:shatter()
+                            else
+                                cards_destroyed[i]:start_dissolve()
+                            end
+                        return true
+                        end
+                    }))
+                    SMODS.calculate_context({csau_card_destroyed = true, removed = cards_destroyed[i] })
+                end
+                table.remove(G.play.cards, 1)
+            end
     for i=1, #G.play.cards do
         local splashed = SMODS.always_scores(G.play.cards[i]) or next(find_joker('Splash'))
         --Check for an Amamiya with The Psychic's Heart
@@ -1875,6 +1899,12 @@ function evaluate_play_intro()
                 table.insert(final_scoring_hand, G.play.cards[i])
             end
         end
+    end
+    if G.GAME.blind.name == "bl_reverse_ehwaz" then
+        final_scoring_hand = G.hand.cards
+        local holder = G.hand
+        G.hand = G.play
+        G.play = holder
     end
     -- TARGET: adding to hand effects
     -- WAUGH
@@ -2284,6 +2314,22 @@ function evaluate_play_intro()
                 end
             end
 
+
+            if G.GAME.selected_partner_card and G.GAME.selected_partner_card.ability then
+                local other_key = "other_unknown"
+                if _card.ability.set == "Joker" then other_key = "other_joker" end
+                if _card.ability.consumeable then other_key = "other_consumeable" end
+                if _card.ability.set == "Voucher" then other_key = "other_voucher" end
+                local ret = G.GAME.selected_partner_card:calculate_partner({full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, [other_key] = _card, other_main = _card})
+                if ret and ret.duplication then
+                    for k, v in ipairs(ret) do
+                        table.insert(effects, {individual = v})
+                    end
+                elseif ret then
+                    table.insert(effects, {individual = ret})
+                end
+            end
+
             -- Calculate context.other_joker effects
             for _, _area in ipairs(SMODS.get_card_areas('jokers')) do
                 for _, _joker in ipairs(_area.cards) do
@@ -2341,6 +2387,18 @@ function evaluate_play_intro()
 
             SMODS.trigger_effects(effects, _card)
         end end
+
+
+        if G.GAME.selected_partner_card and G.GAME.selected_partner_card.ability then
+            local ret = G.GAME.selected_partner_card:calculate_partner({full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, joker_main = true})
+            if ret and ret.duplication then
+                for k, v in ipairs(ret) do
+                    SMODS.trigger_effects({{individual = v}}, G.GAME.selected_partner_card)
+                end
+            elseif ret then
+                SMODS.trigger_effects({{individual = ret}}, G.GAME.selected_partner_card)
+            end
+        end
 
         if next(SMODS.find_card('j_mxms_whos_on_first')) then
         
@@ -2458,7 +2516,6 @@ function evaluate_play_intro()
                   return true
                 end
               }))
-            SMODS.calculate_context({csau_card_destroyed = true, removed = cards_destroyed[i] })
         end
     return text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta
     end
@@ -2639,45 +2696,87 @@ function evaluate_play_intro()
     local play_count = #G.play.cards
     local it = 1
     for k, v in ipairs(G.play.cards) do
-        if (not v.shattered) and (not v.destroyed) and (not v.abducted) then 
-                if v.ability.gemslot_timecrystal then
-                    draw_card(G.play,G.deck, it*100/play_count,'down', false, v)
-                else
-                    if next(SMODS.find_card('j_mxms_maurice')) and SMODS.has_enhancement(v, 'm_wild') then
+        if next(SMODS.find_card('j_picubed_boomerang')) and (not v.shattered) and (not v.destroyed) then
+            if picubed_boomerang_scoring and picubed_boomerang_scoring[v] then --picubed_boomerang_scoring comes from src/jokers/boomerang.lua
+                draw_card(G.play,G.deck, it*100/play_count,'down', false, v)
+                it = it + 1
+                G.deck:shuffle('boomerang'..G.GAME.round_resets.ante)
+            else
+                    if v.ability.gemslot_timecrystal then
                         draw_card(G.play,G.deck, it*100/play_count,'down', false, v)
-                        SMODS.calculate_effect({message = localize('k_saved_ex'), sound = 'mxms_joker'}, SMODS.find_card('j_mxms_maurice')[1])
                     else
-                        
-                        local cards_to_hand = {}
-                        
-                        if G.jokers ~= nil then
-                            for _, joker in ipairs(G.jokers.cards) do
-                                if joker.config.center.key == 'j_bunc_cellphone' and joker.ability.extra.active and not joker.debuff then
-                                    for __, card in ipairs(joker.ability.extra.cards_to_hand) do
-                                        table.insert(cards_to_hand, card)
+                        if next(SMODS.find_card('j_mxms_maurice')) and SMODS.has_enhancement(v, 'm_wild') then
+                            draw_card(G.play,G.deck, it*100/play_count,'down', false, v)
+                            SMODS.calculate_effect({message = localize('k_saved_ex'), sound = 'mxms_joker'}, SMODS.find_card('j_mxms_maurice')[1])
+                        else
+                            
+                            local cards_to_hand = {}
+                            
+                            if G.jokers ~= nil then
+                                for _, joker in ipairs(G.jokers.cards) do
+                                    if joker.config.center.key == 'j_bunc_cellphone' and joker.ability.extra.active and not joker.debuff then
+                                        for __, card in ipairs(joker.ability.extra.cards_to_hand) do
+                                            table.insert(cards_to_hand, card)
+                                        end
+                                        break
                                     end
-                                    break
                                 end
                             end
-                        end
-                        
-                        if cards_to_hand ~= {} then
-                            local condition = false
-                            for _, card_to_hand in ipairs(cards_to_hand) do
-                                if v == card_to_hand then
-                                    condition = true
+                            
+                            if cards_to_hand ~= {} then
+                                local condition = false
+                                for _, card_to_hand in ipairs(cards_to_hand) do
+                                    if v == card_to_hand then
+                                        condition = true
+                                    end
                                 end
-                            end
-                            if condition then
-                                draw_card(G.play,G.hand, it*100/play_count,'up', true, v)
+                                if condition then
+                                    draw_card(G.play,G.hand, it*100/play_count,'up', true, v)
+                                else
+                                    draw_card(G.play,G.discard, it*100/play_count,'down', false, v)
+                                end
                             else
                                 draw_card(G.play,G.discard, it*100/play_count,'down', false, v)
                             end
+                            
+                        end
+                    end
+                it = it + 1
+            end
+        elseif (not v.shattered) and (not v.destroyed) then 
+                if v.ability.gemslot_timecrystal then
+                    draw_card(G.play,G.deck, it*100/play_count,'down', false, v)
+                else
+                    
+                    local cards_to_hand = {}
+                    
+                    if G.jokers ~= nil then
+                        for _, joker in ipairs(G.jokers.cards) do
+                            if joker.config.center.key == 'j_bunc_cellphone' and joker.ability.extra.active and not joker.debuff then
+                                for __, card in ipairs(joker.ability.extra.cards_to_hand) do
+                                    table.insert(cards_to_hand, card)
+                                end
+                                break
+                            end
+                        end
+                    end
+                    
+                    if cards_to_hand ~= {} then
+                        local condition = false
+                        for _, card_to_hand in ipairs(cards_to_hand) do
+                            if v == card_to_hand then
+                                condition = true
+                            end
+                        end
+                        if condition then
+                            draw_card(G.play,G.hand, it*100/play_count,'up', true, v)
                         else
                             draw_card(G.play,G.discard, it*100/play_count,'down', false, v)
                         end
-                        
+                    else
+                        draw_card(G.play,G.discard, it*100/play_count,'down', false, v)
                     end
+                    
                 end
             it = it + 1
         end

@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'bb7dbe58f17fa12df6c14e82a60c8477cb4cb4b166ffb39b47c4ded67c42b1a5'
+LOVELY_INTEGRITY = '88ee8a134536db47ef397b62fc4ac73e6f8b95bc7183a4cd69ae064fb9b5811e'
 
 function set_screen_positions()
     if G.STAGE == G.STAGES.RUN then
@@ -644,6 +644,7 @@ if hand == 'Head in the Clouds' then hand = 'High Card' end -- Prevents Head in 
 
 if hand == 'bunc_Deal' then return end
     amount = amount or 1
+    amount = amount * ((G.GAME.day == 5 and (2 ^ #find_joker("j_reverse_daily_double"))) or 1)
     G.GAME.hands[hand].level = math.max(0, G.GAME.hands[hand].level + amount)
     for name, parameter in pairs(SMODS.Scoring_Parameters) do
         if G.GAME.hands[hand][name] then parameter:level_up_hand(amount, G.GAME.hands[hand]) end
@@ -1900,6 +1901,8 @@ function add_round_eval_row(config)
                         table.insert(left_text, {n=G.UIT.T, config={text = num_dollars, scale = 0.8*scale, colour = G.C.RED, shadow = true, juice = true}})
                         table.insert(left_text,{n=G.UIT.O, config={object = DynaText({string = {" Debit Card (Half of total)"}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4*scale, silent = true})}})
                     end
+                elseif string.find(config.name, "partner") then
+                    table.insert(left_text, {n=G.UIT.O, config={object = DynaText({string = localize{type = "name_text", set = config.card.config.center.set, key = config.card.config.center.key}, colours = {G.C.FILTER}, shadow = true, pop_in = 0, scale = 0.6*scale, silent = true})}})
                 elseif config.name == 'interest' then
                     table.insert(left_text, {n=G.UIT.T, config={text = num_dollars, scale = 0.8*scale, colour = G.C.MONEY, shadow = true, juice = true}})
                     table.insert(left_text,{n=G.UIT.O, config={object = DynaText({string = {" "..localize{type = 'variable', key = 'interest', vars = {G.GAME.interest_amount, Bakery_API.interest_scale(true), G.GAME.interest_amount*G.GAME.interest_cap/5}}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4*scale, silent = true})}})
@@ -2500,6 +2503,18 @@ function check_for_unlock(args)
                     end
                 end
                 
+                if card.name == 'j_reverse_fools_gold' then 
+                    local tally = 0
+                    for j = 1, #args.cards do
+                        if SMODS.has_enhancement(args.cards[j], 'm_reverse_pyrite') then
+                            tally = tally+1
+                        end
+                    end
+                    if tally >= 5 then 
+                        ret = true
+                        unlock_card(card)
+                    end
+                end
                 if card.name == 'Golden Ticket' then 
                     local tally = 0
                     for j = 1, #args.cards do
@@ -3041,6 +3056,12 @@ local rarity = _rarity or SMODS.poll_rarity("Joker", 'rarity'..G.GAME.round_rese
                             add = true
                         end
                     end
+                elseif v.set == 'Tarot' and (_append == 'emp'or _append == 'remp' or _append == 'car' or _append == 'rcar' or _append == 'vag' or _append == 'rvag') then
+                    if ((_append == 'emp' or _append == 'car' or _append == 'vag') and v.order <= 22 or (_append == 'remp' or _append == 'rcar' or _append == 'rvag') and v.order > 22 and (v.original_mod and v.original_mod.id == "reverse_tarot")) then
+                	    add = true
+                    else
+                        add = false
+                    end
                 elseif v.set == 'Planet' then
                 
                 local softlocked = true
@@ -3308,6 +3329,39 @@ local rarity = _rarity or SMODS.poll_rarity("Joker", 'rarity'..G.GAME.round_rese
                 --    _pool_size = _pool_size + 2
                 --  end
                 --end
+                -- yoinked code and concept from Paperback's Paper deck
+                if (G.GAME.selected_back_key or {}).key == 'b_picubed_myepicdeck' and v.key:find('j_picubed_') then
+                  for i = 1, 2 do
+                    if G.GAME.starting_params.csau_jokers_rate or G.GAME.starting_params.csau_all_rate then
+                        local csau_rate, csau_all_rate
+                        if G.GAME.starting_params.csau_jokers_rate then
+                            csau_rate = math.ceil(G.GAME.starting_params.csau_jokers_rate-1)
+                        end
+                        if G.GAME.starting_params.csau_all_rate then
+                            csau_all_rate = math.ceil(G.GAME.starting_params.csau_all_rate-1)
+                        end
+                        if G.GAME.starting_params.csau_jokers_rate and string.sub(v.key, 1, 6) == 'j_csau' then
+                            for i=1, csau_rate do
+                                _pool[#_pool + 1] = v.key
+                                _pool_size = _pool_size + 1
+                            end
+                        elseif G.GAME.starting_params.csau_all_rate and containsString(v.key, '_csau_') then
+                            for i=1, csau_all_rate do
+                                _pool[#_pool + 1] = v.key
+                                _pool_size = _pool_size + 1
+                            end
+                        end
+                    end
+                    if next(SMODS.find_card('j_csau_frich')) then
+                        if table.contains(G.P_CENTER_POOLS.Food, v) then
+                            _pool[#_pool + 1] = v.key
+                            _pool_size = _pool_size + 1
+                        end
+                    end
+                    _pool[#_pool + 1] = v.key
+                    _pool_size = _pool_size + 1
+                  end
+                end
                 if G.GAME.starting_params.csau_jokers_rate or G.GAME.starting_params.csau_all_rate then
                     local csau_rate, csau_all_rate
                     if G.GAME.starting_params.csau_jokers_rate then
@@ -4463,6 +4517,13 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         if specific_vars and specific_vars.pinned then info_queue[#info_queue+1] = {key = 'pinned_left', set = 'Other'} end
         if specific_vars and specific_vars.sticker then info_queue[#info_queue+1] = {key = string.lower(specific_vars.sticker)..'_sticker', set = 'Other'} end
         localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = specific_vars or {}}
+        if G.GAME.hod_deck and G.jokers and G.jokers.cards then
+            for i, v in ipairs(G.jokers.cards) do
+                if G.jokers.cards[i] == card then
+                    info_queue[#info_queue+1] = {set = 'Other', key = 'hod_training', vars = card.ability.hod_training or {0}}
+                end
+            end
+        end
     elseif _c.set == 'Back' or _c.set == 'Blind' then localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = specific_vars or {}}
     elseif _c.set == 'Curse' then
         -- Add the Curse badge

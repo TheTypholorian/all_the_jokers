@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '5e155cf5c79353381afec4c2934e89d59b5471586ada6cf1e842ad56027dcf71'
+LOVELY_INTEGRITY = 'f35e369ea2fc7b9fd20113a2c15a92f6971eb2d10775c3ef356611787f3bdba9'
 
 --- STEAMODDED CORE
 --- MODULE API
@@ -1089,7 +1089,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
     }
     SMODS.ConsumableType {
         key = 'Planet',
-        collection_rows = { 6, 6 },
+        collection_rows = { 7, 6 },
         primary_colour = G.C.SET.Planet,
         secondary_colour = G.C.SECONDARY_SET.Planet,
         inject_card = function(self, center)

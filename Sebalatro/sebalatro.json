@@ -1,0 +1,21 @@
+{
+	"id": "sebalatro",
+	"name": "Sebalatro",
+	"author": ["SebasContre"],
+	"description": "Changes face cards to be some spanish speaking vtubers instead",
+	"prefix": "sebalatro",
+	"main_file": "Sebalatro.lua",
+	"priority": 0,
+	"badge_colour": "03e8fc",
+	"badge_text_colour": "051112",
+	"display_name": "sblt",
+	"version": "1.0.0",
+	"dependencies": [
+		"Steamodded (*)", 
+		"Lovely (*)", 
+		"Balatro (>=1.0.1m)"],
+	"conflicts": [
+	],
+	"provides": [
+	]
+}

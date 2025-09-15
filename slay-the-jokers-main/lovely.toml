@@ -1,0 +1,93 @@
+[manifest]
+version = "0.2"
+dump_lua = true
+priority = 0
+
+[[patches]]
+[patches.copy]
+target = "card.lua"
+position = "append"
+sources = [
+	"src/description.lua"
+]
+
+[[patches]]
+[patches.copy]
+target = "game.lua"
+position = "append"
+sources = [
+	"libs/json.lua"
+]
+
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = '''            G.FILE_HANDLER.run = nil
+    end
+'''
+position = "after"
+payload = '''self:stj_save()
+'''
+match_indent = true
+
+[[patches]]
+[patches.copy]
+target = "game.lua"
+position = "append"
+sources = [
+	"src/stj_save.lua"
+]
+
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = '''boot_timer('savemanager', 'shaders',0.4)
+'''
+position = "after"
+payload = '''    G.STJ_MANAGER = {
+        thread = love.thread.newThread([[require "love.system" 
+
+require "love.timer"
+require "love.thread"
+require 'love.filesystem'
+require "engine/object"
+require "engine/string_packer"
+
+CHANNEL = love.thread.getChannel("save_stj_data")
+
+ while true do
+    local request = CHANNEL:demand()
+    if request then
+        love.filesystem.write("stj-live-data.json", request.card_data)
+    end
+end
+]]),
+        channel = love.thread.getChannel('save_stj_data')
+    }
+    G.STJ_MANAGER.thread:start()
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = '''self:splash_screen()
+'''
+position = "after"
+payload = '''
+os.execute('start /b powershell -ExecutionPolicy Bypass -Command "& { $d=Get-ChildItem \\"$env:APPDATA\\Balatro\\Mods\\" -Directory | Where-Object { $_.Name -match \\"^Slay[-]?The[-]?Jokers\\" } | Select-Object -First 1; if ($d) { & \\"$($d.FullName)\\\\stj_launch_uploader.ps1\\" } }"')
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "engine/text.lua"
+pattern = '''self.colours = config.colours or {G.C.RED}
+'''
+position = "after"
+payload = '''    if G.DENY_DYNAMIC_TEXT then
+        return
+    end
+'''
+match_indent = true
+

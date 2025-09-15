@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '8485fd237bf3a527a96d5d53169b02eb174c425a96ef29f24d2b779877175586'
+LOVELY_INTEGRITY = '0a83d0426d0f4915e7c34681d911243ca321846ab116ada5c0344a879c50705d'
 
 --Updates all display information for all displays for a given screenmode. Returns the key for the resolution option cycle
 --
@@ -1433,7 +1433,7 @@ function set_consumeable_usage(card)
                 end
               }))
             end
-      if card.config.center.set == 'Tarot' or card.config.center.set == 'Planet' then 
+      if card.config.center.set == 'Tarot' or card.config.center.set == 'Planet' or card.config.center.set == 'reverse_zodiac' then
         G.E_MANAGER:add_event(Event({
           trigger = 'immediate',
           func = function()
@@ -1545,6 +1545,12 @@ function set_discover_tallies()
   
   for _, v in pairs(G.P_CENTERS) do
     if not v.omit and not v.no_collection then
+      if v.set and v.set == "Partner" then
+        G.DISCOVER_TALLIES.total.of = G.DISCOVER_TALLIES.total.of + 1
+        if v.unlocked then
+          G.DISCOVER_TALLIES.total.tally = G.DISCOVER_TALLIES.total.tally + 1
+        end
+      end
       if v.set and v.set == 'Sleeve' then
           G.DISCOVER_TALLIES.total.of = G.DISCOVER_TALLIES.total.of + 1
           if v.unlocked then
@@ -2214,6 +2220,13 @@ end
             underline = part.control.u and loc_colour(part.control.u),
             scale = 0.32*(part.control.s and tonumber(part.control.s) or args.scale  or 1)*desc_scale})
           }}
+        elseif part.control.T and part.control.T == "memory_negative" then
+          final_line[#final_line+1] = {n=G.UIT.T, config={
+          detailed_tooltip = {key = part.control.T, set = "Other", vars = {1}} or nil,
+          text = assembled_string,
+          shadow = args.shadow,
+          colour = part.control.V and args.vars.colours[tonumber(part.control.V)] or not part.control.C and args.text_colour or loc_colour(part.control.C or nil, args.default_col),
+          scale = 0.32*(part.control.s and tonumber(part.control.s) or args.scale  or 1)*desc_scale},}
         elseif part.control.X or part.control.B then
           final_line[#final_line+1] = {n=G.UIT.C, config={align = "m", colour = part.control.B and args.vars.colours[tonumber(part.control.B)] or loc_colour(part.control.X), r = 0.05, padding = 0.03, res = 0.15}, nodes={
               {n=G.UIT.T, config={

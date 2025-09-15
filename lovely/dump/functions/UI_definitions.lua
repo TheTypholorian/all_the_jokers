@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'e176b6075b0d7870ee815e4d93c6efbe84a80f9032a2ad288a896455c96d0a4c'
+LOVELY_INTEGRITY = 'bb70ad57ea0073ce3ee53824fd524d55f46c533c12d4788ca4cd7f47d05f78ab'
 
 --Create a global UIDEF that contains all UI definition functions\
 --As a rule, these contain functions that return a table T representing the definition for a UIBox
@@ -1493,7 +1493,7 @@ end
               AUT.ccd and name_from_rows(AUT.ccd.name, G.C.WHITE) or nil,
               AUT.ccd and desc_from_rows(AUT.ccd.main) or nil,
               name_from_rows(AUT.name, is_playing_card and G.C.WHITE or nil),
-              desc_from_rows(AUT.main),
+              desc_from_rows(AUT.main, nil, nil, card),
               badges[1] and {n=G.UIT.R, config={align = "cm", padding = 0.03}, nodes=badges} or nil,
             }}
           }}
@@ -5050,7 +5050,7 @@ function create_UIBox_blind_popup(blind, discovered, vars)
   
   local _dollars = blind.dollars
   local target = {type = 'raw_descriptions', key = blind.key, set = 'Blind', vars = vars or blind.vars}
-  if blind.collection_loc_vars and type(blind.collection_loc_vars) == 'function' then
+  if not vars and blind.collection_loc_vars and type(blind.collection_loc_vars) == 'function' then
       local res = blind:collection_loc_vars() or {}
       target.vars = res.vars or target.vars
       target.key = res.key or target.key

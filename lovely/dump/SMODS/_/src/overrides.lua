@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '0bd366686ccecf776642a29a1c570380762284f6fcb56a6a865e6fd0011d8eeb'
+LOVELY_INTEGRITY = '0f0811fe8de2ad6f1a297fffedae98ecb87a4cc16d7f6c2cb6b0636191a635e6'
 
 --- STEAMODDED CORE
 --- OVERRIDES
@@ -2401,6 +2401,9 @@ end
 function get_pack(_key, _type)
     if not G.GAME.first_shop_buffoon and not G.GAME.banned_keys['p_buffoon_normal_1'] then
         G.GAME.first_shop_buffoon = true
+        if G.GAME.selected_back_key.key == 'b_picubed_rejuvinationdeck' then
+            return G.P_CENTERS['p_celestial_mega_'..(math.random(1, 2))]
+        end
         return G.P_CENTERS['p_buffoon_normal_'..(math.random(1, 2))]
     end
     local cume, it, center = 0, 0, nil
