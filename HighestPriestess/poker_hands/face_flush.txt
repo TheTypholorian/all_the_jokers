@@ -1,0 +1,13 @@
+Name = Face Flush
+Desc = {A flush that made by face cards}
+Base chips = 111
+Base mult = 10
+Level chips = 11
+Level mult = 5
+Author = Sustato
+Eval = {
+    (* of x, * of x, * of x, * of x, * of x)
+} 
+All Face = Yes
+Example = King of Spades, Queen of Spades, Queen of Spades, Queen of Spades, Jack of Spades
+Planet Name = Ganymede

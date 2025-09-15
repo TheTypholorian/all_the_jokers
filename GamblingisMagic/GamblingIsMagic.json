@@ -1,0 +1,12 @@
+{
+    "id":"gamblingismagic",
+    "name":"Gambling is Magic",
+    "author": ["PokeRen","Radspeon"],
+    "description": "MLP themed suits",
+    "prefix":"mlpgim",
+    "main_file":"gamblingismagic.lua",
+    "version": "0.1.0",
+    "badge_colour": "660066",
+    "badge_text_colour": "FFFFFF",
+    "dump_loc": true
+}

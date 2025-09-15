@@ -1,0 +1,13 @@
+{
+    "id": "MAXJOKERS",
+    "name": "Max's Jokers",
+    "author": ["Kingmaxthe2"],
+    "description": "Joker Pack for Max and friends.",
+    "prefix": "KMJS",
+    "main_file": "main.lua",
+    "badge_colour": "379639",
+    "dependencies": [
+        "Steamodded (>=1.0.0~ALPHA-1225a)"
+    ],
+    "version": "1.0.0"
+}

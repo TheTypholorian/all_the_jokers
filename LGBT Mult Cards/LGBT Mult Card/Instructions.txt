@@ -1,0 +1,12 @@
+INSTRUCTIONS:
+
+1. Install 7Zip if you do not already have it.
+2. Download the mod. This is done in the FILES tab of this modpage.
+3. Extract the mod from the zip folder.
+4. Go to the Balatro game directory (C:\Program Files (x86)\Steam\steamapps\common\Balatro for windows.) and open Balatro.exe with 7Zip.
+5. Navigate to the "resources", and then the "textures" folder so that the folders "1x" and "2x" are visible.
+6. Navigate through your mod folder until you reach ...\LGBT Mult Card\Modded and select the folders "1x" and "2x".
+7. Drag/Copy-Paste the folders over into the "textures" folder in the 7Zip window.
+
+And you're done!
+If you are reverting the game back to its original state you will use the "1x" and "2x" files that are in the "Vanilla" file rather than the "Modded" one.

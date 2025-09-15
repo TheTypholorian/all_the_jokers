@@ -1,0 +1,14 @@
+{
+	"id": "MainMenuTweaks",
+	"name": "Main Menu Tweaks",
+	"display_name": "Main Menu Tweaks",
+	"author": ["termisaal", "seven_kd_irl"],
+	"description": "Minor Changes to the Main Menu Screen. Original code by termisaal and seven_kd_irl on Discord.",
+	"prefix": "",
+	"main_file": "MainMenuTweaks.lua",
+	"priority": 0,
+	"badge_colour": "7a52ad",
+	"badge_text_colour": "FFFFFF",
+	"version": "1.2.1",
+	"dependencies": ["Steamodded"],
+}

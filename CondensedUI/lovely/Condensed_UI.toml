@@ -1,0 +1,29 @@
+[manifest]
+version = "1.0.0"
+priority = 0
+
+########################
+
+# Moving blind selects to the left slightly
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = '''config = {align="bmi", offset = {x=0,y=G.ROOM.T.y + 29},major = G.hand, bond = 'Weak'}'''
+position = "at"
+payload='''
+config = {align="bmi", offset = {x=-0.25,y=G.ROOM.T.y + 29},major = G.hand, bond = 'Weak'}
+'''
+match_indent = true
+times = 1
+
+########################
+
+# Moving blind selects to the left slightly
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = "G.blind_select.alignment.offset.x = 0"
+position = "at"
+payload="G.blind_select.alignment.offset.x = -0.15"
+match_indent = true
+times = 1

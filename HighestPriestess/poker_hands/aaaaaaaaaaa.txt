@@ -1,0 +1,25 @@
+Name = AAAAAAAAAAA
+Desc = {
+    A Five of a Kind of Aces
+}
+Base Chips = 136
+Base Mult = 13
+Level Chips = 36
+Level Mult = 4
+Eval = {
+    (Ace of *, Ace of *, Ace of *, Ace of *, Ace of *)
+}
+Author = NinjaBanana
+Example = Ace of Spades, Ace of Hearts, Ace of Hearts, Ace of Clubs, Ace of Diamonds
+
+> Added by Gladofdingldill
+Joker Mult = 30
+Joker Chips = 225
+Joker XMult = 6
+Joker Mult Name = Screaming Joker
+Joker Chips Name = Agonizing Joker
+Joker XMult Name = AAAAAAAAAAAAAAAAA
+Planet Name = KELT-9b
+Joker Texture ID = 6
+
+Planet Texture ID = 10

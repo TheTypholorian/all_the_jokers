@@ -1,0 +1,10 @@
+{
+	"id": "jollimod",
+	"name": "A Jolly Expansion",
+	"display_name": "A Jolly Expansion",
+	"author": ["DrFuff"],
+	"description": "A Jolly Wangcore themed mod",
+	"prefix": "jolli",
+	"main_file": "jolli.lua",
+	"version": "1.0.1"
+}

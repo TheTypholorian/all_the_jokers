@@ -1,0 +1,14 @@
+{
+	"id": "horizon",
+	"name": "Horizon",
+	"display_name": "Horizon",
+	"author": ["Microwave"],
+	"description": "Goofy ahh jokers for this goofy ahh mod",
+	"prefix": "hrzi",
+	"main_file": "main.lua",
+	"priority": 0,
+	"badge_colour": "7c2699",
+	"badge_text_colour": "ff8340",
+	"version": "1.0.0",
+	"dependencies": ["Steamodded"]
+}

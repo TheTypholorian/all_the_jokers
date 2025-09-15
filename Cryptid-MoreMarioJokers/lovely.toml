@@ -1,0 +1,115 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''perma_bonus = self.ability and self.ability.perma_bonus or 0,'''
+position = 'after'
+payload = '''perma_x_mult = self.ability and self.ability.perma_x_mult or 0,'''
+match_indent = true
+
+
+
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''return self.ability.x_mult'''
+position = 'at'
+payload = '''return self.ability.x_mult + (self.ability.perma_x_mult or 0)'''
+match_indent = true
+
+
+
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''bonus_chips = (self.ability.bonus + (self.ability.perma_bonus or 0)) > 0 and (self.ability.bonus + (self.ability.perma_bonus or 0)) or nil,'''
+position = 'after'
+payload = '''mmj_bonus_x_mult = ((self.ability.perma_x_mult or 0) > 0) and self.ability.perma_x_mult or nil,'''
+match_indent = true
+
+
+
+
+
+
+[[patches]]
+[patches.pattern]
+target = 'common_events.lua'
+pattern = '''if specific_vars.bonus_chips then
+    localize{type = 'other', key = 'card_extra_chips', nodes = desc_nodes, vars = {specific_vars.bonus_chips}}
+end'''
+position = 'after'
+payload = '''if specific_vars.mmj_bonus_x_mult then
+    localize{type = 'other', key = 'card_extra_xmult', nodes = desc_nodes, vars = {specific_vars.mmj_bonus_x_mult}}
+end'''
+match_indent = true
+
+
+
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''if self.ability.x_mult <= 1 then return 0 end'''
+position = 'at'
+payload = '''if (self.ability.x_mult <= 1 and self.ability.perma_bonus == (0 or nil)) then return 0 end'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''local card = nil'''
+position = 'after'
+payload = '''
+if self.ability.name:find('Celestial') and G.GAME.used_vouchers.v_telescope and (i ~= 1) then
+    local lumarng = pseudorandom('Luma')
+    if G.GAME.used_vouchers.v_mmj_planet_hopp and (rng <= 0.2   ) then
+        card = create_card("Luma", G.pack_cards, nil, nil, true, true, nil, "lma")
+        card:start_materialize({G.C.WHITE, G.C.WHITE}, nil, 1.5*G.SETTINGS.GAMESPEED)
+        card.T.x = self.T.x + 0
+        card.T.y = self.T.y
+        pack_cards[i] = card or {}
+        goto continue2
+    end
+elseif self.ability.name:find('Celestial') then
+    local rng = pseudorandom('Luma')
+    if G.GAME.used_vouchers.v_mmj_planet_hopp and (rng <= 0.2) then
+        card = create_card("Luma", G.pack_cards, nil, nil, true, true, nil, "lma")
+        card:start_materialize({G.C.WHITE, G.C.WHITE}, nil, 1.5*G.SETTINGS.GAMESPEED)
+        card.T.x = self.T.x + 0
+        card.T.y = self.T.y
+        pack_cards[i] = card or {}
+        goto continue2
+    end
+end'''
+match_indent = true
+
+
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''                   card.T.x = self.T.x
+                    card.T.y = self.T.y
+                    card:start_materialize({G.C.WHITE, G.C.WHITE}, nil, 1.5*G.SETTINGS.GAMESPEED)
+                    pack_cards[i] = card'''
+position = 'after'
+payload = '''
+::continue2::'''
+match_indent = true
+
+
+
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''for i = 1, _size do'''
+position = 'before'
+payload = '''
+if G.GAME.used_vouchers.v_mmj_planet_bounce then
+    SMODS.add_card({set = "Luma",area = G.consumeables, skip_materialize = true})
+end
+    ''' 
+match_indent = true

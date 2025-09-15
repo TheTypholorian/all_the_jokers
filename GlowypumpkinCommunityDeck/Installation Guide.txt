@@ -1,0 +1,17 @@
+This is a guide on how to generally install mods via the modloader "Steamodded"/"SMODS", which includes but is not limited to the custom Modpack "GlowyPumpkin"
+
+
+1. For a guide on how to install the modloader visit: 
+   "https://github.com/Steamodded/smods?tab=readme-ov-file#readme" (this is the github of the needed modloader "Steamodded"/"SMODS"
+	NOTE THAT for the installation of it you will possibly need to disable your firewall for a short period!
+	(how to do that is also described in the github)
+
+2. After successfull installation you just have to extract the .zip modfolder and drag&drop/copy its contents into your new "Mods" folder by going to:
+   Win+R -> open "appdata" -> open folder "roaming" -> open folder "Balatro" -> open folder "Mods" -> deposit extracted modfolder
+
+
+
+If set up correctly just open Balatro and it should load everything and automatically activate the Mod 
+	(if not go to "Mods" in the main menu of the game and Tick box next to the modname)
+
+If there are any troubles or you are unsure about some steps just contact "ButterSpaceship" on the Discord!

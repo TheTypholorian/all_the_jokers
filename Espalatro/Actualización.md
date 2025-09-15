@@ -1,0 +1,12 @@
+----1.0.2----
+-La descripción del joker Balatrez360 tenía un fallo que ponía espadas en vez de picas, soy gilipollas
+-La gorra de Caja Rural ahora al duplicar el valor, se suma el coste base del comodín
+-El error de la gorra de Caja Rural con el Huevo y la Carta de Regalo ya está solucionado 
+-Jimbo Sánchez provocaba un crasheo que ya está arreglado
+
+----1.0.1----
+-Se rescribió el código de Balatro Motos para que no tenga errores
+-Ahora Balatro Recio suma x0.05 de mult
+-Jimbiesta tenía un error con el plano que ya está solucionado
+-Jimbo Sanchez solo quitaba dinero en la primera ronda y se le ha añadido un nuevo sonido
+-Algunos comodines ahora tiene compatibilidad con el Plano

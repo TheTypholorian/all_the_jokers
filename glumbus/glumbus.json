@@ -1,0 +1,14 @@
+{
+    "id": "glumbus",
+    "name": "Glumbus",
+    "author": ["colonthreeing"],
+    "description": "glumbus",
+    "prefix": "glumbus",
+    "main_file": "main.lua",
+    "priority": 0,
+    "badge_text_colour": "FFFFFF",
+    "display_name": "Glumbus",
+    "version": "0.2.2",
+    "dependencies": ["Steamodded (>=1.*)", "Lovely (>=0.6)", "malverk"],
+    "conflicts": []
+}

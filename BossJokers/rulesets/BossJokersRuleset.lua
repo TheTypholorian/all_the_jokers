@@ -1,0 +1,26 @@
+MP.Ruleset:take_ownership("mp_standard", {
+	reworked_jokers = merge(MP.Rulesets.ruleset_mp_standard.reworked_jokers, {
+		"j_mpbj_luchador",
+		"j_mpbj_chicot",
+		"j_mpbj_the_hook",
+		"j_mpbj_the_ox",
+		"j_mpbj_the_house",
+		"j_mpbj_the_wheel",
+		"j_mpbj_the_arm",
+		"j_mpbj_the_club",
+		"j_mpbj_the_fish",
+		"j_mpbj_the_psychic",
+		"j_mpbj_the_goad",
+		"j_mpbj_the_water",
+		"j_mpbj_the_window",
+		"j_mpbj_the_manacle",
+		"j_mpbj_the_eye",
+		"j_mpbj_the_mouth",
+		"j_mpbj_the_plant",
+		"j_mpbj_the_pillar",
+		"j_mpbj_the_head",
+		"j_mpbj_the_tooth",
+		"j_mpbj_the_flint",
+		"j_mpbj_the_mark",
+	})
+}, true)

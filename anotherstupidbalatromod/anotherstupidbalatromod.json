@@ -1,0 +1,19 @@
+{
+  "id": "anotherstupidbalatromod",
+  "name": "Another Stupid Balatro Mod",
+  "author": [
+    "Doggfly"
+  ],
+  "description": "as the title says stupid balatro mod is a creation of mine through the mod creation page Joker Forge and a little bit of code made by me in quotes enjoy it if you read this",
+  "prefix": "shit",
+  "main_file": "main.lua",
+  "version": "3.6",
+  "priority": -9000,
+  "badge_colour": "501457",
+  "badge_text_colour": "bd80c4",
+  "display_name": "ASBM",
+  "dependencies": [
+    "Steamodded (>=1.0.0~BETA-0827c)",
+    "Talisman (>=2.5)"
+  ]
+}

@@ -1,0 +1,50 @@
+[manifest]
+version = "1.0"
+dump_lua = true
+priority = 0
+
+# This manifest assumes the following release structure:
+#
+# Fantoms-Preview
+
+[[patches]]
+[patches.copy]
+target = "globals.lua"
+position = "append"
+sources = [ 
+  "InitSimulate.lua",
+  "InitPreview.lua"
+]
+
+[[patches]]
+[patches.copy]
+target = "main.lua"
+position = "append"
+sources = [
+  "CorePreview.lua",
+  "UtilsPreview.lua"
+]
+
+[[patches]]
+[patches.copy]
+target = "functions/common_events.lua"
+position = "append"
+sources = [
+  "EngineSimulate.lua",
+  "UtilsSimulate.lua"
+]
+
+[[patches]]
+[patches.copy]
+target = "card.lua"
+position = "append"
+sources = [
+  "Jokers/_Vanilla.lua",
+  "Jokers/Multiplayer.lua"
+]
+
+[[patches]]
+[patches.copy]
+target = "functions/UI_definitions.lua"
+position = "append"
+sources = [ "InterfacePreview.lua" ]

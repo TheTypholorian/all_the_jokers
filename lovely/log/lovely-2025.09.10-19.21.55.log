@@ -1,0 +1,385 @@
+INFO - [♥] Lovely 0.8.0
+INFO - [♥] Game directory is at "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Balatro"
+INFO - [♥] Writing logs to "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\lovely\\log"
+INFO - [♥] Using mod directory at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods"
+INFO - [♥] Found .lovelyignore in 'DebugPlus', skipping it.
+INFO - [♥] Found .lovelyignore in 'Saturn', skipping it.
+INFO - [♥] Found .lovelyignore in 'Yorick', skipping it.
+WARN - [♥] Unknown key `patches.1.?.match_indent` found in patch file at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\Cartomancer\\lovely\\blinds-info.toml", ignoring it
+WARN - [♥] Unknown key `patches.2.?.match_indent` found in patch file at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\Cartomancer\\lovely\\stackable-deck-steamodded.toml", ignoring it
+WARN - [♥] Unknown key `patches.4.?.match_indent` found in patch file at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\Cartomancer\\lovely\\stackable-deck-steamodded.toml", ignoring it
+WARN - [♥] Unknown key `patches.6.?.match_indent` found in patch file at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\Cartomancer\\lovely\\stackable-deck-steamodded.toml", ignoring it
+WARN - [♥] Unknown key `patches.21.?.match_indent` found in patch file at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\Cryptid\\lovely\\code.toml", ignoring it
+WARN - [♥] Unknown key `patches.1.?.match_indent` found in patch file at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\HandyBalatro\\lovely\\controls_misc.toml", ignoring it
+WARN - [♥] Unknown key `patches.1.?.overwrite` found in patch file at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\HandyBalatro\\lovely\\controls_misc.toml", ignoring it
+WARN - [♥] Unknown key `patches.0.?.overwrite` found in patch file at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\HandyBalatro\\lovely\\controls_show_deck_preview.toml", ignoring it
+WARN - [♥] Unknown key `patches.35.?.match_indent` found in patch file at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\Talisman\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.35.?.overwrite` found in patch file at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\Talisman\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.52.?.match_indent` found in patch file at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\Talisman\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.55.?.match_indent` found in patch file at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\Talisman\\lovely.toml", ignoring it
+INFO - [♥] Cleaning up dumps directory at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\lovely\\dump"
+INFO - [♥] Initialization complete in 294ms
+WARN - [♥] Pattern 'G.ARGS.score_intensity.organ = G.video_organ or G.ARGS.score_intensity.required_score > 0 and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0' on target 'main.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if type(G.GAME.current_round.current_hand.chips) ~= \'number\' or type(G.GAME.current_round.current_hand.mult) ~= \'number\' then' on target 'main.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'assert(load(nfs.read(Saturn.PATH .. \"/core/logic/hide_played.lua\")))()' on target 'main.lua' for pattern patch from Cartomancer\lovely\saturn-compat.toml resulted in no matches
+WARN - [♥] Pattern 'modded and {' on target 'main.lua' for pattern patch from Cartomancer\lovely\stackable-deck-steamodded-0.9.8.toml resulted in no matches
+INFO - [♥] Applied 17 patches to 'main.lua'
+INFO - [♥] Applied 2 patches to 'engine/string_packer.lua'
+INFO - [♥] Applied 11 patches to 'engine/controller.lua'
+INFO - [♥] Applied 15 patches to 'back.lua'
+INFO - [♥] Applied 18 patches to 'tag.lua'
+INFO - [♥] Applied 1 patch to 'engine/event.lua'
+INFO - [♥] Applied 1 patch to 'engine/node.lua'
+INFO - [♥] Applied 3 patches to 'engine/moveable.lua'
+INFO - [♥] Applied 3 patches to 'engine/sprite.lua'
+INFO - [♥] Applied 2 patches to 'engine/animatedsprite.lua'
+WARN - [♥] Pattern 'assembled_string = assembled_string..(type(subpart) == \'string\' and subpart or args.vars[tonumber(subpart[1])] or \'ERROR\')' on target 'functions/misc_functions.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+INFO - [♥] Applied 86 patches to 'functions/misc_functions.lua'
+WARN - [♥] Regex 'card\\:start_materialize\\(\\)\\n\\s+G\\.shop_vouchers\\:emplace\\(card\\)\\n\\s+end' on target 'game.lua' for regex patch from Cryptid\lovely\Voucher.toml resulted in no matches
+INFO - [♥] Applied 107 patches to 'game.lua'
+INFO - [♥] Applied 1 patch to 'globals.lua'
+WARN - [♥] Pattern 'self.config.chosen = true' on target 'engine/ui.lua' for pattern patch from Cartomancer\lovely\vanilla-ui.toml resulted in no matches
+INFO - [♥] Applied 9 patches to 'engine/ui.lua'
+WARN - [♥] Pattern '{n=G.UIT.T, config={text = G.GAME.hands[handname].chips, scale = 0.45, colour = G.C.UI.TEXT_LIGHT}},' on target 'functions/UI_definitions.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern '{n=G.UIT.T, config={text = G.GAME.hands[handname].mult, scale = 0.45, colour = G.C.UI.TEXT_LIGHT}}' on target 'functions/UI_definitions.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+INFO - [♥] Applied 145 patches to 'functions/UI_definitions.lua'
+WARN - [♥] Pattern 'ease_to = G.GAME.chips + math.floor(hand_chips * mult) * (e and e.antiscore and -1 or 1),' on target 'functions/state_events.lua' for pattern patch from Cryptid\lovely\blind.toml resulted in no matches
+WARN - [♥] Pattern 'if reps[j] ~= 1 then' on target 'functions/state_events.lua' for pattern patch from Cryptid\lovely\misc.toml resulted in no matches
+WARN - [♥] Pattern 'if effects[ii].card then' on target 'functions/state_events.lua' for pattern patch from HandyBalatro\lovely\controls_animation_skip.toml resulted in no matches
+WARN - [♥] Pattern 'if G.GAME.round_resets.blind == G.P_BLINDS.bl_small then\n  G.GAME.round_resets.blind_states.Small = \'Defeated\' ' on target 'functions/state_events.lua' for pattern patch from MoreFluff\lovely\superboss.toml resulted in no matches
+WARN - [♥] Pattern 'if G.GAME.round_resets.ante == G.GAME.win_ante and G.GAME.blind:get_type() == \'Boss\' then\n  game_won = true\n  G.GAME.won = true\nend' on target 'functions/state_events.lua' for pattern patch from MoreFluff\lovely\superboss.toml resulted in no matches
+WARN - [♥] Pattern 'G.FUNCS.draw_from_hand_to_discard()\nif G.GAME.blind:get_type() == \'Boss\' then' on target 'functions/state_events.lua' for pattern patch from MoreFluff\lovely\superboss.toml resulted in no matches
+WARN - [♥] Pattern 'if effects[ii].card then' on target 'functions/state_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if effects.jokers.Xmult_mod then mult = mod_mult(mult*effects.jokers.Xmult_mod);extras.mult = true  end' on target 'functions/state_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if effect.Xmult_mod then mult = mod_mult(mult*effect.Xmult_mod);extras.mult = true  end' on target 'functions/state_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if effects[ii].message then' on target 'functions/state_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern '--calculate the card edition effects' on target 'functions/state_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if effects[ii].edition.p_dollars_mod then' on target 'functions/state_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if edition_effects.jokers.x_mult_mod then' on target 'functions/state_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if SMODS.has_enhancement(scoring_hand[i], \'m_glass\') and scoring_hand[i]:can_calculate() and pseudorandom(\'glass\') < G.GAME.probabilities.normal/(scoring_hand[i].ability.name == \'Glass Card\' and scoring_hand[i].ability.extra or G.P_CENTERS.m_glass.config.extra) then' on target 'functions/state_events.lua' for pattern patch from Cryptid\lovely\Probability.toml resulted in no matches
+WARN - [♥] Regex '(?<indent>[\\t ]*)if destroyed then \\n' on target 'functions/state_events.lua' for regex patch from Cryptid\lovely\seal.toml resulted in no matches
+INFO - [♥] Applied 101 patches to 'functions/state_events.lua'
+WARN - [♥] Pattern '{n=G.UIT.T, config={text = localize(\'$\')..config.dollars, scale = 1.2*scale, colour = G.C.WHITE, shadow = true, juice = true}}' on target 'functions/common_events.lua' for pattern patch from Cryptid\lovely\code.toml resulted in no matches
+WARN - [♥] Pattern 'elseif v.boss.showdown and (G.GAME.round_resets.ante)%G.GAME.win_ante == 0 and G.GAME.round_resets.ante >= 2 then' on target 'functions/common_events.lua' for pattern patch from Cryptid\lovely\stake.toml resulted in no matches
+WARN - [♥] Pattern 'func = (function() if eval_func(card) then if not first or first then card:juice_up(0.1, 0.1) end;juice_card_until(card, eval_func, nil, 0.8) end return true end)' on target 'functions/common_events.lua' for pattern patch from HandyBalatro\lovely\controls_animation_skip.toml resulted in no matches
+WARN - [♥] Pattern 'func = (function() if eval_func(card) then if not first or first then card:juice_up(0.1, 0.1) end;juice_card_until(card, eval_func, nil, 0.8) end return true end)' on target 'functions/common_events.lua' for pattern patch from HandyBalatro\lovely\controls_animation_skip.toml resulted in no matches
+WARN - [♥] Pattern '   end\n\n    if main_end then \n        desc_nodes[#desc_nodes+1] = main_end \n    end' on target 'functions/common_events.lua' for pattern patch from MoreFluff\lovely\complexitycreep.toml resulted in no matches
+WARN - [♥] Regex 'localize\\(\'ph_mr_bones\'\\)..\' \'\\}, colours = \\{G.C.FILTER' on target 'functions/common_events.lua' for regex patch from Cryptid\lovely\code.toml resulted in no matches
+WARN - [♥] Pattern 'if num_dollars > 60 then' on target 'functions/common_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'func = (function() card:juice_up(0.7);return true end)' on target 'functions/common_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if card then card:juice_up(0.8, 0.5) end' on target 'functions/common_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'card:juice_up(0.6, 0.1)' on target 'functions/common_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'func = (function() if eval_func(card) then if not first or first then card:juice_up(0.1, 0.1) end;juice_card_until(card, eval_func, nil, 0.8) end return true end)' on target 'functions/common_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'func = (function() if eval_func(card) then if not first or first then card:juice_up(0.1, 0.1) end;juice_card_until(card, eval_func, nil, 0.8) end return true end)' on target 'functions/common_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if amt > 0 or amt < 0 then' on target 'functions/common_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if amt > 0 or amt < 0 then' on target 'functions/common_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'elseif _c.effect == \'Glass Card\' then loc_vars = {cfg.Xmult, G.GAME.probabilities.normal, cfg.extra}' on target 'functions/common_events.lua' for pattern patch from Cryptid\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'elseif _c.name == \"The Wheel of Fortune\" then loc_vars = {G.GAME.probabilities.normal, cfg.extra};  info_queue[#info_queue+1] = G.P_CENTERS.e_foil; info_queue[#info_queue+1] = G.P_CENTERS.e_holo; info_queue[#info_queue+1] = G.P_CENTERS.e_polychrome;' on target 'functions/common_events.lua' for pattern patch from Cryptid\lovely\Probability.toml resulted in no matches
+INFO - [♥] Applied 201 patches to 'functions/common_events.lua'
+WARN - [♥] Pattern 'if #G.hand.highlighted <= 0 or G.GAME.blind.block_play or #G.hand.highlighted > 5 then' on target 'functions/button_callbacks.lua' for pattern patch from Cryptid\lovely\misprint.toml resulted in no matches
+WARN - [♥] Pattern 'if ((G.GAME.dollars-G.GAME.bankrupt_at) - 10 >= 0) and' on target 'functions/button_callbacks.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if #G.hand.highlighted <= 0 or G.GAME.blind.block_play or #G.hand.highlighted > 5 then' on target 'functions/button_callbacks.lua' for pattern patch from CardSleeves\lovely\expected_to_fail.toml resulted in no matches
+INFO - [♥] Applied 90 patches to 'functions/button_callbacks.lua'
+WARN - [♥] Pattern 'if not initial then G.GAME.blind:debuff_card(self) end' on target 'card.lua' for pattern patch from Cryptid\lovely\lib_misc.toml resulted in no matches
+WARN - [♥] Pattern 'if self.ability.name == \'Campfire\' and G.GAME.blind.boss and not (G.GAME.blind.config and G.GAME.blind.config.bonus) and self.ability.x_mult > 1 then' on target 'card.lua' for pattern patch from Cryptid\lovely\misc.toml resulted in no matches
+WARN - [♥] Pattern 'if self.ability.name == \'Ectoplasm\' or self.ability.name == \'Hex\' or pseudorandom(\'wheel_of_fortune\') < G.GAME.probabilities.normal/self.ability.extra then' on target 'card.lua' for pattern patch from Cryptid\lovely\misc.toml resulted in no matches
+WARN - [♥] Pattern 'if self.ability.name:find(\'Arcana\') then' on target 'card.lua' for pattern patch from Cryptid\lovely\misprint.toml resulted in no matches
+WARN - [♥] Pattern 'if self.ability.name == \'The Hermit\' or self.ability.consumeable.hand_type or self.ability.name == \'Temperance\' or self.ability.name == \'Black Hole\' then' on target 'card.lua' for pattern patch from Cryptid\lovely\stake.toml resulted in no matches
+WARN - [♥] Pattern 'if self.ability.queue_negative_removal then' on target 'card.lua' for pattern patch from Cryptid\lovely\sticker.toml resulted in no matches
+WARN - [♥] Pattern 'if self.ability.rental then self.cost = 1 end' on target 'card.lua' for pattern patch from MoreFluff\lovely\superboss.toml resulted in no matches
+WARN - [♥] Pattern 'G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)}))' on target 'card.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if G.GAME.blind then G.E_MANAGER:add_event(Event({ func = function() G.GAME.blind:set_blind(nil, true, nil); return true end })) end' on target 'card.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'x_mult = center.config.Xmult or 1,' on target 'card.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if pseudorandom(\'lucky_money\') < G.GAME.probabilities.normal/15 then' on target 'card.lua' for pattern patch from Cryptid\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'if pseudorandom(\'lucky_mult\') < G.GAME.probabilities.normal/5 then' on target 'card.lua' for pattern patch from Cryptid\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'if self.ability.name == \'Ectoplasm\' or self.ability.name == \'Hex\' or pseudorandom(\'wheel_of_fortune\') < G.GAME.probabilities.normal/self.ability.extra then' on target 'card.lua' for pattern patch from Cryptid\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'elseif self.ability.name == \'Space Joker\' then loc_vars = {\'\'..(G.GAME and G.GAME.probabilities.normal or 1), self.ability.extra}' on target 'card.lua' for pattern patch from Cryptid\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'if self.ability.name == \'Space Joker\' and pseudorandom(\'space\') < G.GAME.probabilities.normal/self.ability.extra then' on target 'card.lua' for pattern patch from Cryptid\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'elseif self.ability.name == \'8 Ball\' then loc_vars = {\'\'..(G.GAME and G.GAME.probabilities.normal or 1),self.ability.extra}' on target 'card.lua' for pattern patch from Cryptid\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'if (context.other_card:get_id() == 8) and (pseudorandom(\'8ball\') < G.GAME.probabilities.normal/self.ability.extra) then' on target 'card.lua' for pattern patch from Cryptid\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'elseif self.ability.name == \'Business Card\' then loc_vars = {\'\'..(G.GAME and G.GAME.probabilities.normal or 1), self.ability.extra}' on target 'card.lua' for pattern patch from Cryptid\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'pseudorandom(\'business\') < G.GAME.probabilities.normal/self.ability.extra then' on target 'card.lua' for pattern patch from Cryptid\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'elseif self.ability.name == \'Gros Michel\' then loc_vars = {self.ability.extra.mult, \'\'..(G.GAME and G.GAME.probabilities.normal or 1), self.ability.extra.odds}' on target 'card.lua' for pattern patch from Cryptid\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'elseif self.ability.name == \'Cavendish\' then loc_vars = {self.ability.extra.Xmult, \'\'..(G.GAME and G.GAME.probabilities.normal or 1), self.ability.extra.odds}' on target 'card.lua' for pattern patch from Cryptid\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'if pseudorandom(self.ability.name == \'Cavendish\' and \'cavendish\' or \'gros_michel\') < G.GAME.probabilities.normal/self.ability.extra.odds then' on target 'card.lua' for pattern patch from Cryptid\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'elseif self.ability.name == \'Bloodstone\' then loc_vars = {\'\'..(G.GAME and G.GAME.probabilities.normal or 1), self.ability.extra.odds, self.ability.extra.Xmult}' on target 'card.lua' for pattern patch from Cryptid\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'pseudorandom(\'bloodstone\') < G.GAME.probabilities.normal/self.ability.extra.odds then' on target 'card.lua' for pattern patch from Cryptid\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'elseif self.ability.name == \'Reserved Parking\' then loc_vars = {self.ability.extra.dollars, \'\'..(G.GAME and G.GAME.probabilities.normal or 1), self.ability.extra.odds}' on target 'card.lua' for pattern patch from Cryptid\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'pseudorandom(\'parking\') < G.GAME.probabilities.normal/self.ability.extra.odds then' on target 'card.lua' for pattern patch from Cryptid\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'elseif self.ability.name == \'Hallucination\' then loc_vars = {G.GAME.probabilities.normal, self.ability.extra}' on target 'card.lua' for pattern patch from Cryptid\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'if pseudorandom(\'halu\'..G.GAME.round_resets.ante) < G.GAME.probabilities.normal/self.ability.extra then' on target 'card.lua' for pattern patch from Cryptid\lovely\Probability.toml resulted in no matches
+WARN - [♥] Regex 'self.params.viewed_back and G.GAME.viewed_back or G.GAME.selected_back' on target 'card.lua' for regex patch from CardSleeves\lovely\expected_to_fail.toml resulted in no matches
+INFO - [♥] Applied 276 patches to 'card.lua'
+INFO - [♥] Applied 31 patches to 'cardarea.lua'
+INFO - [♥] Applied 46 patches to 'blind.lua'
+INFO - [♥] Applied 2 patches to 'card_character.lua'
+WARN - [♥] Pattern 'if self.strings[k].W > self.config.W then' on target 'engine/text.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'local letter = self.strings[self.focused_string].letters[k]' on target 'engine/text.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+INFO - [♥] Applied 6 patches to 'engine/text.lua'
+WARN - [♥] Pattern 'if eff.retrigger_flag then SMODS.calculate_effect(eff, eff.card); j = j+1; _, eff = next(reps[j]) end' on target '=[SMODS _ "src/utils.lua"]' for pattern patch from Cryptid\lovely\misc.toml resulted in no matches
+INFO - [♥] Applied 12 patches to '=[SMODS _ "src/utils.lua"]'
+WARN - [♥] Pattern '\t\t\t\t\t\topt_callback = \'your_collection_tags_page\',\n\t\t\t\t\t\tfocus_args = { snap_to = true, nav = \'wide\' },\n\t\t\t\t\t\tcurrent_option = page,\n\t\t\t\t\t\tcolour = G.C.RED,\n\t\t\t\t\t\tno_pips = true\n\t\t\t\t\t})\n\t\t\t\t}\n\t\t\t}' on target '=[SMODS _ "src/overrides.lua"]' for pattern patch from Cryptid\lovely\cat.toml resulted in no matches
+WARN - [♥] Pattern 'card_limit = #SUITS[suit_map[j]],' on target '=[SMODS _ "src/overrides.lua"]' for pattern patch from Cartomancer\lovely\stackable-deck-steamodded.toml resulted in no matches
+WARN - [♥] Pattern 'card_limit = #SUITS[visible_suit[j]],' on target '=[SMODS _ "src/overrides.lua"]' for pattern patch from Cartomancer\lovely\stackable-deck-steamodded.toml resulted in no matches
+WARN - [♥] Regex '\t\t\tfor i = 1\\, \\#SUITS\\[suit_map\\[j\\]\\] do\n\t\t\t\tif SUITS\\[suit_map\\[j\\]\\]\\[i\\] then\n\t\t\t\t\tlocal greyed\\, _scale = nil\\, 0\\.7\n\t\t\t\t\tif unplayed_only and not \\(\\(SUITS\\[suit_map\\[j\\]\\]\\[i\\]\\.area and SUITS\\[suit_map\\[j\\]\\]\\[i\\]\\.area == G\\.deck\\) or SUITS\\[suit_map\\[j\\]\\]\\[i\\]\\.ability\\.wheel_flipped\\) then\n\t\t\t\t\t\tgreyed = true\n\t\t\t\t\tend\n\t\t\t\t\tlocal copy = copy_card\\(SUITS\\[suit_map\\[j\\]\\]\\[i\\]\\, nil\\, _scale[^\\)\\n]*\\)\n\t\t\t\t\tcopy\\.greyed = greyed\n\t\t\t\t\tcopy\\.T\\.x = view_deck\\.T\\.x \\+ view_deck\\.T\\.w \\/ 2\n\t\t\t\t\tcopy\\.T\\.y = view_deck\\.T\\.y\n\n\t\t\t\t\tcopy:hard_set_T\\(\\)\n\t\t\t\t\tview_deck:emplace\\(copy\\)\n\t\t\t\tend\n\t\t\tend' on target '=[SMODS _ "src/overrides.lua"]' for regex patch from Cartomancer\lovely\stackable-deck-steamodded.toml resulted in no matches
+INFO - [♥] Applied 9 patches to '=[SMODS _ "src/overrides.lua"]'
+INFO - [♥] Applied 3 patches to '=[SMODS _ "src/game_object.lua"]'
+INFO - [G] Failed to connect to the debug server
+INFO - [G] 2025-09-10 19:22:01 :: DEBUG :: DebugConsole :: Steamodded Debug Socket started !
+INFO - [G] 2025-09-10 19:22:01 :: INFO  :: SMODS :: Steamodded v1.0.0~BETA-0711a
+INFO - [G] Order not set for config dictionary: misc_quick_restart
+INFO - [G] Order not set for config dictionary: speed_multiplier_default_value
+INFO - [G] Order not set for config dictionary: misc_save_run
+INFO - [G] Order not set for config dictionary: animation_skip_default_value
+INFO - [♥] Applied 9 patches to 'engine/sound_manager.lua'
+INFO - [♥] Applied 3 patches to 'engine/save_manager.lua'
+INFO - [♥] Applied 2 patches to 'engine/string_packer.lua'
+INFO - [♥] Applied 4 patches to '=[SMODS _ "src/card_draw.lua"]'
+INFO - [G] 2025-09-10 19:22:02 :: INFO  :: Loader :: Valid JSON file found
+INFO - [G] 2025-09-10 19:22:02 :: TRACE :: Loader :: Processing Mod file (Legacy header): mod.lua
+INFO - [G] 2025-09-10 19:22:02 :: TRACE :: Loader :: Saving Mod Info: cartomancer
+INFO - [G] 2025-09-10 19:22:02 :: INFO  :: Loader :: Valid JSON file found
+INFO - [G] 2025-09-10 19:22:03 :: INFO  :: Loader :: Valid JSON file found
+INFO - [G] 2025-09-10 19:22:03 :: INFO  :: Loader :: Valid JSON file found
+INFO - [G] 2025-09-10 19:22:03 :: TRACE :: Loader :: Processing Mod file (Legacy header): steamodded.lua
+INFO - [G] 2025-09-10 19:22:03 :: WARN  :: Loader :: Duplicate Mod ID: Handy
+INFO - [G] 2025-09-10 19:22:03 :: TRACE :: Loader :: Processing Mod file (Legacy header): MoreFluff.lua
+INFO - [G] 2025-09-10 19:22:03 :: TRACE :: Loader :: Saving Mod Info: MoreFluff
+INFO - [G] 2025-09-10 19:22:03 :: INFO  :: Loader :: Valid JSON file found
+INFO - [G] 2025-09-10 19:22:03 :: TRACE :: Loader :: Processing Mod file (Legacy header): MoreSpeeds.lua
+INFO - [G] 2025-09-10 19:22:03 :: TRACE :: Loader :: Saving Mod Info: MoreSpeed
+INFO - [G] 2025-09-10 19:22:03 :: ERROR :: Loader :: Found invalid metadata JSON file at C:\Users\evan\AppData\Roaming\Balatro\Mods/Steamopollys-MoreSpeed-0.8.2/manifest.json, ignoring: [SMODS _ "src/loader.lua"]:226: id
+INFO - [G] 2025-09-10 19:22:03 :: TRACE :: Loader :: Processing Mod file (Legacy header): steamodded_metadata.lua
+INFO - [G] 2025-09-10 19:22:03 :: TRACE :: Loader :: Saving Mod Info: Talisman
+INFO - [G] 2025-09-10 19:22:03 :: INFO  :: Loader :: Valid JSON file found
+INFO - [G] 2025-09-10 19:22:03 :: INFO  :: CardSleeves :: CardSleeves v1.8.0 loaded~!
+INFO - [G] 2025-09-10 19:22:03 :: TRACE :: Loader :: Mod DebugPlus was unable to load: 
+INFO - [G] basepaul_card
+INFO - [G] blahaj
+INFO - [G] clownfish
+INFO - [G] expansion_pack
+INFO - [G] hollow
+INFO - [G] jester
+INFO - [G] lollipop
+INFO - [G] luckycharm
+INFO - [G] monochrome
+INFO - [G] mspaint
+INFO - [G] philosophical
+INFO - [G] simplified
+INFO - [G] spiral
+INFO - [G] treasuremap
+INFO - [G] unregisteredhypercam
+INFO - [G] dropkick
+INFO - [G] bladedance
+INFO - [G] hyperbeam
+INFO - [G] blasphemy
+INFO - [G] dramaticentrance
+INFO - [G] badlegaldefence
+INFO - [G] blunder
+INFO - [G] brilliant
+INFO - [G] broomcloset
+INFO - [G] clipart
+INFO - [G] coupon_catalogue
+INFO - [G] css
+INFO - [G] cueball
+INFO - [G] flintandsteel
+INFO - [G] gemstonejoker
+INFO - [G] globe
+INFO - [G] goldencarrot
+INFO - [G] hallofmirrors
+INFO - [G] impostor
+INFO - [G] farmmerge
+INFO - [G] junkmail
+INFO - [G] tonersoup
+INFO - [G] unpleasantcard
+INFO - [G] loadeddisk
+INFO - [G] missingjoker
+INFO - [G] paintcan
+INFO - [G] rot_cartomancer
+INFO - [G] snake
+INFO - [G] slotmachine
+INFO - [G] stylemeter
+INFO - [G] stonejokerjoker
+INFO - [G] sudoku
+INFO - [G] talljoker
+INFO - [G] teacup
+INFO - [G] tealjoker
+INFO - [G] recycling
+INFO - [G] virtual
+INFO - [G] wilddrawfour
+INFO - [G] yuckyrat
+INFO - [G] allicantdo
+INFO - [G] bloodpact
+INFO - [G] bookmove
+INFO - [G] brass
+INFO - [G] bowlingball
+INFO - [G] cba
+INFO - [G] complexitycreep
+INFO - [G] fleshprison
+INFO - [G] hugejoker
+INFO - [G] hyperjimbo
+INFO - [G] jankman
+INFO - [G] mashupalbum
+INFO - [G] pixeljoker
+INFO - [G] rainbowjoker
+INFO - [G] rosetinted
+INFO - [G] the_solo
+INFO - [G] top10
+INFO - [G] widejoker
+INFO - [G] triangle
+INFO - [G] marigold
+INFO - [G] lessfluff
+INFO - [G] colorem
+INFO - [G] 2025-09-10 19:22:03 :: TRACE :: Loader :: Mod Saturn was unable to load: 
+INFO - [G] 2025-09-10 19:22:03 :: TRACE :: Loader :: Mod yorick was unable to load: 
+INFO - [G] [CRYPTID] Loading library file ascended.lua
+INFO - [G] [CRYPTID] Loading library file calculate.lua
+INFO - [G] [CRYPTID] Loading library file content.lua
+INFO - [G] [CRYPTID] Loading library file cross-mod.lua
+INFO - [G] [CRYPTID] Loading library file d20.lua
+INFO - [G] [CRYPTID] Loading library file event.lua
+INFO - [G] [CRYPTID] Loading library file forcetrigger.lua
+INFO - [G] [CRYPTID] Loading library file gameset.lua
+INFO - [G] [CRYPTID] Loading library file https.lua
+INFO - [G] 2025-09-10 19:22:03 :: DEBUG :: SMODS.https :: Using https module backend
+INFO - [G] [CRYPTID] Loading library file misc.lua
+INFO - [G] [CRYPTID] Loading library file misprintize.lua
+INFO - [G] [CRYPTID] Loading library file modifiers.lua
+INFO - [G] 2025-09-10 19:22:03 :: WARN  :: Sticker :: Detected duplicate register call on object perishable
+INFO - [G] 2025-09-10 19:22:03 :: WARN  :: Sticker :: Detected duplicate register call on object pinned
+INFO - [G] 2025-09-10 19:22:03 :: WARN  :: Sticker :: Detected duplicate register call on object eternal
+INFO - [G] 2025-09-10 19:22:03 :: WARN  :: Sticker :: Detected duplicate register call on object rental
+INFO - [G] [CRYPTID] Loading library file notifications.lua
+INFO - [G] [CRYPTID] Loading library file overrides.lua
+INFO - [G] [CRYPTID] Loading library file pointerlib.lua
+INFO - [G] [CRYPTID] Loading library file ui.lua
+INFO - [G] [CRYPTID] Loading file achievement.lua
+INFO - [G] [CRYPTID] Loading file blind.lua
+INFO - [G] [CRYPTID] Loading file challenge.lua
+INFO - [G] [CRYPTID] Loading file code.lua
+INFO - [G] [CRYPTID] Loading file deck.lua
+INFO - [G] [CRYPTID] Loading file enhanced.lua
+INFO - [G] [CRYPTID] Loading file epic.lua
+INFO - [G] [CRYPTID] Loading file exotic.lua
+INFO - [G] [CRYPTID] Loading file joker_display.lua
+INFO - [G] [CRYPTID] Loading file m.lua
+INFO - [G] [CRYPTID] Loading file misc.lua
+INFO - [G] [CRYPTID] Loading file misc_joker.lua
+INFO - [G] [CRYPTID] Loading file planet.lua
+INFO - [G] [CRYPTID] Loading file pointer.lua
+INFO - [G] [CRYPTID] Inserting Pointer Aliases
+INFO - [G] [CRYPTID] Loading file sleeve.lua
+INFO - [G] [CRYPTID] Loading file spectral.lua
+INFO - [G] [CRYPTID] Loading file spooky.lua
+INFO - [G] [CRYPTID] Loading file stake.lua
+INFO - [G] [CRYPTID] Loading file tag.lua
+INFO - [G] [CRYPTID] Loading file test.lua
+INFO - [G] [CRYPTID] Loading file voucher.lua
+INFO - [G] 2025-09-10 19:22:03 :: WARN  :: Atlas :: Object cry_effarcire has the same key as an existing object, not registering.
+INFO - [G] 2025-09-10 19:22:03 :: WARN  :: Atlas :: If you want to modify an existing object, use take_ownership()
+INFO - [G] 2025-09-10 19:22:03 :: INFO  :: TIMER :: [0000] Injected Fonts in 0.001 ms
+INFO - [G] 2025-09-10 19:22:03 :: INFO  :: TIMER :: [0000] Injected Language in 0.001 ms
+INFO - [G] 2025-09-10 19:22:03 :: INFO  :: TIMER :: [0000] Injected [INTERNAL] in 2.663 ms
+INFO - [G] 2025-09-10 19:22:04 :: INFO  :: TIMER :: [0053] Injected Atlas in 661.158 ms
+INFO - [G] 2025-09-10 19:22:04 :: INFO  :: TIMER :: [0036] Injected Sound in 276.652 ms
+INFO - [G] 2025-09-10 19:22:04 :: INFO  :: TIMER :: [0032] Injected Stake in 0.846 ms
+INFO - [G] 2025-09-10 19:22:04 :: INFO  :: TIMER :: [0008] Injected Rarity in 0.091 ms
+INFO - [G] 2025-09-10 19:22:04 :: INFO  :: TIMER :: [0012] Injected ObjectType in 0.164 ms
+INFO - [G] 2025-09-10 19:22:04 :: INFO  :: TIMER :: [0588] Injected Center in 3.932 ms
+INFO - [G] 2025-09-10 19:22:04 :: INFO  :: TIMER :: [0011] Injected Undiscovered Sprite in 0.019 ms
+INFO - [G] 2025-09-10 19:22:04 :: INFO  :: TIMER :: [0047] Injected Blind in 0.104 ms
+INFO - [G] 2025-09-10 19:22:04 :: INFO  :: TIMER :: [0006] Injected Seal in 0.326 ms
+INFO - [G] 2025-09-10 19:22:04 :: INFO  :: TIMER :: [0004] Injected Suit in 0.115 ms
+INFO - [G] 2025-09-10 19:22:04 :: INFO  :: TIMER :: [0013] Injected Rank in 0.194 ms
+INFO - [G] 2025-09-10 19:22:04 :: INFO  :: TIMER :: [0028] Injected DeckSkin in 0.604 ms
+INFO - [G] 2025-09-10 19:22:04 :: INFO  :: TIMER :: [0016] Injected PokerHand in 0.171 ms
+INFO - [G] 2025-09-10 19:22:04 :: INFO  :: TIMER :: [0032] Injected Challenge in 0.132 ms
+INFO - [G] 2025-09-10 19:22:04 :: INFO  :: TIMER :: [0032] Injected Tag in 0.139 ms
+INFO - [G] 2025-09-10 19:22:04 :: INFO  :: TIMER :: [0011] Injected Sticker in 0.390 ms
+INFO - [G] 2025-09-10 19:22:05 :: INFO  :: TIMER :: [0011] Injected Shader in 254.107 ms
+INFO - [G] 2025-09-10 19:22:05 :: INFO  :: TIMER :: [0002] Injected Keybind in 0.031 ms
+INFO - [G] 2025-09-10 19:22:05 :: INFO  :: TIMER :: [0028] Injected Achievement in 0.240 ms
+INFO - [G] 2025-09-10 19:22:05 :: INFO  :: TIMER :: [0002] Injected nil in 0.016 ms
+INFO - [G] 2025-09-10 19:22:05 :: INFO  :: TIMER :: [0024] Injected Draw Step in 0.170 ms
+INFO - [G] 2025-09-10 19:22:05 :: INFO  :: TIMER :: [0000] Injected [INTERNAL] in 41.284 ms
+INFO - [G] 2025-09-10 19:22:05 :: INFO  :: TIMER :: [0010] Injected Other in 0.017 ms
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:22:46 :: DEBUG :: SMODS.https(1) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:23:47 :: DEBUG :: SMODS.https(2) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:25:12 :: DEBUG :: SMODS.https(3) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:26:12 :: DEBUG :: SMODS.https(4) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:27:14 :: DEBUG :: SMODS.https(5) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:28:18 :: DEBUG :: SMODS.https(6) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:29:19 :: DEBUG :: SMODS.https(7) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:30:19 :: DEBUG :: SMODS.https(8) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:31:19 :: DEBUG :: SMODS.https(9) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:32:20 :: DEBUG :: SMODS.https(10) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:33:20 :: DEBUG :: SMODS.https(11) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:34:20 :: DEBUG :: SMODS.https(12) :: Using https module backend
+INFO - [G] LONG DT @ 789: 0.1
+INFO - [G] LONG DT @ 789: 0.081533979999999
+INFO - [G] LONG DT @ 789: 0.068234103999984
+INFO - [G] LONG DT @ 789: 0.057915543199999
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:35:24 :: DEBUG :: SMODS.https(13) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:36:24 :: DEBUG :: SMODS.https(14) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:37:30 :: DEBUG :: SMODS.https(15) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:38:30 :: DEBUG :: SMODS.https(16) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:39:30 :: DEBUG :: SMODS.https(17) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:40:30 :: DEBUG :: SMODS.https(18) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:41:31 :: DEBUG :: SMODS.https(19) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:42:31 :: DEBUG :: SMODS.https(20) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:43:31 :: DEBUG :: SMODS.https(21) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:44:31 :: DEBUG :: SMODS.https(22) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:45:32 :: DEBUG :: SMODS.https(23) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:46:32 :: DEBUG :: SMODS.https(24) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:47:32 :: DEBUG :: SMODS.https(25) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:48:33 :: DEBUG :: SMODS.https(26) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:49:35 :: DEBUG :: SMODS.https(27) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:50:35 :: DEBUG :: SMODS.https(28) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:51:36 :: DEBUG :: SMODS.https(29) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:52:40 :: DEBUG :: SMODS.https(30) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:53:40 :: DEBUG :: SMODS.https(31) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:54:41 :: DEBUG :: SMODS.https(32) :: Using https module backend
+INFO - [G] LONG DT @ 1974: 0.088136089868416
+INFO - [G] LONG DT @ 1974: 0.077577831894702
+INFO - [G] LONG DT @ 1974: 0.064286485515778
+INFO - [G] LONG DT @ 1974: 0.054895528412645
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:55:41 :: DEBUG :: SMODS.https(33) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:56:41 :: DEBUG :: SMODS.https(34) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:57:42 :: DEBUG :: SMODS.https(35) :: Using https module backend
+INFO - [♥] Applied 0 patches to '=[SMODS _ "smods-https-thread.lua"]'
+INFO - [G] 2025-09-10 19:58:42 :: DEBUG :: SMODS.https(36) :: Using https module backend

@@ -1,0 +1,24 @@
+Name = The Glassopoly
+Desc = {
+    A monopoly of glass.
+    (A Flush made with Glass Cards. When this hand is played,
+    temporarily greatly decrease all listed probabilities.)
+}
+Base Chips = 126
+Base Mult = 16
+Level Chips = 36
+Level Mult = 3
+Eval = {
+    (* of a, * of a, * of a, * of a, * of a)
+}
+Author = Helena (i_want_helenussy)
+Example = 7 of Spades, King of Spades, 10 of Spades, 2 of Spades, Jack of Spades
+All Enhanced = Glass
+Joker Mult = 16
+Joker Chips = 100
+Joker XMult = 4
+Planet Name = Cryselara
+Joker Mult Name = The Unbent
+Joker Chips Name = The Unbowed
+Joker XMult Name = The Unbroken
+Probability Mod = 0.000001

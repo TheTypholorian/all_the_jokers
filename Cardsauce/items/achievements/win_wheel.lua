@@ -1,0 +1,12 @@
+local trophyInfo = {
+    rarity = 3,
+    unlock_condition = function(self, args)
+        if args.type == 'win_deck' then
+            if G.GAME.selected_back.effect.center.key == "b_csau_wheel" then
+                return true
+            end
+        end
+    end,
+}
+
+return trophyInfo

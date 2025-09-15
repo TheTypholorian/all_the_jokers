@@ -1,0 +1,145 @@
+INFO - [♥] Lovely 0.8.0
+INFO - [♥] Game directory is at "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Balatro"
+INFO - [♥] Writing logs to "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\lovely\\log"
+INFO - [♥] Using mod directory at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods"
+INFO - [♥] Found .lovelyignore in 'Cryptid', skipping it.
+INFO - [♥] Found .lovelyignore in 'MoreFluff', skipping it.
+INFO - [♥] Found .lovelyignore in 'Saturn', skipping it.
+INFO - [♥] Found .lovelyignore in 'Talisman', skipping it.
+INFO - [♥] Found .lovelyignore in 'Yorick', skipping it.
+WARN - [♥] Unknown key `patches.1.?.match_indent` found in patch file at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\Cartomancer\\lovely\\blinds-info.toml", ignoring it
+WARN - [♥] Unknown key `patches.2.?.match_indent` found in patch file at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\Cartomancer\\lovely\\stackable-deck-steamodded.toml", ignoring it
+WARN - [♥] Unknown key `patches.4.?.match_indent` found in patch file at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\Cartomancer\\lovely\\stackable-deck-steamodded.toml", ignoring it
+WARN - [♥] Unknown key `patches.6.?.match_indent` found in patch file at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\Cartomancer\\lovely\\stackable-deck-steamodded.toml", ignoring it
+WARN - [♥] Unknown key `patches.1.?.match_indent` found in patch file at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\HandyBalatro\\lovely\\controls_misc.toml", ignoring it
+WARN - [♥] Unknown key `patches.1.?.overwrite` found in patch file at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\HandyBalatro\\lovely\\controls_misc.toml", ignoring it
+WARN - [♥] Unknown key `patches.0.?.overwrite` found in patch file at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\HandyBalatro\\lovely\\controls_show_deck_preview.toml", ignoring it
+INFO - [♥] Cleaning up dumps directory at "C:\\Users\\evan\\AppData\\Roaming\\Balatro\\Mods\\lovely\\dump"
+INFO - [♥] Initialization complete in 82ms
+INFO - [♥] Applied 1 patch to 'conf.lua'
+WARN - [♥] Pattern 'assert(load(nfs.read(Saturn.PATH .. \"/core/logic/hide_played.lua\")))()' on target 'main.lua' for pattern patch from Cartomancer\lovely\saturn-compat.toml resulted in no matches
+WARN - [♥] Pattern 'modded and {' on target 'main.lua' for pattern patch from Cartomancer\lovely\stackable-deck-steamodded-0.9.8.toml resulted in no matches
+INFO - [♥] Applied 18 patches to 'main.lua'
+INFO - [♥] Applied 16 patches to 'engine/controller.lua'
+INFO - [♥] Applied 16 patches to 'back.lua'
+INFO - [♥] Applied 7 patches to 'tag.lua'
+INFO - [♥] Applied 1 patch to 'engine/event.lua'
+INFO - [♥] Applied 3 patches to 'engine/moveable.lua'
+INFO - [♥] Applied 2 patches to 'engine/sprite.lua'
+INFO - [♥] Applied 2 patches to 'engine/animatedsprite.lua'
+INFO - [♥] Applied 71 patches to 'functions/misc_functions.lua'
+WARN - [♥] Pattern 'self.GAME.pseudorandom.seed = hash_seed(self.GAME.pseudorandom.seed)' on target 'game.lua' for pattern patch from Multiplayer\lovely\TheOrder.toml resulted in no matches
+WARN - [♥] Pattern 'if not saveTable then\n    if args.seed then self.GAME.seeded = true end\n    self.GAME.pseudorandom.seed = args.seed or (not (G.SETTINGS.tutorial_complete or G.SETTINGS.tutorial_progress.completed_parts[\'big_blind\']) and \"TUTORIAL\") or generate_starting_seed()\nend\n\nfor k, v in pairs(self.GAME.pseudorandom) do if v == 0 then self.GAME.pseudorandom[k] = pseudohash(k..self.GAME.pseudorandom.seed) end end\nself.GAME.pseudorandom.hashed_seed = pseudohash(self.GAME.pseudorandom.seed)\n' on target 'game.lua' for pattern patch from CardSleeves\lovely\expected_to_match.toml resulted in no matches
+INFO - [♥] Applied 58 patches to 'game.lua'
+INFO - [♥] Applied 2 patches to 'globals.lua'
+WARN - [♥] Pattern 'self.config.chosen = true' on target 'engine/ui.lua' for pattern patch from Cartomancer\lovely\vanilla-ui.toml resulted in no matches
+INFO - [♥] Applied 6 patches to 'engine/ui.lua'
+WARN - [♥] Pattern 'if edition_poll > 1 - 0.15 then edition.polychrome = true\n                elseif edition_poll > 0.5 then edition.holo = true\n                else edition.foil = true\n                end\n                card:set_edition(edition)' on target 'functions/UI_definitions.lua' for pattern patch from Rofflatro\lovely\vouchers.toml resulted in no matches
+INFO - [♥] Applied 135 patches to 'functions/UI_definitions.lua'
+WARN - [♥] Pattern 'if effects[ii].card then' on target 'functions/state_events.lua' for pattern patch from HandyBalatro\lovely\controls_animation_skip.toml resulted in no matches
+INFO - [♥] Applied 55 patches to 'functions/state_events.lua'
+WARN - [♥] Pattern 'func = (function() if eval_func(card) then if not first or first then card:juice_up(0.1, 0.1) end;juice_card_until(card, eval_func, nil, 0.8) end return true end)' on target 'functions/common_events.lua' for pattern patch from HandyBalatro\lovely\controls_animation_skip.toml resulted in no matches
+WARN - [♥] Pattern 'func = (function() if eval_func(card) then if not first or first then card:juice_up(0.1, 0.1) end;juice_card_until(card, eval_func, nil, 0.8) end return true end)' on target 'functions/common_events.lua' for pattern patch from HandyBalatro\lovely\controls_animation_skip.toml resulted in no matches
+WARN - [♥] Pattern '''
+WARN - [♥]         attention_text({
+WARN - [♥]           text = text..tostring(math.abs(mod)),''' on target 'functions/common_events.lua' for pattern patch from Multiplayer\lovely\decks.toml resulted in 3 matches, wanted 1
+WARN - [♥] Ignoring excess matches
+INFO - [♥] Applied 142 patches to 'functions/common_events.lua'
+WARN - [♥] Pattern 'if #G.hand.highlighted <= 0 or G.GAME.blind.block_play or #G.hand.highlighted > 5 then' on target 'functions/button_callbacks.lua' for pattern patch from CardSleeves\lovely\expected_to_fail.toml resulted in no matches
+INFO - [♥] Applied 63 patches to 'functions/button_callbacks.lua'
+WARN - [♥] Regex 'self.params.viewed_back and G.GAME.viewed_back or G.GAME.selected_back' on target 'card.lua' for regex patch from CardSleeves\lovely\expected_to_fail.toml resulted in no matches
+INFO - [♥] Applied 208 patches to 'card.lua'
+INFO - [♥] Applied 20 patches to 'cardarea.lua'
+INFO - [♥] Applied 38 patches to 'blind.lua'
+INFO - [♥] Applied 2 patches to 'engine/text.lua'
+INFO - [♥] Applied 3 patches to '=[SMODS _ "src/utils.lua"]'
+WARN - [♥] Pattern 'card_limit = #SUITS[suit_map[j]],' on target '=[SMODS _ "src/overrides.lua"]' for pattern patch from Cartomancer\lovely\stackable-deck-steamodded.toml resulted in no matches
+WARN - [♥] Pattern 'card_limit = #SUITS[visible_suit[j]],' on target '=[SMODS _ "src/overrides.lua"]' for pattern patch from Cartomancer\lovely\stackable-deck-steamodded.toml resulted in no matches
+WARN - [♥] Regex '\t\t\tfor i = 1\\, \\#SUITS\\[suit_map\\[j\\]\\] do\n\t\t\t\tif SUITS\\[suit_map\\[j\\]\\]\\[i\\] then\n\t\t\t\t\tlocal greyed\\, _scale = nil\\, 0\\.7\n\t\t\t\t\tif unplayed_only and not \\(\\(SUITS\\[suit_map\\[j\\]\\]\\[i\\]\\.area and SUITS\\[suit_map\\[j\\]\\]\\[i\\]\\.area == G\\.deck\\) or SUITS\\[suit_map\\[j\\]\\]\\[i\\]\\.ability\\.wheel_flipped\\) then\n\t\t\t\t\t\tgreyed = true\n\t\t\t\t\tend\n\t\t\t\t\tlocal copy = copy_card\\(SUITS\\[suit_map\\[j\\]\\]\\[i\\]\\, nil\\, _scale[^\\)\\n]*\\)\n\t\t\t\t\tcopy\\.greyed = greyed\n\t\t\t\t\tcopy\\.T\\.x = view_deck\\.T\\.x \\+ view_deck\\.T\\.w \\/ 2\n\t\t\t\t\tcopy\\.T\\.y = view_deck\\.T\\.y\n\n\t\t\t\t\tcopy:hard_set_T\\(\\)\n\t\t\t\t\tview_deck:emplace\\(copy\\)\n\t\t\t\tend\n\t\t\tend' on target '=[SMODS _ "src/overrides.lua"]' for regex patch from Cartomancer\lovely\stackable-deck-steamodded.toml resulted in no matches
+INFO - [♥] Applied 6 patches to '=[SMODS _ "src/overrides.lua"]'
+INFO - [♥] Applied 1 patch to '=[SMODS _ "src/game_object.lua"]'
+INFO - [G] Failed to connect to the debug server 
+INFO - [G] 2025-09-14 17:40:18 :: DEBUG :: DebugConsole :: Steamodded Debug Socket started ! 
+INFO - [G] 2025-09-14 17:40:18 :: INFO  :: SMODS :: Steamodded v1.0.0~BETA-0711a 
+INFO - [G] Order not set for config dictionary: speed_multiplier_default_value 
+INFO - [G] Order not set for config dictionary: animation_skip_default_value 
+INFO - [♥] Applied 9 patches to 'engine/sound_manager.lua'
+INFO - [♥] Applied 1 patch to 'engine/save_manager.lua'
+INFO - [G] 2025-09-14 17:40:19 :: INFO  :: Loader :: Valid JSON file found 
+INFO - [G] 2025-09-14 17:40:19 :: TRACE :: Loader :: Processing Mod file (Legacy header): mod.lua 
+INFO - [G] 2025-09-14 17:40:19 :: TRACE :: Loader :: Saving Mod Info: cartomancer 
+INFO - [G] 2025-09-14 17:40:19 :: INFO  :: Loader :: Valid JSON file found 
+INFO - [G] 2025-09-14 17:40:19 :: INFO  :: Loader :: Valid JSON file found 
+INFO - [G] 2025-09-14 17:40:19 :: INFO  :: Loader :: Valid JSON file found 
+INFO - [G] 2025-09-14 17:40:19 :: TRACE :: Loader :: Processing Mod file (Legacy header): steamodded.lua 
+INFO - [G] 2025-09-14 17:40:19 :: WARN  :: Loader :: Duplicate Mod ID: Handy 
+INFO - [G] 2025-09-14 17:40:19 :: TRACE :: Loader :: Processing Mod file (Legacy header): MoreFluff.lua 
+INFO - [G] 2025-09-14 17:40:19 :: TRACE :: Loader :: Saving Mod Info: MoreFluff 
+INFO - [G] 2025-09-14 17:40:19 :: INFO  :: Loader :: Valid JSON file found 
+INFO - [G] 2025-09-14 17:40:19 :: INFO  :: Loader :: Valid JSON file found 
+INFO - [G] 2025-09-14 17:40:19 :: INFO  :: Loader :: Valid JSON file found 
+INFO - [G] 2025-09-14 17:40:19 :: TRACE :: Loader :: Processing Mod file (Legacy header): MoreSpeeds.lua 
+INFO - [G] 2025-09-14 17:40:19 :: TRACE :: Loader :: Saving Mod Info: MoreSpeed 
+INFO - [G] 2025-09-14 17:40:19 :: ERROR :: Loader :: Found invalid metadata JSON file at C:\Users\evan\AppData\Roaming\Balatro\Mods/Steamopollys-MoreSpeed-0.8.2/manifest.json, ignoring: [SMODS _ "src/loader.lua"]:226: id 
+INFO - [G] 2025-09-14 17:40:19 :: TRACE :: Loader :: Processing Mod file (Legacy header): steamodded_metadata.lua 
+INFO - [G] 2025-09-14 17:40:19 :: TRACE :: Loader :: Saving Mod Info: Talisman 
+INFO - [G] 2025-09-14 17:40:19 :: INFO  :: Loader :: Valid JSON file found 
+INFO - [G] 2025-09-14 17:40:19 :: INFO  :: CardSleeves :: CardSleeves v1.8.0 loaded~! 
+INFO - [G] 2025-09-14 17:40:19 :: TRACE :: Loader :: Mod MoreFluff was unable to load:  
+INFO - [G] 2025-09-14 17:40:19 :: TRACE :: Loader :: Mod Saturn was unable to load:  
+INFO - [G] 2025-09-14 17:40:19 :: TRACE :: Loader :: Mod Talisman was unable to load:  
+INFO - [G] 2025-09-14 17:40:19 :: TRACE :: Loader :: Mod yorick was unable to load:  
+INFO - [G] 2025-09-14 17:40:19 :: TRACE :: Loader :: Mod Cryptid was unable to load: Missing Dependencies: 1: Talisman (>=2.2.0a)
+
+ 
+INFO - [G] 2025-09-14 17:40:19 :: DEBUG :: MULTIPLAYER :: Resetting lobby options 
+INFO - [G] 2025-09-14 17:40:19 :: DEBUG :: MULTIPLAYER :: Resetting game states 
+INFO - [G] 2025-09-14 17:40:19 :: TRACE :: MULTIPLAYER :: Client sent message: connect 
+INFO - [G] 2025-09-14 17:40:19 :: INFO  :: TIMER :: [0000] Injected Fonts in 0.001 ms 
+INFO - [G] 2025-09-14 17:40:19 :: INFO  :: TIMER :: [0000] Injected Language in 0.001 ms 
+INFO - [G] 2025-09-14 17:40:19 :: INFO  :: TIMER :: [0000] Injected [INTERNAL] in 1.269 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0052] Injected Atlas in 217.469 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0001] Injected Sound in 0.199 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0011] Injected Stake in 0.209 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0004] Injected Rarity in 0.025 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0004] Injected ObjectType in 0.036 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0202] Injected Center in 1.080 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0007] Injected Undiscovered Sprite in 0.044 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0003] Injected Blind in 0.021 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0004] Injected Seal in 0.133 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0004] Injected Suit in 0.103 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0013] Injected Rank in 0.225 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0028] Injected DeckSkin in 0.155 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0012] Injected PokerHand in 0.067 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0039] Injected Challenge in 0.089 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0001] Injected Tag in 0.013 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0007] Injected Sticker in 0.091 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0000] Injected Shader in 0.002 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0002] Injected Keybind in 0.016 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0000] Injected Achievement in 0.055 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0002] Injected nil in 0.018 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0022] Injected Draw Step in 0.054 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0000] Injected [INTERNAL] in 4.852 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0009] Injected nil in 0.027 ms 
+INFO - [G] 2025-09-14 17:40:20 :: INFO  :: TIMER :: [0003] Injected nil in 0.018 ms 
+INFO - [G] 2025-09-14 17:40:20 :: TRACE :: MULTIPLAYER :: Client got connected message:  (action: connected)  
+INFO - [G] 2025-09-14 17:40:20 :: TRACE :: MULTIPLAYER :: Client sent message: action:username,username:Guest~1,modHash: 
+INFO - [G] 2025-09-14 17:40:20 :: TRACE :: MULTIPLAYER :: Client got version message:  (action: version)  
+INFO - [G] 2025-09-14 17:40:20 :: TRACE :: MULTIPLAYER :: Client sent message: action:version,version:0.2.19~DEV-MULTIPLAYER 
+INFO - [G] 2025-09-14 17:40:20 :: TRACE :: MULTIPLAYER :: Client sent message: action:username,username:Guest~1,modHash:preview=false;unlocked=true;encryptID=73618298353.204;serversideConnectionID=ea3ccdce;CardSleeves-1.8.0;DebugPlus-1.5.1;Handy-1.5.1i;Lovely-0.8.0;MoreSpeed-0.0.0;Multiplayer-0.2.19~DEV;Roffle-1.2.0a;Steamodded-1.0.0~BETA-0711a;TheOrder-MultiplayerIntegration;cartomancer-4.16 
+INFO - [G] [DebugPlus] Press [/] to toggle console and press [shift] + [/] to toggle new log previews 
+INFO - [G] 2025-09-14 17:43:24 :: TRACE :: MULTIPLAYER :: Client sent message: action:moneyMoved,amount:6 
+INFO - [G] 2025-09-14 17:43:29 :: TRACE :: MULTIPLAYER :: Client sent message: action:boughtCardFromShop,card:Photograph,cost:5 
+INFO - [G] 2025-09-14 17:43:29 :: TRACE :: MULTIPLAYER :: Client sent message: action:moneyMoved,amount:-5 
+INFO - [G] 2025-09-14 17:43:30 :: TRACE :: MULTIPLAYER :: Client sent message: action:usedCard,card:Hex 
+INFO - [G] 2025-09-14 17:43:31 :: TRACE :: MULTIPLAYER :: Client sent message: action:boughtCardFromShop,card:Cryptid,cost:4 
+INFO - [G] 2025-09-14 17:43:31 :: TRACE :: MULTIPLAYER :: Client sent message: action:moneyMoved,amount:-4 
+INFO - [G] 2025-09-14 17:43:32 :: TRACE :: MULTIPLAYER :: Client sent message: action:usedCard,card:Buffoon Pack 
+INFO - [G] 2025-09-14 17:43:32 :: TRACE :: MULTIPLAYER :: Client sent message: action:moneyMoved,amount:-4 
+INFO - [G] 2025-09-14 17:43:34 :: TRACE :: MULTIPLAYER :: Client sent message: action:usedCard,card:Misprint 
+INFO - [G] 2025-09-14 17:43:36 :: TRACE :: MULTIPLAYER :: Client sent message: action:usedCard,card:Standard Pack 
+INFO - [G] 2025-09-14 17:43:36 :: TRACE :: MULTIPLAYER :: Client sent message: action:moneyMoved,amount:-4 
+INFO - [G] 2025-09-14 17:44:11 :: TRACE :: MULTIPLAYER :: Client sent message: action:moneyMoved,amount:6 
+INFO - [G] 2025-09-14 17:44:14 :: TRACE :: MULTIPLAYER :: Client sent message: action:usedCard,card:Arcana Pack 
+INFO - [G] 2025-09-14 17:44:14 :: TRACE :: MULTIPLAYER :: Client sent message: action:moneyMoved,amount:-4 
+INFO - [G] 2025-09-14 17:44:19 :: TRACE :: MULTIPLAYER :: Client sent message: action:usedCard,card:The Sun 

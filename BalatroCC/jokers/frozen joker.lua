@@ -1,0 +1,42 @@
+-- -- Frozen Joker
+-- SMODS.Joker {
+--     key = "frozen_joker",
+--     rarity = 3, -- Rare
+--     cost = 8,
+--     pos = { x = 4, y = 4 },
+--     blueprint_compat = true,
+--     eternal_compat = true,
+--     unlocked = true,
+--     discovered = true,
+--     atlas = 'ModdedVanilla',
+--     config = { extra = { frozen_count = 0 } },
+
+--     loc_txt = {
+--         name = "Frozen Joker",
+--         text = {
+--             "First {C:attention}3 Planet{} cards",
+--             "added each round become {C:dark_edition}Negative{}"
+--         }
+--     },
+
+--     -- Reset counter each round
+--     before_round = function(self, card)
+--         card.ability.extra.frozen_count = 0
+--     end,
+
+--     add_to_deck = function(self, card)
+--         -- Hook the event when any card is added
+--         G.E_MANAGER:add_event(Event({
+--             func = function()
+--                 for _, c in ipairs(G.GAME.added_cards or {}) do
+--                     if c.set == "Planet" and self.ability.extra.frozen_count < 3 then
+--                         c:set_edition("e_negative", true)
+--                         self.ability.extra.frozen_count = self.ability.extra.frozen_count + 1
+--                         c:juice_up() -- visual feedback
+--                     end
+--                 end
+--                 return true
+--             end
+--         }))
+--     end
+-- }
