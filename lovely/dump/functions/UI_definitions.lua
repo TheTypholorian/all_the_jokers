@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'bb70ad57ea0073ce3ee53824fd524d55f46c533c12d4788ca4cd7f47d05f78ab'
+LOVELY_INTEGRITY = '70b6c62c4113edc6a77e87ca598963954f6d2217f6bdaaeb794d978d33d98a5d'
 
 --Create a global UIDEF that contains all UI definition functions\
 --As a rule, these contain functions that return a table T representing the definition for a UIBox
@@ -8,7 +8,7 @@ function create_UIBox_debug_tools()
 local debugplus = require("debugplus.core")
 debugplus.registerButtons()
   G.debug_tool_config = G.debug_tool_config or {}
-  G.FUNCS.DT_add_money = function() if G.STAGE == G.STAGES.RUN then ease_dollars(10000) end end
+  G.FUNCS.DT_add_money = function() if G.STAGE == G.STAGES.RUN then ease_dollars(10) end end
   G.FUNCS.DT_add_round = function() if G.STAGE == G.STAGES.RUN then  ease_round(1) end end
   G.FUNCS.DT_add_ante = function() if G.STAGE == G.STAGES.RUN then  ease_ante(1) end end
   G.FUNCS.DT_add_hand = function() if G.STAGE == G.STAGES.RUN then  ease_hands_played(1) end end
@@ -293,16 +293,6 @@ function create_UIBox_high_scores_filling(_resp)
 end
 
 function G.UIDEF.use_and_sell_buttons(card)
-
-if card.area and card.area == G.pack_cards and card.ability.blind_card then
-    return {
-        n = G.UIT.ROOT, config = {padding = 0, colour = G.C.CLEAR}, nodes = {
-            {n = G.UIT.R, config = {ref_table = card, r = 0.08, padding = 0.1, align = "bm", minw = 0.5 * card.T.w - 0.15, maxw = 0.9 * card.T.w - 0.15, minh = 0.3 * card.T.h, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, one_press = true, button = 'use_blind_card', func = 'can_use_blind_card'}, nodes = {
-                {n=G.UIT.T, config={text = localize('b_select'), colour = G.C.UI.TEXT_LIGHT, scale = 0.45, shadow = true}}
-        }},
-    }}
-end
-
   local sell = nil
   local use = nil
   if card.area and (card.area == G.consumeables) and card.playing_card and not (hit_minor_arcana_suits and hit_minor_arcana_suits[card.config.card.suit]) then
@@ -346,8 +336,8 @@ end
       use = 
       {n=G.UIT.C, config={align = "cr"}, nodes={
         {n=G.UIT.C, config={ref_table = card, align = "cr",maxw = 1.25, padding = 0.1, r=0.08, minw = 1.25, minh = 1, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, one_press = true, button = 'hit_use_minor_arcana', func = 'hit_can_use_minor_arcana'}, nodes={
-          {n=G.UIT.B, config = {w=card.ability.set == "VHS" and 0.2 or 0.1,h=0.6 }},
-          {n=G.UIT.T, config={text = card.ability.set == "VHS" and (card.ability.activated and localize('b_deactivate') or localize('b_activate')) or localize('b_use'),colour = G.C.UI.TEXT_LIGHT, scale = card.ability.set == "VHS" and 0.75 or 0.55, shadow = true}}
+          {n=G.UIT.B, config = {w=0.1,h=0.6}},
+          {n=G.UIT.T, config={text = localize('b_use'),colour = G.C.UI.TEXT_LIGHT, scale = 0.55, shadow = true}}
         }}
       }}
       sell =
@@ -371,15 +361,6 @@ end
       return t
   end
   if card.area and card.area.config.type == 'joker' then
-      if card.config.center.key == "j_bunc_stylophone" or card.config.center.key == "j_bunc_mousetrap" or card.config.center.key == "j_bunc_trigger_finger" then
-          local settings_sprite = Sprite(0, 0, 0.5, 0.5, G.ASSET_ATLAS['bunc_settings_icon'] ,{x=0, y=0})
-          use = {n=G.UIT.C, config={align = "cr"}, nodes={
-              {n=G.UIT.C, config={ref_table = card, align = "cr",maxw = 1.25, padding = 0.1, r=0.08, minh = (card.area and card.area.config.type == 'joker') and 0 or 1, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, button = card.config.center.key .. '_settings'}, nodes={
-                  {n=G.UIT.B, config = {w=0.1,h=0.6}},
-                  {n=G.UIT.O, config={object = settings_sprite, can_collide = false, shadow = true}}
-              }}
-          }}
-      end
     sell = {n=G.UIT.C, config={align = "cr"}, nodes={
       {n=G.UIT.C, config={ref_table = card, align = "cr",padding = 0.1, r=0.08, minw = 1.25, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, one_press = true, button = 'sell_card', func = 'can_sell_card'}, nodes={
         {n=G.UIT.B, config = {w=0.1,h=0.6}},
@@ -439,8 +420,8 @@ end
     {n=G.UIT.C, config={align = "cr"}, nodes={
       
       {n=G.UIT.C, config={ref_table = card, align = "cr",maxw = 1.25, padding = 0.1, r=0.08, minw = 1.25, minh = (card.area and card.area.config.type == 'joker') and 0 or 1, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, one_press = true, button = 'use_card', func = 'can_use_consumeable'}, nodes={
-        {n=G.UIT.B, config = {w=card.ability.set == "VHS" and 0.2 or 0.1,h=0.6 }},
-        {n=G.UIT.T, config={text = card.ability.set == "VHS" and (card.ability.activated and localize('b_deactivate') or localize('b_activate')) or localize('b_use'),colour = G.C.UI.TEXT_LIGHT, scale = card.ability.set == "VHS" and 0.75 or 0.55, shadow = true}}
+        {n=G.UIT.B, config = {w=0.1,h=0.6}},
+        {n=G.UIT.T, config={text = localize('b_use'),colour = G.C.UI.TEXT_LIGHT, scale = 0.55, shadow = true}}
       }}
     }}
   elseif card and card.area and card.area.config.skill_table then
@@ -539,7 +520,7 @@ function G.UIDEF.card_focus_ui(card)
     }
   end
   if ((card.area == G.consumeables and G.consumeables) or (card.area == G.pack_cards and G.pack_cards)) and
-  card.ability.consumeable and card.ability.set ~= 'csau_Stand' then --Add a use button
+  card.ability.consumeable then --Add a use button
     base_attach.children.use = G.UIDEF.card_focus_button{
       card = card, parent = base_attach, type = 'use',
       func = 'can_use_consumeable', button = 'use_card', card_width = card_width
@@ -594,7 +575,7 @@ function G.UIDEF.card_focus_button(args)
   elseif args.type == 'learn' then 
       button_contents = {n=G.UIT.T, config={text = localize('b_learn'),colour = G.C.WHITE, scale = 0.5}}
   elseif args.type == 'use' then
-    button_contents = {n=G.UIT.T, config={text = args.card.ability.set == 'VHS' and localize('b_'..(args.card.ability.activated and 'de' or '')..'activate') or localize('b_use'),colour = G.C.WHITE, scale = 0.5}}
+    button_contents = {n=G.UIT.T, config={text = localize('b_use'),colour = G.C.WHITE, scale = 0.5}}
   elseif args.type == 'buy_and_use' then
     button_contents = 
     {n=G.UIT.C, config={align = "cr"}, nodes={
@@ -983,7 +964,9 @@ end
           G.GAME.spectral_rate = G.GAME.spectral_rate or 0
           local total_rate = G.GAME.joker_rate + G.GAME.playing_card_rate
           for _,v in ipairs(SMODS.ConsumableType.ctype_buffer) do
-              total_rate = total_rate + ( G.GAME[v:lower()..'_rate'] * (G.GAME.cry_percrate[v:lower()]/100) )
+              if SuperRogue.is_pool_available(v) then
+                  total_rate = total_rate + ( G.GAME[v:lower()..'_rate'] * (G.GAME.cry_percrate[v:lower()]/100) )
+              end
           end
           local polled_rate = pseudorandom(pseudoseed('cdt'..G.GAME.round_resets.ante))*total_rate
           local check_rate = 0
@@ -998,7 +981,9 @@ end
           for _, v in ipairs(SMODS.ConsumableType.ctype_buffer) do
               if not (v == 'Tarot' or v == 'Planet' or v == 'Spectral') then
                   local num = G.GAME.cry_percrate and G.GAME.cry_percrate[v:lower()] or 100
-                  table.insert(rates, { type = v, val = G.GAME[v:lower()..'_rate'] * ((num or 100) / 100) })
+                  if SuperRogue.is_pool_available(v) then
+                      table.insert(rates, { type = v, val = G.GAME[v:lower()..'_rate'] * ((num or 100) / 100) })
+                  end
               end
           end
           for _, v in ipairs(rates) do
@@ -1422,8 +1407,6 @@ end
           if v:sub(v:len()-14) == '_SMODS_INTERNAL' then
               if v:sub(1, 9) == 'negative_' then v = 'negative' else v = v:sub(1, v:find('_', v:find('_')+1)-1) end
           end
-          if v:sub(1, 24) == 'bunc_consumable_edition_' then v = v:sub(25) end
-          if v == "holo" then v = "holographic" end
           badges[#badges + 1] = create_badge(localize(v, "labels"), get_badge_colour(v))
         end
       end
@@ -1640,13 +1623,6 @@ function create_UIBox_HUD_blind()
 end
 
 function add_tag(_tag)
-
-if G.GAME.used_vouchers['v_bunc_pin_collector'] then
-    if _tag.key == 'tag_double' then
-        _tag = Tag('tag_bunc_triple')
-    end
-end
-
   G.HUD_tags = G.HUD_tags or {}
   local tag_sprite_ui = _tag:generate_UI()
   local _handy_tag_click_target = _tag.tag_sprite
@@ -2016,21 +1992,6 @@ function create_UIBox_blind_choice(type, run_info)
   local extras = nil
   local stake_sprite = get_stake_sprite(G.GAME.stake or 1, 0.5)
 
-      local betmma_extra_blind_money=0
-      if type=='Boss' and betmma_rich_boss_bonus then
-          betmma_extra_blind_money=betmma_extra_blind_money+betmma_rich_boss_bonus()
-      end
-      local function string_rep(string,times)
-          local ans=""
-          if times<=8 then
-              for i=1,times do
-                  ans=ans..string
-              end
-          else
-              ans=string..times
-          end
-          return ans
-      end
   G.GAME.orbital_choices = G.GAME.orbital_choices or {}
   G.GAME.orbital_choices[G.GAME.round_resets.ante] = G.GAME.orbital_choices[G.GAME.round_resets.ante] or {}
 
@@ -2210,19 +2171,18 @@ function create_UIBox_blind_choice(type, run_info)
               {n=G.UIT.R, config={align = "cm", maxw = 3}, nodes={
                 {n=G.UIT.T, config={text = localize('ph_blind_score_at_least'), scale = 0.3, colour = disabled and G.C.UI.TEXT_INACTIVE or G.C.WHITE, shadow = not disabled}}
               }},
-              has_blind_drawn and {n=G.UIT.R, config={align = "cm", minh = 0.6}, nodes={
-                  {n=G.UIT.O, config={w=0.5,h=0.5, colour = G.C.BLUE, object = stake_sprite, hover = true, can_collide = false}},
-                  {n=G.UIT.B, config={h=0.1,w=0.1}},
-                  {n=G.UIT.T, config={text = "???", scale = score_number_scale(0.9, 600), colour = disabled and G.C.UI.TEXT_INACTIVE or G.C.RED, shadow =  not disabled}}
-              }} or
               {n=G.UIT.R, config={align = "cm", minh = 0.6}, nodes={
                 {n=G.UIT.O, config={w=0.5,h=0.5, colour = G.C.BLUE, object = stake_sprite, hover = true, can_collide = false}},
                 {n=G.UIT.B, config={h=0.1,w=0.1}},
-                {n=G.UIT.T, config={text = number_format(blind_amt), scale = score_number_scale(0.9, blind_amt), colour = disabled and G.C.UI.TEXT_INACTIVE or G.C.RED, shadow =  not disabled}}
+                {n=G.UIT.T, config={ref_table = StrangeLib.dynablind.blind_choice_score_texts, ref_value = type, colour = disabled and G.C.UI.TEXT_INACTIVE or G.C.RED, shadow =  not disabled, func = 'StrangeLib_blind_UI_scale'}}
               }},
+              has_blind_drawn and _reward and {n=G.UIT.R, config={align = "cm"}, nodes={
+                  {n=G.UIT.T, config={text = localize('ph_blind_reward'), scale = 0.35, colour = disabled and G.C.UI.TEXT_INACTIVE or G.C.WHITE, shadow = not disabled}},
+                  {n=G.UIT.T, config={text = "???+", scale = 0.35, colour = disabled and G.C.UI.TEXT_INACTIVE or G.C.MONEY, shadow = not disabled}}
+              }} or
               _reward and {n=G.UIT.R, config={align = "cm"}, nodes={
                 {n=G.UIT.T, config={text = localize('ph_blind_reward'), scale = 0.35, colour = disabled and G.C.UI.TEXT_INACTIVE or G.C.WHITE, shadow = not disabled}},
-                    {n=G.UIT.T, config={text = string_rep(localize("$"), blind_choice.config.dollars+betmma_extra_blind_money)..'+', scale = 0.35, colour = disabled and G.C.UI.TEXT_INACTIVE or G.C.MONEY, shadow = not disabled}}
+                {n=G.UIT.T, config={text = string.rep(localize("$"), blind_choice.config.dollars)..'+', scale = 0.35, colour = disabled and G.C.UI.TEXT_INACTIVE or G.C.MONEY, shadow = not disabled}}
               }} or nil,
             }},
           }},
@@ -2289,12 +2249,7 @@ function create_UIBox_arcana_pack()
       }},
         {n=G.UIT.C,config={align = "tm", padding = 0.05, minw = 2.4}, nodes={
           {n=G.UIT.R,config={minh =0.2}, nodes={}},
-          
-          (G.GAME.used_vouchers['v_bunc_shell_game'] and not G.GAME.rerolled_pack and
-          UIBox_button({label = {localize('k_reroll')}, padding = 0.07, minh = 0.7, minw = 1.8, r = 0.15, one_press = true, button = 'reroll_booster_pack', func = 'reroll_booster_pack_button'}) or nil),
-          G.GAME.used_vouchers['v_bunc_shell_game'] and {n=G.UIT.R,config = {minh = 0.07}, nodes={}},
-          {n=G.UIT.R, config = {align = G.GAME.used_vouchers['v_bunc_shell_game'] and 'cm' or 'tm', padding = G.GAME.used_vouchers['v_bunc_shell_game'] and 0.07 or 0.2, minh = G.GAME.used_vouchers['v_bunc_shell_game'] and 0.7 or 1.2, minw = 1.8, r = 0.15, colour = G.C.GREY, one_press = true, button = 'skip_booster', hover = true, shadow = true, func = 'can_skip_booster'}, nodes = {
-          
+          {n=G.UIT.R,config={align = "tm",padding = 0.2, minh = 1.2, minw = 1.8, r=0.15,colour = G.C.GREY, one_press = true, button = 'skip_booster', hover = true,shadow = true, func = 'can_skip_booster'}, nodes = {
             {n=G.UIT.T, config={text = localize('b_skip'), scale = 0.5, colour = G.C.WHITE, shadow = true, focus_args = {button = 'y', orientation = 'bm'}, func = 'set_button_pip'}}
           }}
         }}
@@ -2340,12 +2295,7 @@ function create_UIBox_spectral_pack()
       }},
         {n=G.UIT.C,config={align = "tm", padding = 0.05, minw = 2.4}, nodes={
           {n=G.UIT.R,config={minh =0.2}, nodes={}},
-          
-          (G.GAME.used_vouchers['v_bunc_shell_game'] and not G.GAME.rerolled_pack and
-          UIBox_button({label = {localize('k_reroll')}, padding = 0.07, minh = 0.7, minw = 1.8, r = 0.15, one_press = true, button = 'reroll_booster_pack', func = 'reroll_booster_pack_button'}) or nil),
-          G.GAME.used_vouchers['v_bunc_shell_game'] and {n=G.UIT.R,config = {minh = 0.07}, nodes={}},
-          {n=G.UIT.R, config = {align = G.GAME.used_vouchers['v_bunc_shell_game'] and 'cm' or 'tm', padding = G.GAME.used_vouchers['v_bunc_shell_game'] and 0.07 or 0.2, minh = G.GAME.used_vouchers['v_bunc_shell_game'] and 0.7 or 1.2, minw = 1.8, r = 0.15, colour = G.C.GREY, one_press = true, button = 'skip_booster', hover = true, shadow = true, func = 'can_skip_booster'}, nodes = {
-          
+          {n=G.UIT.R,config={align = "tm",padding = 0.2, minh = 1.2, minw = 1.8, r=0.15,colour = G.C.GREY, one_press = true, button = 'skip_booster', hover = true,shadow = true, func = 'can_skip_booster'}, nodes = {
             {n=G.UIT.T, config={text = localize('b_skip'), scale = 0.5, colour = G.C.WHITE, shadow = true, focus_args = {button = 'y', orientation = 'bm'}, func = 'set_button_pip'}}
           }}
         }}
@@ -2391,12 +2341,7 @@ function create_UIBox_standard_pack()
       }},
         {n=G.UIT.C,config={align = "tm", padding = 0.05, minw = 2.4}, nodes={
           {n=G.UIT.R,config={minh =0.2}, nodes={}},
-          
-          (G.GAME.used_vouchers['v_bunc_shell_game'] and not G.GAME.rerolled_pack and
-          UIBox_button({label = {localize('k_reroll')}, padding = 0.07, minh = 0.7, minw = 1.8, r = 0.15, one_press = true, button = 'reroll_booster_pack', func = 'reroll_booster_pack_button'}) or nil),
-          G.GAME.used_vouchers['v_bunc_shell_game'] and {n=G.UIT.R,config = {minh = 0.07}, nodes={}},
-          {n=G.UIT.R, config = {align = G.GAME.used_vouchers['v_bunc_shell_game'] and 'cm' or 'tm', padding = G.GAME.used_vouchers['v_bunc_shell_game'] and 0.07 or 0.2, minh = G.GAME.used_vouchers['v_bunc_shell_game'] and 0.7 or 1.2, minw = 1.8, r = 0.15, colour = G.C.GREY, one_press = true, button = 'skip_booster', hover = true, shadow = true, func = 'can_skip_booster'}, nodes = {
-          
+          {n=G.UIT.R,config={align = "tm",padding = 0.2, minh = 1.2, minw = 1.8, r=0.15,colour = G.C.GREY, one_press = true, button = 'skip_booster', hover = true,shadow = true, func = 'can_skip_booster'}, nodes = {
             {n=G.UIT.T, config={text = localize('b_skip'), scale = 0.5, colour = G.C.WHITE, shadow = true, focus_args = {button = 'y', orientation = 'bm'}, func = 'set_button_pip'}}
           }}
         }}
@@ -2442,12 +2387,7 @@ function create_UIBox_buffoon_pack()
       }},
         {n=G.UIT.C,config={align = "tm", padding = 0.05, minw = 2.4}, nodes={
           {n=G.UIT.R,config={minh =0.2}, nodes={}},
-          
-          (G.GAME.used_vouchers['v_bunc_shell_game'] and not G.GAME.rerolled_pack and
-          UIBox_button({label = {localize('k_reroll')}, padding = 0.07, minh = 0.7, minw = 1.8, r = 0.15, one_press = true, button = 'reroll_booster_pack', func = 'reroll_booster_pack_button'}) or nil),
-          G.GAME.used_vouchers['v_bunc_shell_game'] and {n=G.UIT.R,config = {minh = 0.07}, nodes={}},
-          {n=G.UIT.R, config = {align = G.GAME.used_vouchers['v_bunc_shell_game'] and 'cm' or 'tm', padding = G.GAME.used_vouchers['v_bunc_shell_game'] and 0.07 or 0.2, minh = G.GAME.used_vouchers['v_bunc_shell_game'] and 0.7 or 1.2, minw = 1.8, r = 0.15, colour = G.C.GREY, one_press = true, button = 'skip_booster', hover = true, shadow = true, func = 'can_skip_booster'}, nodes = {
-          
+          {n=G.UIT.R,config={align = "tm",padding = 0.2, minh = 1.2, minw = 1.8, r=0.15,colour = G.C.GREY, one_press = true, button = 'skip_booster', hover = true,shadow = true, func = 'can_skip_booster'}, nodes = {
             {n=G.UIT.T, config={text = localize('b_skip'), scale = 0.5, colour = G.C.WHITE, shadow = true, focus_args = {button = 'y', orientation = 'bm'}, func = 'set_button_pip'}}
           }}
         }}
@@ -2493,12 +2433,7 @@ function create_UIBox_celestial_pack()
       }},
         {n=G.UIT.C,config={align = "tm", padding = 0.05, minw = 2.4}, nodes={
           {n=G.UIT.R,config={minh =0.2}, nodes={}},
-          
-          (G.GAME.used_vouchers['v_bunc_shell_game'] and not G.GAME.rerolled_pack and
-          UIBox_button({label = {localize('k_reroll')}, padding = 0.07, minh = 0.7, minw = 1.8, r = 0.15, one_press = true, button = 'reroll_booster_pack', func = 'reroll_booster_pack_button'}) or nil),
-          G.GAME.used_vouchers['v_bunc_shell_game'] and {n=G.UIT.R,config = {minh = 0.07}, nodes={}},
-          {n=G.UIT.R, config = {align = G.GAME.used_vouchers['v_bunc_shell_game'] and 'cm' or 'tm', padding = G.GAME.used_vouchers['v_bunc_shell_game'] and 0.07 or 0.2, minh = G.GAME.used_vouchers['v_bunc_shell_game'] and 0.7 or 1.2, minw = 1.8, r = 0.15, colour = G.C.GREY, one_press = true, button = 'skip_booster', hover = true, shadow = true, func = 'can_skip_booster'}, nodes = {
-          
+          {n=G.UIT.R,config={align = "tm",padding = 0.2, minh = 1.2, minw = 1.8, r=0.15,colour = G.C.GREY, one_press = true, button = 'skip_booster', hover = true,shadow = true, func = 'can_skip_booster'}, nodes = {
             {n=G.UIT.T, config={text = localize('b_skip'), scale = 0.5, colour = G.C.WHITE, shadow = true, focus_args = {button = 'y', orientation = 'bm'}, func = 'set_button_pip'}}
           }}
         }}
@@ -2957,13 +2892,6 @@ function create_UIBox_settings()
     tab_definition_function = G.UIDEF.settings_tab,
     tab_definition_function_args = 'Audio'
   }
-      if csau_enabled['enableColors'] then
-          tabs[#tabs+1] = {
-              label = localize('b_set_colors'),
-              tab_definition_function = G.UIDEF.settings_tab,
-              tab_definition_function_args = 'Colors'
-          }
-      end
 
   if not require("debugplus.config").SMODSLoaded then
       tabs[#tabs+1] = {
@@ -3216,9 +3144,7 @@ function create_UIBox_customize_deck()
   local index = 1
   for i, suit in ipairs(SMODS.Suit:obj_list(true)) do
     if not suit.akyrs_hidden then
-    if G.COLLABS.options[suit.key] and
-    (suit.key ~= 'bunc_Fleurons' or (suit.key == 'bunc_Fleurons' and G.P_CENTERS['b_bunc_fairy'].unlocked)) and
-    (suit.key ~= 'bunc_Halberds' or (suit.key == 'bunc_Halberds' and G.P_CENTERS['b_bunc_fairy'].unlocked)) then
+    if G.COLLABS.options[suit.key] then
         suitTabs[index] = {
                     label = localize(suit.key, 'suits_plural'),
                     tab_definition_function = G.UIDEF.custom_deck_tab,
@@ -3367,23 +3293,18 @@ function create_UIBox_high_scores()
 end
 
 function create_progress_box(_profile_progress, smaller)
-  local rows, protos = {}, {'collection', 'challenges', 'joker_stickers', 'stand_stickers', 'deck_stake_wins'}
+  local rows, protos = {}, {'collection', 'challenges', 'joker_stickers', 'deck_stake_wins'}
   _profile_progress = _profile_progress or G.PROFILES[G.SETTINGS.profile].progress
-  if not _profile_progress.stand_stickers then
-      local of = 0; for _, v in pairs(G.P_CENTERS) do if v.set == 'csau_Stand' then of = of + 1 end end
-      _profile_progress.stand_stickers = {tally = 0, of = of*#G.P_CENTER_POOLS.Stake }
-  end
 
   
   _profile_progress.overall_tally, _profile_progress.overall_of = 
   _profile_progress.discovered.tally/_profile_progress.discovered.of +
   _profile_progress.deck_stakes.tally/_profile_progress.deck_stakes.of +
   _profile_progress.joker_stickers.tally/_profile_progress.joker_stickers.of +
-  _profile_progress.stand_stickers.tally/_profile_progress.stand_stickers.of +
   _profile_progress.challenges.tally/_profile_progress.challenges.of,
-    5
-  
-    local text_scale = smaller and 0.7 or 1
+  4
+
+  local text_scale = smaller and 0.7 or 1
   local bar_colour = G.PROFILES[G.focused_profile].all_unlocked and G.C.RED or G.C.BLUE
 
   for _, v in ipairs(protos) do
@@ -3392,8 +3313,6 @@ function create_progress_box(_profile_progress, smaller)
       tab, val, max = _profile_progress.discovered, 'tally', _profile_progress.discovered.of
     elseif v == 'deck_stake_wins' then
       tab, val, max = _profile_progress.deck_stakes, 'tally', _profile_progress.deck_stakes.of
-    elseif v == 'stand_stickers' then
-        tab, val, max = _profile_progress.stand_stickers, 'tally', _profile_progress.stand_stickers.of
     elseif v == 'joker_stickers' then
       tab, val, max = _profile_progress.joker_stickers, 'tally', _profile_progress.joker_stickers.of
     elseif v == 'challenges' then
@@ -3412,10 +3331,6 @@ function create_progress_box(_profile_progress, smaller)
       {n=G.UIT.O, config={object = DynaText({string = {math.floor(0.01+100*_profile_progress.challenges.tally/_profile_progress.challenges.of)..'%'}, colours = {G.C.WHITE},shadow = true, float = true, scale = 0.55*text_scale})}},
       {n=G.UIT.T, config={text = " (".._profile_progress.challenges.tally..'/'.._profile_progress.challenges.of..")", scale = 0.35, colour = G.C.JOKER_GREY}}
     }
-      or v == 'stand_stickers' and {
-            {n=G.UIT.O, config={object = DynaText({string = {math.floor(0.01+100*_profile_progress.stand_stickers.tally/_profile_progress.stand_stickers.of)..'%'}, colours = {G.C.WHITE},shadow = true, float = true, scale = 0.55*text_scale})}},
-            {n=G.UIT.T, config={text = " (".._profile_progress.stand_stickers.tally..'/'.._profile_progress.stand_stickers.of..")", scale = 0.35, colour = G.C.JOKER_GREY}}
-          }
 
     rows[#rows+1] = {n=G.UIT.R, config={align = "cm", padding = 0.05, r = 0.1, colour = darken(G.C.JOKER_GREY, 0.1), emboss = 0.05}, nodes={
       {n=G.UIT.C, config={align = "cm", padding = 0.05, minw = 3.5*text_scale, maxw = 3.5*text_scale}, nodes={
@@ -3950,6 +3865,10 @@ function G.UIDEF.run_info()
         {
             label = localize('b_vouchers'),
             tab_definition_function = G.UIDEF.used_vouchers,
+        },
+        {
+            label = localize('b_sr_mods'),
+            tab_definition_function = G.UIDEF.sr_activated_mods,
         },
             {
             	label = localize('b_questlog'),
@@ -5082,10 +5001,6 @@ function create_UIBox_blind_popup(blind, discovered, vars)
         {n=G.UIT.O, config={object = DynaText({string = {_dollars and string.rep(localize('$'),_dollars) or '-'}, colours = {G.C.MONEY}, rotate = true, bump = true, silent = true, scale = 0.45})}},
     }},
     ability_text[1] and {n=G.UIT.R, config={align = "cm", padding = 0.08, colour = mix_colours(blind.boss_colour, G.C.GREY, 0.4), r = 0.1, emboss = 0.05, minw = 2.5, minh = 0.9}, nodes=ability_text} or nil
-    ,
-    ability_text[1] and blind.boss and {n=G.UIT.R, config={align = "cm"}, nodes={
-        {n=G.UIT.T, config={text = blind.boss.showdown and localize('bunc_final_blind') or (localize('bunc_min_ante')..' '..(blind.boss.min or '?')), scale = 0.3, colour = G.C.UI.TEXT_INACTIVE}}
-    }},
     }} or 
       {n=G.UIT.R, config={align = "cm", emboss = 0.05, r = 0.1, minw = 2.5, padding = 0.07, colour = G.C.WHITE}, nodes={
         {n=G.UIT.R, config={align = "cm", maxw = 2.4}, nodes={
@@ -5094,17 +5009,13 @@ function create_UIBox_blind_popup(blind, discovered, vars)
         {n=G.UIT.R, config={align = "cm"}, nodes={
           {n=G.UIT.O, config={object = stake_sprite}},
           AKYRS.mod_blind_display(blind) or
-          {n=G.UIT.T, config={text = blind.mult..localize('k_x_base'), scale = 0.4, colour = G.C.RED}},
+          {n=G.UIT.T, config={text = blind.key == 'bl_pencil_caret' and '^'..blind.mult..' Base' or blind.mult..localize('k_x_base'), scale = 0.4, colour = G.C.RED}},
         }},
         {n=G.UIT.R, config={align = "cm"}, nodes={
           {n=G.UIT.T, config={text = localize('ph_blind_reward'), scale = 0.35, colour = G.C.UI.TEXT_DARK}},
           {n=G.UIT.O, config={object = DynaText({string = {_dollars and string.rep(localize('$'),_dollars) or '-'}, colours = {G.C.MONEY}, rotate = true, bump = true, silent = true, scale = 0.45})}},
         }},
         ability_text[1] and {n=G.UIT.R, config={align = "cm", padding = 0.08, colour = mix_colours(blind.boss_colour, G.C.GREY, 0.4), r = 0.1, emboss = 0.05, minw = 2.5, minh = 0.9}, nodes=ability_text} or nil
-        ,
-        ability_text[1] and blind.boss and {n=G.UIT.R, config={align = "cm"}, nodes={
-            {n=G.UIT.T, config={text = blind.boss.showdown and localize('bunc_final_blind') or (localize('bunc_min_ante')..' '..(blind.boss.min or '?')), scale = 0.3, colour = G.C.UI.TEXT_INACTIVE}}
-        }},
       }}
         AKYRS.add_blind_extra_info(blind,ability_text,{text_size = 0.25, difficulty_text_size = 0.3, full_ui = true, info_queue = info_queue})
   else
@@ -6462,14 +6373,7 @@ end
 function G.UIDEF.stake_description(_stake)
   local _stake_center = G.P_CENTER_POOLS.Stake[_stake]
   local ret_nodes = {}
-  local target = {}
-  if _stake_center and type(_stake_center.loc_vars) == "function" then
-      res = _stake_center:loc_vars() or {}
-      target.vars = res.vars or target.vars
-      target.key = res.key or target.key
-      target.set = res.set or target.set
-  end
-  if _stake_center then localize{type = 'descriptions', key = target.key or _stake_center.key, set = target.set or _stake_center.set, nodes = ret_nodes, vars = target.vars} end
+  if _stake_center then localize{type = 'descriptions', key = _stake_center.key, set = _stake_center.set, nodes = ret_nodes} end 
 
   local desc_t = {}
   for k, v in ipairs(ret_nodes) do

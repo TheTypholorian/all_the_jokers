@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '7015e6257f5263dc761a9bd94c1822921ed6eae001e4d6360f6ad9a0786a7e3d'
+LOVELY_INTEGRITY = 'beda238fbc76e736bcae13782b9438fb1439a1aa5e5f68c2ba3acb3ce363cf16'
 
 --Class
 Game = Object:extend()
@@ -267,6 +267,7 @@ function Game:start_up()
     --Create the event manager for the game
     self.E_MANAGER = EventManager()
     self.SPEEDFACTOR = 1
+    Trance_set_globals(self, 0);print(tprint(G.C.SPLASH))
     initSteamodded()
 
     set_profile_progress()
@@ -1445,9 +1446,6 @@ function Game:delete_run()
         self.load_shop_booster = nil
         self.load_shop_jokers = nil
         self.load_shop_vouchers = nil
-        self.load_morshu_area = nil
-        if G.morshu_save then G.morshu_save:remove() end
-        G.morshu_save = nil
         G.load_memory_row_1 = nil
         G.load_memory_row_2 = nil
         if self.buttons then self.buttons:remove(); self.buttons = nil end
@@ -1612,42 +1610,16 @@ function Game:sandbox()
         offset = {x=0,y=0}
     })
 
-    if csau_enabled['enableColors'] then
-        G.SPLASH_BACK:define_draw_steps({{
-            shader = 'splash',
-            send = {
-                {name = 'time', ref_table = G.SANDBOX, ref_value = 'vort_time'},
-                {name = 'vort_speed', val = 1},
-                {name = 'colour_1', ref_table = G.SANDBOX, ref_value = 'col1'},
-                {name = 'colour_2', ref_table = G.SANDBOX, ref_value = 'col2'},
-                {name = 'mid_flash', ref_table = G.SANDBOX, ref_value = 'mid_flash'},
-                {name = 'vort_offset', val = (2*90.15315131*os.time())%100000},
-            }
-        }})
-        G.SPLASH_BACK:define_draw_steps({{
-            shader = 'splash',
-            send = {
-                {name = 'time', ref_table = G.SANDBOX, ref_value = 'vort_time'},
-                {name = 'vort_speed', val = 1},
-                {name = 'colour_1', ref_table = G.C, ref_value = 'COLOUR1'},
-                {name = 'colour_2', ref_table = G.C, ref_value = 'WHITE'},
-                {name = 'mid_flash', val = 0},
-                {name = 'vort_offset', val = (2*90.15315131*os.time())%100000},
-            }
-        }})
-    else
-        G.SPLASH_BACK:define_draw_steps({{
-            shader = 'splash',
-            send = {
-                {name = 'time', ref_table = G.SANDBOX, ref_value = 'vort_time'},
-                {name = 'vort_speed', val = 0.4},
-                {name = 'colour_1', ref_table = G.SANDBOX, ref_value = 'col1'},
-                {name = 'colour_2', ref_table = G.SANDBOX, ref_value = 'col2'},
-                {name = 'mid_flash', ref_table = G.SANDBOX, ref_value = 'mid_flash'},
-                {name = 'vort_offset', val = 0},
-            }
-        }})
-    end
+    G.SPLASH_BACK:define_draw_steps({{
+        shader = 'splash',
+        send = {
+            {name = 'time', ref_table = G.SANDBOX, ref_value = 'vort_time'},
+            {name = 'vort_speed', val = 0.4},
+            {name = 'colour_1', ref_table = G.SANDBOX, ref_value = 'col1'},
+            {name = 'colour_2', ref_table = G.SANDBOX, ref_value = 'col2'},
+            {name = 'mid_flash', ref_table = G.SANDBOX, ref_value = 'mid_flash'},
+            {name = 'vort_offset', val = 0},
+    }}})
 
     function create_UIBox_sandbox_controls()
         G.FUNCS.col1change = function(args)
@@ -1764,12 +1736,8 @@ function Game:splash_screen()
             local SC = nil
             G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.2,func = (function()
                 local SC_scale = 1.2
-                SC = nil
-                if G.FUNCS.center_splash_screen_card then
-                    SC = G.FUNCS.center_splash_screen_card(SC_scale)
-                else
-                    SC = Card(G.ROOM.T.w/2 - SC_scale*G.CARD_W/2, 10. + G.ROOM.T.h/2 - SC_scale*G.CARD_H/2, SC_scale*G.CARD_W, SC_scale*G.CARD_H, G.P_CARDS.empty, G.P_CENTERS['j_joker'])
-                end
+                SC = Card(G.ROOM.T.w/2 - SC_scale*G.CARD_W/2, 10. + G.ROOM.T.h/2 - SC_scale*G.CARD_H/2, SC_scale*G.CARD_W, SC_scale*G.CARD_H, G.P_CARDS.empty, G.P_CENTERS['j_joker'])
+                SC = Card(G.ROOM.T.w/2 - SC_scale*G.CARD_W/2, 10. + G.ROOM.T.h/2 - SC_scale*G.CARD_H/2, SC_scale*G.CARD_W, SC_scale*G.CARD_H, G.P_CARDS.empty, G.P_CENTERS['b_SGTMD_argyle'],{bypass_discovery_center = true, bypass_discovery_ui = true})
                 if ((Cryptid_config and Cryptid_config.menu) or false) then
                 	SC = Card(G.ROOM.T.w/2 - SC_scale*G.CARD_W/2, 10. + G.ROOM.T.h/2 - SC_scale*G.CARD_H/2, SC_scale*G.CARD_W, SC_scale*G.CARD_H, G.P_CARDS.empty, G.P_CENTERS['j_jolly'],{bypass_discovery_center = true, bypass_discovery_ui = true})
                 end
@@ -1799,9 +1767,13 @@ function Game:splash_screen()
                     x = (18 + card_size)*math.sin(angle),
                     y = (18 + card_size)*math.cos(angle)
                 }
-                local card = G.FUNCS.splash_screen_card(card_pos, card_size)
+                local card = Card(  card_pos.x + G.ROOM.T.w/2 - G.CARD_W*card_size/2,
+                                    card_pos.y + G.ROOM.T.h/2 - G.CARD_H*card_size/2,
+                                    card_size*G.CARD_W, card_size*G.CARD_H, pseudorandom_element(G.P_CARDS), G.P_CENTERS.c_base)
                 --if Cryptid.random_consumable then card:set_ability(Cryptid.random_consumable('cry_splash',{"no_grc"},nil,nil,true), true, nil) end
-                if math.random() > 0.8 then card.sprite_facing = 'back'; card.facing = 'back' end
+                if true then card.sprite_facing = 'back'; card.facing = 'back' end
+                card.children.back.atlas = deckstext
+                card.children.back.sprite_pos = TMD.splashpos[math.random(#TMD.splashpos)]
                 card.no_shadow = true
                 card.states.hover.can = false
                 card.states.drag.can = false
@@ -1896,8 +1868,8 @@ function Game:main_menu(change_context) --True if main menu is accessed from the
         send = {
             {name = 'time', ref_table = G.TIMERS, ref_value = 'REAL_SHADER'},
             {name = 'vort_speed', val = 0.4},
-            {name = 'colour_1', ref_table = G.C, ref_value = 'RED'},
-            {name = 'colour_2', ref_table = G.C, ref_value = 'BLUE'},
+            {name = 'colour_1', ref_table = G.C.SPLASH, ref_value = 1},
+            {name = 'colour_2', ref_table = G.C.SPLASH, ref_value = 2},
             {name = 'mid_flash', ref_table = splash_args, ref_value = 'mid_flash'},
             {name = 'vort_offset', val = 0},
         }}})
@@ -1942,7 +1914,7 @@ function Game:main_menu(change_context) --True if main menu is accessed from the
     G.SPLASH_LOGO.dissolve = 1   
 
 
-    local replace_card = G.FUNCS.title_screen_card(self, SC_scale)
+    local replace_card = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, G.P_CARDS.S_A, G.P_CENTERS.c_base)
     G.KINO_SPLASH_LOGO = Sprite(0, 0, 
         13*SC_scale, 
         13*SC_scale*(G.ASSET_ATLAS["kino_splash_screen"].py/G.ASSET_ATLAS["kino_splash_screen"].px),
@@ -2321,8 +2293,8 @@ function Game:demo_cta() --True if main menu is accessed from the splash screen,
         send = {
             {name = 'time', ref_table = G.TIMERS, ref_value = 'REAL_SHADER'},
             {name = 'vort_speed', val = 0.4},
-            {name = 'colour_1', ref_table = G.C, ref_value = 'RED'},
-            {name = 'colour_2', ref_table = G.C, ref_value = 'BLUE'},
+            {name = 'colour_1', ref_table = G.C.SPLASH, ref_value = 1},
+            {name = 'colour_2', ref_table = G.C.SPLASH, ref_value = 2},
             {name = 'mid_flash', ref_table = splash_args, ref_value = 'mid_flash'},
             {name = 'vort_offset', val = 0},
         }}})
@@ -2357,7 +2329,7 @@ function Game:demo_cta() --True if main menu is accessed from the splash screen,
     G.SPLASH_LOGO.dissolve_colours = {G.C.WHITE, G.C.WHITE}
     G.SPLASH_LOGO.dissolve = 1   
 
-    local replace_card = G.FUNCS.title_screen_card(self, SC_scale)
+    local replace_card = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, G.P_CARDS.S_A, G.P_CENTERS.c_base)
     G.KINO_SPLASH_LOGO = Sprite(0, 0, 
         13*SC_scale, 
         13*SC_scale*(G.ASSET_ATLAS["kino_splash_screen"].py/G.ASSET_ATLAS["kino_splash_screen"].px),
@@ -2498,7 +2470,6 @@ function Game:init_game_object()
             normal = 1,
         },
         bosses_used = bosses_used,
-        enhancements_used = false,
         pseudorandom = {},
         starting_deck_size = 52,
         ecto_minus = 1,
@@ -2518,7 +2489,6 @@ function Game:init_game_object()
         interest_amount = 1,
         inflation = 0,
         hands_played = 0,
-        booster_packs_opened = 0,
         unused_discards = 0,
         all_in_jest = {
         	dizzard_shop = false,
@@ -2619,7 +2589,6 @@ function Game:init_game_object()
         voucher_text = '',
         dollars = 0,
         max_jokers = 0,
-        max_common_jokers = 0,
         bankrupt_at = 0,
         current_boss_streak = 0,
         base_reroll_cost = 5,
@@ -2661,7 +2630,6 @@ function Game:init_game_object()
             castle_card = {suit = 'Spades'},
             hands_left = 0,
             hands_played = 0,
-            booster_packs_opened = 0,
             discards_left = 0,
             discards_used = 0,
             dollars = 0,
@@ -2675,8 +2643,6 @@ function Game:init_game_object()
             round_dollars = 0,
             dollars_to_be_earned = '!!!',
             most_played_poker_hand = 'High Card',
-            least_played_poker_hand = 'High Card',
-            most_played_rank = '2',
             least_played_rank = '2',
             least_played_rank2 = '3',
         },
@@ -2785,8 +2751,8 @@ van_count = 0
         self.GAME.current_scoring_calculation = SMODS.Scoring_Calculations['multiply']:new()
     end
 
-    G.C.UI_CHIPS[1], G.C.UI_CHIPS[2], G.C.UI_CHIPS[3], G.C.UI_CHIPS[4] = G.C.BLUE[1], G.C.BLUE[2], G.C.BLUE[3], G.C.BLUE[4]
-    G.C.UI_MULT[1], G.C.UI_MULT[2], G.C.UI_MULT[3], G.C.UI_MULT[4] = G.C.RED[1], G.C.RED[2], G.C.RED[3], G.C.RED[4]
+    G.C.UI_CHIPS = copy_table(G.C.CHIPS)
+    G.C.UI_MULT = copy_table(G.C.MULT)
 
     if not saveTable then 
         if false then
@@ -2910,9 +2876,6 @@ van_count = 0
                    if type(_ch.restrictions.banned_cards) == 'function' then
                         _ch.restrictions.banned_cards = _ch.restrictions.banned_cards()
                 	end
-                   if type(_ch.restrictions.banned_cards) == 'function' then
-                        _ch.restrictions.banned_cards = _ch.restrictions.banned_cards()
-                	end
                     for k, v in ipairs(_ch.restrictions.banned_cards) do
                         G.GAME.banned_keys[v.id] = true
                         if v.ids then
@@ -2926,18 +2889,11 @@ van_count = 0
                     if type(_ch.restrictions.banned_tags) == 'function' then
                         _ch.restrictions.banned_tags = _ch.restrictions.banned_tags()
                     end
-                    if type(_ch.restrictions.banned_tags) == 'function' then
-                        _ch.restrictions.banned_tags = _ch.restrictions.banned_tags()
-                    end
                     for k, v in ipairs(_ch.restrictions.banned_tags) do
                         G.GAME.banned_keys[v.id] = true
                     end
                 end
                 if _ch.restrictions.banned_other then
-                   
-                    if type(_ch.restrictions.banned_other) == 'function' then
-                        _ch.restrictions.banned_other = _ch.restrictions.banned_other()
-                    end
                    
                     if type(_ch.restrictions.banned_other) == 'function' then
                         _ch.restrictions.banned_other = _ch.restrictions.banned_other()
@@ -3163,26 +3119,6 @@ van_count = 0
         )
         self.kino_snackbag.states.visible = false
         Kino.snackbag = G.kino_snackbag
-    if USING_BETMMA_ABILITIES then -- not adding area if Betmma_Abilities.lua isn't executed
-        self.ABILITY_W=0.8
-        self.ABILITY_H=0.8
-        self.betmma_abilities = CardArea(G.jokers.T.x + G.jokers.T.w + 0.2+1.1*G.CARD_W, G.jokers.T.y+2.2*G.CARD_H, 1.2*G.CARD_W, 0.3*G.CARD_H, { -- G.jokers.T.x + G.jokers.T.w + 0.2 is G.consumables.x but some deck removes consumables area
-                card_limit = 3,
-                type = "betmma_ability",
-                highlight_limit = 1
-        })
-        self.betmma_abilities.card_w=self.betmma_abilities.card_w*34/71
-    end
-    if USING_BETMMA_SPELLS then -- not adding area if Betmma_Spells.lua isn't executed
-        self.ABILITY_W=0.8
-        self.ABILITY_H=0.8
-        self.betmma_spells = CardArea(G.jokers.T.x + G.jokers.T.w + 0.2+1.1*G.CARD_W, G.jokers.T.y+2.6*G.CARD_H, 1.2*G.CARD_W, 0.3*G.CARD_H, {
-                card_limit = 3,
-                type = "betmma_ability",
-                highlight_limit = 2
-        })
-        self.betmma_spells.card_w=self.betmma_spells.card_w*34/71
-    end
     if Maximus_config.horoscopes then
         self.mxms_horoscope_W = G.CARD_W*1.1
         self.mxms_horoscope_H = 0.95*G.CARD_H
@@ -3436,15 +3372,6 @@ van_count = 0
     G.FUNCS.blind_chip_UI_scale(G.hand_text_area.blind_chips)
      
     self.HUD:recalculate()
-    
-    local deck_size = 0
-    
-    for k, v in pairs(G.playing_cards) do
-        deck_size = deck_size + 1
-    end
-    
-    G.GAME.last_deck_size = deck_size
-    
 
     G.E_MANAGER:add_event(Event({
         trigger = 'immediate',
@@ -3457,14 +3384,6 @@ van_count = 0
 end
 
 function Game:update(dt)
-
-if G.GAME.round_resets.blind_choices and G.GAME.round_resets.blind_choices.Boss and G.GAME.round_resets.blind_choices.Boss == 'bl_bunc_final_trident' then
-    G.GAME.Trident = true
-else
-    G.GAME.Trident = false
-    G.GAME.ante_purchases = 0
-end
-
     nuGC(nil, nil, true)
 
     G.MAJORS = 0
@@ -3957,6 +3876,7 @@ function Game:draw()
             G.SPLASH_FRONT:draw()
             love.graphics.pop()
         end
+        Supf_DrawEverything()
 
         G.under_overlay = false
         if self.OVERLAY_TUTORIAL then
@@ -4029,51 +3949,6 @@ function Game:draw()
         love.graphics.pop()
     end
 
-    
-    G.FORCEFIELD_CARDS = G.FORCEFIELD_CARDS or {}
-    
-    for index, card in ipairs(G.FORCEFIELD_CARDS) do
-        if BUNCOMOD.content.config.high_quality_shaders
-        and card
-        and not card.removed
-        and card.states.visible
-        and index <= 5 then
-    
-            love.graphics.setColor(G.C.WHITE)
-    
-            local w, h = love.graphics.getWidth(), love.graphics.getHeight() -- Get the size
-    
-            card.pinch_canvas = love.graphics.newCanvas(realw, realh) -- Create the black hole canvas (size is important or else it will cut off on fullscreen)
-            love.graphics.setCanvas(card.pinch_canvas) -- Enable the black hole canvas
-    
-            love.graphics.draw(self.CANVAS) -- Draw the old canvas onto the black hole one
-    
-            local pinch = G.SHADERS['bunc_pinch']
-    
-            local card_position = {
-            (card.VT.x + (card.VT.w / 2) + G.ROOM.T.x) * G.TILESCALE * G.TILESIZE * G.CANV_SCALE,
-            (card.VT.y + (card.VT.h / 2) + G.ROOM.T.y + 0.1) * G.TILESCALE * G.TILESIZE * G.CANV_SCALE}
-    
-            local dissolve_mult = 1 - (card.dissolve or 0)
-    
-            pinch:send("position", card_position)
-            pinch:send("screen_size", {w, h})
-            pinch:send("radius", (card.config and card.config.forcefield and card.config.forcefield.radius or 160) * (1.2 + math.sin((index * 3.0) + G.TIMERS.REAL / 2.0) / 3.0) * dissolve_mult)
-            pinch:send("strength", (card.config and card.config.forcefield and card.config.forcefield.strength or -0.5) * (0.8 - math.cos((index * 3.0) + G.TIMERS.REAL / 2.0) / 3.0) * dissolve_mult)
-    
-            love.graphics.setShader(pinch) -- Set the shader to the black hole canvas
-    
-            love.graphics.setCanvas(self.CANVAS) -- Forget about the black hole canvas and switch back to the og canvas
-            love.graphics.draw(card.pinch_canvas) -- And draw the result of black hole canvas onto the og one
-    
-            -- Reset shader:
-            love.graphics.setShader()
-    
-        elseif (not card) or (card.removed) then
-            table.remove(G.FORCEFIELD_CARDS, index)
-        end
-    end
-    
     for k, v in pairs(self.I.POPUP) do
         love.graphics.push()
         v:translate_container()
@@ -4342,11 +4217,6 @@ function Game:update_shop(dt)
                                             end
                                         end
                                         
-                                        
-                                        if G.jokers ~= nil then
-                                            SMODS.calculate_context({bunc_enter_shop = true})
-                                        end
-                                        
                                         for i = 1, G.GAME.shop.joker_max - #G.shop_jokers.cards do
                                             G.shop_jokers:emplace(create_card_for_shop(G.shop_jokers))
                                         end
@@ -4378,33 +4248,6 @@ function Game:update_shop(dt)
                                     end
                                     
 
-                                    if G.shop_abilities then
-                                        if G.load_shop_abilities then 
-                                            nosave_shop = true
-                                            G.shop_abilities:load(G.load_shop_abilities)
-                                            for k, v in ipairs(G.shop_abilities.cards) do
-                                                create_shop_card_ui(v)
-                                                v:start_materialize()
-                                            end
-                                            G.load_shop_abilities = nil
-                                        else
-                                            for i = 1, G.GAME.shop.ability_max - #G.shop_abilities.cards do
-                                                local center=pseudorandom_element(G.P_CENTER_POOLS['Ability'],pseudoseed('shop_abilities'))
-                                                local card = create_card('Ability', nil, nil, nil, nil, nil, nil, 'sho')
-                                                --local card = Card(G.shop_abilities.T.x + G.shop_abilities.T.w/2,
-                                                --G.shop_abilities.T.y+G.ABILITY_W*(i-1), G.ABILITY_W, G.ABILITY_H, G.P_CARDS.empty, center,{bypass_discovery_center = true, bypass_discovery_ui = true})
-                                                if cry_misprintize then
-                                                    cry_misprintize(card)
-                                                end
-                                                    if G.GAME.modifiers.cry_enable_flipped_in_shop and pseudorandom('cry_flip_'..G.GAME.round_resets.ante) > 0.7 then
-                                                        card.cry_flipped = true
-                                                    end
-                                                create_shop_card_ui(card, 'Ability', nil)
-                                                --card:start_materialize()
-                                                G.shop_abilities:emplace(card)
-                                            end
-                                        end
-                                    end
                                     if G.GAME.events.ev_cry_choco10 then
                                         local add = true
                                         for k, v in pairs(G.shop_vouchers.cards) do		-- G.load_shop_vouchers is already set to nil here, just do a normal check
@@ -4491,12 +4334,6 @@ function Game:update_shop(dt)
                                         end
                                         for i = 1, #G.GAME.tags do
                                             G.GAME.tags[i]:apply_to_run({type = 'shop_final_pass'})
-                                                end
-                                                if used_voucher and used_voucher('bargain_aisle') then
-                                                    bargain_aisle_effect()
-                                                end
-                                                if used_voucher and used_voucher('clearance_aisle') then
-                                                    clearance_aisle_effect()
                                         end
                                     end
                                 end
@@ -4821,20 +4658,12 @@ function Game:update_arcana_pack(dt)
                     trigger = 'immediate',
                     func = function()
                         G.FUNCS.draw_from_deck_to_hand()
-                        
-                        -- TODO Add support for modded packs (this hinders the card clicking)
-                        
-                        G.DRAWING_CARDS = G.STATE
-                        
 
                         G.E_MANAGER:add_event(Event({
                             trigger = 'after',
                             delay = 0.5,
                             func = function()
                                 G.CONTROLLER:recall_cardarea_focus('pack_cards')
-                                
-                                G.E_MANAGER:add_event(Event({func = function() G.DRAWING_CARDS = nil return true end}))
-                                
                                 return true
                             end}))
                         return true
@@ -4880,20 +4709,12 @@ function Game:update_spectral_pack(dt)
                     trigger = 'immediate',
                     func = function()
                         G.FUNCS.draw_from_deck_to_hand()
-                        
-                        -- TODO Add support for modded packs (this hinders the card clicking)
-                        
-                        G.DRAWING_CARDS = G.STATE
-                        
 
                         G.E_MANAGER:add_event(Event({
                             trigger = 'after',
                             delay = 0.5,
                             func = function()
                                 G.CONTROLLER:recall_cardarea_focus('pack_cards')
-                                
-                                G.E_MANAGER:add_event(Event({func = function() G.DRAWING_CARDS = nil return true end}))
-                                
                                 return true
                             end}))
                         return true
@@ -4943,9 +4764,6 @@ function Game:update_standard_pack(dt)
                             delay = 0.5,
                             func = function()
                                 G.CONTROLLER:recall_cardarea_focus('pack_cards')
-                                
-                                G.E_MANAGER:add_event(Event({func = function() G.DRAWING_CARDS = nil return true end}))
-                                
                                 return true
                             end}))
                         return true
@@ -4982,9 +4800,6 @@ function Game:update_buffoon_pack(dt)
                             delay = 0.5,
                             func = function()
                                 G.CONTROLLER:recall_cardarea_focus('pack_cards')
-                                
-                                G.E_MANAGER:add_event(Event({func = function() G.DRAWING_CARDS = nil return true end}))
-                                
                                 return true
                             end}))
                         return true
@@ -5041,9 +4856,6 @@ function Game:update_celestial_pack(dt)
                 G.E_MANAGER:add_event(Event({
                     func = function()
                         G.CONTROLLER:recall_cardarea_focus('pack_cards')
-                        
-                        G.E_MANAGER:add_event(Event({func = function() G.DRAWING_CARDS = nil return true end}))
-                        
                         return true
                     end}))
                 return true

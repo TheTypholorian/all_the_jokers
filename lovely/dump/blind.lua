@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'b15b3b1dba802181d6d43693da6d47a2a0b661249d3b7a0ab35672f4eec3e868'
+LOVELY_INTEGRITY = '0689fc42c7ff370630e7d2291c12a37038fe56ed5b043cb348d6b34f9b35b28d'
 
 --class
 Blind = Moveable:extend()
@@ -241,9 +241,6 @@ function Blind:set_blind(blind, reset, silent)
         self.effect = type(self.config.blind.config) == "table" and copy_table(self.config.blind.config) or {}
         self.name = blind and blind.name or ''
         self.dollars = blind and blind.dollars or 0
-        if G.GAME.vhp_blind_reward_extra then
-            self.dollars = self.dollars + G.GAME.vhp_blind_reward_extra
-        end
         self.sound_pings = self.dollars + 2
         self.small = blind and not not blind.small
         self.big = blind and not not blind.big --Redundant if Ortalab is also present, but shouldn't do anything bad PROBABLY
@@ -282,24 +279,7 @@ function Blind:set_blind(blind, reset, silent)
 
         if not blind then self.chips = 0 end
 
-            if self.boss and betmma_rich_boss_bonus then
-                self.dollars=self.dollars+betmma_rich_boss_bonus()
-            end
-            local function string_rep(string,times)
-                local ans=""
-                if times<=8 then
-                    for i=1,times do
-                        ans=ans..string
-                    end
-                else
-                    ans=string..times
-                end
-                return ans
-            end
-            G.GAME.current_round.dollars_to_be_earned = self.dollars > 0 and (string_rep(localize('$'), self.dollars)..'') or ('')
-            if self.boss and betmma_rich_boss_bonus then
-                self.dollars=self.dollars-betmma_rich_boss_bonus()
-            end
+        G.GAME.current_round.dollars_to_be_earned = self.dollars > 0 and (string.rep(localize('$'), self.dollars)..'') or ('')
         G.HUD_blind.alignment.offset.y = -10
         G.HUD_blind:recalculate(false)
 
@@ -565,7 +545,6 @@ function Blind:defeat(silent)
         for _, v in ipairs(G.jokers.cards) do
             v.ability.crimson_heart_chosen = nil
         end
-    elseif self.name == 'The Wall' and not self.disabled then check_for_unlock({ type = 'defeat_wall' })
     elseif self.name == 'The Manacle' and not self.disabled then
         G.hand:change_size(1)
     end
@@ -715,36 +694,6 @@ function Blind:draw()
 end
 
 function Blind:press_play()
-
-if G.GAME.used_vouchers['v_bunc_hedge_trimmer'] then
-    local final_chips = (G.GAME.blind.chips / 100) * (100 - SMODS.Centers['v_bunc_hedge_trimmer'].config.percent)
-    local chip_mod -- iterate over ~120 ticks
-    if type(G.GAME.blind.chips) ~= 'table' then
-        chip_mod = math.ceil((G.GAME.blind.chips - final_chips) / 120)
-    else
-        chip_mod = ((G.GAME.blind.chips - final_chips) / 120):ceil()
-    end
-    local step = 0
-    G.E_MANAGER:add_event(Event({trigger = 'after', blocking = true, func = function()
-        G.GAME.blind.chips = G.GAME.blind.chips - G.SETTINGS.GAMESPEED * chip_mod
-        if G.GAME.blind.chips > final_chips then
-            G.GAME.blind.chip_text = number_format(G.GAME.blind.chips)
-            if step % 5 == 0 then
-                play_sound('chips1', math.max(1.0 - (step * 0.005), 0.001))
-            end
-            step = step + 1
-        else
-            G.GAME.blind.chips = final_chips
-            G.GAME.blind.chip_text = number_format(G.GAME.blind.chips)
-            return true
-        end
-    end}))
-
-    G.PROFILES[G.SETTINGS.profile].hedge_trimmer_usage = (G.PROFILES[G.SETTINGS.profile].hedge_trimmer_usage or 0) + 1
-
-    check_for_unlock({type = 'hedge_trimmer_used', used_total = G.PROFILES[G.SETTINGS.profile].hedge_trimmer_usage})
-end
-
 G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
     if not G.GAME.monitor_ranks_played then
         G.GAME.monitor_ranks_played = {}

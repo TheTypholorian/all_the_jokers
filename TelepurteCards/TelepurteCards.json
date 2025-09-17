@@ -1,0 +1,16 @@
+{
+    "id": "TelepurteCards",
+    "name": "Telepurte Cards",
+    "author": [
+        "OneSuchKeeper",
+        "Telepurte"
+    ],
+    "description": "Adds a custom deck skins and other Telepurte themed cards.",
+    "prefix": "telepurteCards",
+    "main_file": "main.lua",
+    "priority": 0,
+    "badge_colour": "162664",
+    "badge_text_colour": "1593e0",
+    "display_name": "Telepurte Cards",
+    "version": "1.0.1"
+}

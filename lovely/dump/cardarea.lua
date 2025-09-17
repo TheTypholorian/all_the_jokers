@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '84dd414085cad8a946e900e9da11302bcf2eec7d06ee85bcb79a03c2a678998d'
+LOVELY_INTEGRITY = '70e8f8c92c30f5efdb56a394b4508fd401a5116d8eafa8b5925a208292bf839d'
 
 --Class
 CardArea = Moveable:extend()
@@ -63,9 +63,7 @@ if self == G.jokers then
     Cartomancer.handle_joker_added(card)
 end
     self:handle_card_limit(card.ability.card_limit, card.ability.extra_slots_used)
-    if index then
-        table.insert(self.cards, index, card)
-    elseif location == 'front' or self.config.type == 'deck' then 
+    if location == 'front' or self.config.type == 'deck' then 
         table.insert(self.cards, 1, card)
     else
         self.cards[#self.cards+1] = card
@@ -78,11 +76,6 @@ end
         card.ability.wheel_flipped = true
     end
 
-    
-    if G.jokers ~= nil and self == G.hand and next(SMODS.find_card('j_bunc_xray')) then
-        SMODS.calculate_context({emplaced_card = card})
-    end
-    
     if #self.cards > self.config.card_limit then
         if self == G.deck then
             self.config.card_limit = #self.cards
@@ -115,14 +108,6 @@ end
           if G.jokers.cards[i].ability.set == 'Joker' then joker_tally = joker_tally + 1 end
         end
         if joker_tally > G.GAME.max_jokers then G.GAME.max_jokers = joker_tally end
-        
-        G.GAME.max_common_jokers = G.GAME.max_common_jokers or 0
-        local common_joker_tally = 0
-        for i = 1, #G.jokers.cards do
-            if G.jokers.cards[i].ability.set == 'Joker' and G.jokers.cards[i].config.center.rarity == 1 then common_joker_tally = common_joker_tally + 1 end
-        end
-        if common_joker_tally > G.GAME.max_common_jokers then G.GAME.max_common_jokers = common_joker_tally end
-        
         check_for_unlock({type = 'modify_jokers'}) 
     end
     if self == G.deck then check_for_unlock({type = 'modify_deck', deck = self}) end
@@ -174,7 +159,6 @@ function CardArea:change_size(delta)
                 self.config.card_limit = math.max(0, self.config.real_card_limit)
                 if delta > 0 and self.config.real_card_limit > 1 and self == G.hand and self.cards[1] and (G.STATE == G.STATES.DRAW_TO_HAND or G.STATE == G.STATES.SELECTING_HAND) then 
                     local card_count = math.abs(delta)
-                    card_count = math.min(card_count, math.max(0, self.config.card_limit - #self.cards))
                     for i=1, card_count do
                         draw_card(G.deck,G.hand, i*100/card_count,nil, nil , nil, 0.07)
                         G.E_MANAGER:add_event(Event({func = function() self:sort() return true end}))
@@ -187,57 +171,6 @@ function CardArea:change_size(delta)
 end
 
 function CardArea:can_highlight(card)
-
--- Anything is selectable with The 8 active
-
-if card and self == G.hand and G.GAME and G.GAME.THE_8_BYPASS then
-    return true
-end
-
--- Making so the player can't choose a group of linked cards if it'd bypass highlighted limit
-
-if card and card.ability.group then
-
-    local group_amount = 0 -- Amount of cards in the same group
-    local highlighted_amount = 0 -- Amount of cards already highlighted
-    local highlighted_group_amount = 0 -- Amount of cards already highlighted in the same group
-
-    for i = 1, #self.cards do
-        if self.cards[i].ability.group and self.cards[i].ability.group.id == card.ability.group.id then
-            if not self.cards[i].highlighted then
-                group_amount = group_amount + 1
-            else
-                highlighted_group_amount = highlighted_group_amount + 1
-            end
-        end
-        if self.cards[i].highlighted then
-            highlighted_amount = highlighted_amount + 1
-        end
-    end
-
-
-    -- If you select a group that has more cards than the game allows
-    if (not card.highlighted) and (group_amount > self.config.highlighted_limit) then
-
-        -- Check if there's already cards selected
-        if highlighted_amount ~= 0 then
-            return false
-        end
-
-        return true
-    end
-
-    -- If you select a normal amount of cards but the amount of cards in the group and already highlighted will bypass the limit
-    if (not card.highlighted) and (self.config.highlighted_limit < (group_amount + highlighted_amount)) then
-        return false
-    end
-
-    -- If you want to unselect cards that already bypassed the limit
-    if card.highlighted then
-        return true
-    end
-end
-
 if self.config.skill_table and not card.config.center.unlocked then
     return false
 end
@@ -343,20 +276,6 @@ function CardArea:parse_highlighted()
 end
 
 function CardArea:remove_from_highlighted(card, force)
-
-if card.edition and card.edition.bunc_fluorescent then
-    card.ability.forced_selection = false
-end
-
-
-if G.GAME.blind and G.GAME.blind.name == 'bl_bunc_gate' and not force and card.area == G.hand then
-    if G.GAME.blind.disabled then
-        card.ability.forced_selection = false
-    elseif not G.GAME.blind.disabled and card.ability.forced_selection == true then
-        G.GAME.blind:wiggle()
-    end
-end
-
     if (not force) and  card and card.ability.forced_selection and self == G.hand then return end
     for i = #self.highlighted,1,-1 do
         if self.highlighted[i] == card then
@@ -782,57 +701,6 @@ function CardArea:align_cards()
     for k, card in ipairs(self.cards) do
         card.rank = k
     end
-    
-    if self.config.type == 'hand' and G.hand and G.STATE == G.STATES.SMODS_BOOSTER_OPENED and SMODS.OPENED_BOOSTER.config.center.type == 'bunc_virtual' then
-        local max_cards_override = (Cartomancer.SETTINGS.dynamic_hand_align and self.config.temp_limit - #self.cards > 5) and math.max(#self.cards, math.min(10, self.config.temp_limit))
-
-        G.hand:sort()
-        for i = 1, #G.hand.cards do
-            local card = G.hand.cards[i]
-            card.states.drag.can = false
-    
-            local offset_mult = 0.4
-    
-            card.T.y = card.T.y - (
-                card.base.suit == 'Spades' and offset_mult * 2
-            or card.base.suit == 'Hearts' and offset_mult * 1
-            or card.base.suit == 'Clubs' and offset_mult * 0
-            or card.base.suit == 'Diamonds' and offset_mult * -1
-            or card.base.suit == 'bunc_Fleurons' and offset_mult * -2
-            or card.base.suit == 'bunc_Halberds' and offset_mult * -3
-            or offset_mult * -4)
-    
-            local align_mult = 0.2
-    
-            card.T.x = card.T.x - (
-                card.base.suit == 'Spades' and 0.0
-            or card.base.suit == 'Hearts' and align_mult
-            or card.base.suit == 'Clubs' and align_mult * 2
-            or card.base.suit == 'Diamonds' and align_mult * 3
-            or card.base.suit == 'bunc_Fleurons' and align_mult * 4
-            or card.base.suit == 'bunc_Halberds' and align_mult * 5
-            or align_mult * 6)
-    
-            card.T.r = card.T.r / 3.0
-            if card.highlighted then
-                card.T.y = card.T.y + 0.5
-                card.greyed = false
-            else
-                card.greyed = true
-            end
-        end
-    end
-    
-    
-    for k, card in ipairs(self.cards) do
-        if card.config.center.key == 'j_bunc_taped' and (card.config.center.discovered or card.bypass_discovery_center) then
-            if not card.states.drag.is then
-                card.T.x = card.T.x + (0.18 * card.T.w)
-                card.T.y = card.T.y - (0.01 * card.T.h)
-            end
-        end
-    end
-    
     if self.children.view_deck then
         self.children.view_deck:set_role{major = self.cards[1] or self}
     end

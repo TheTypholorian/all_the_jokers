@@ -1,0 +1,30 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = -1
+
+
+# Replaces joker with argyle deck
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = "SC = Card(G.ROOM.T.w/2 - SC_scale*G.CARD_W/2, 10. + G.ROOM.T.h/2 - SC_scale*G.CARD_H/2, SC_scale*G.CARD_W, SC_scale*G.CARD_H, G.P_CARDS.empty, G.P_CENTERS['j_joker'])"
+position = "after"
+payload = '''
+SC = Card(G.ROOM.T.w/2 - SC_scale*G.CARD_W/2, 10. + G.ROOM.T.h/2 - SC_scale*G.CARD_H/2, SC_scale*G.CARD_W, SC_scale*G.CARD_H, G.P_CARDS.empty, G.P_CENTERS['b_SGTMD_argyle'],{bypass_discovery_center = true, bypass_discovery_ui = true})
+'''
+match_indent = true
+
+
+# flips playing cards and makes their backs into TMD decks
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = "if math.random() > 0.8 then card.sprite_facing = 'back'; card.facing = 'back' end"
+position = "at"
+payload = '''
+if true then card.sprite_facing = 'back'; card.facing = 'back' end
+card.children.back.atlas = deckstext
+card.children.back.sprite_pos = TMD.splashpos[math.random(#TMD.splashpos)]
+'''
+match_indent = true

@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '4d2b5afd2fe1c981793223390a916e1efc523218fbaccacd3c3322bcb4fd0efa'
+LOVELY_INTEGRITY = '05e9539e3aa7b13675021c4c6e3233db46a118b2a4664b59942ffc6a1a8221eb'
 
 --- STEAMODDED CORE
 --- UTILITY FUNCTIONS
@@ -787,15 +787,11 @@ function convert_save_data()
         v.wins_by_key = v.wins_by_key or {}
         for index, number in pairs(v.wins or {}) do
             if index > 8 and not first_pass then break end
-            if index == 8 and v.bunco_loaded then break end
-            v.bunco_loaded = true -- Bit hacky, but easiest way to set this after the check
             v.wins_by_key[SMODS.stake_from_index(index)] = number
         end
         v.losses_by_key = v.losses_by_key or {}
         for index, number in pairs(v.losses or {}) do
             if index > 8 and not first_pass then break end
-            if index == 8 and v.bunco_loaded then break end
-            v.bunco_loaded = true -- Bit hacky, but easiest way to set this after the check
             v.losses_by_key[SMODS.stake_from_index(index)] = number
         end
     end
@@ -804,15 +800,11 @@ function convert_save_data()
         v.wins_by_key = v.wins_by_key or {}
         for index, number in pairs(v.wins or {}) do
             if index > 8 and not first_pass then break end
-            if index == 8 and v.bunco_loaded then break end
-            v.bunco_loaded = true -- Bit hacky, but easiest way to set this after the check
             v.wins_by_key[SMODS.stake_from_index(index)] = number
         end
         v.losses_by_key = v.losses_by_key or {}
         for index, number in pairs(v.losses or {}) do
             if index > 8 and not first_pass then break end
-            if index == 8 and v.bunco_loaded then break end
-            v.bunco_loaded = true -- Bit hacky, but easiest way to set this after the check
             v.losses_by_key[SMODS.stake_from_index(index)] = number
         end
     end
@@ -1659,11 +1651,6 @@ SMODS.calculate_retriggers = function(card, context, _ret)
 end
 
 function Card:calculate_edition(context)
-
-if not (BUNCOMOD and BUNCOMOD.vars and BUNCOMOD.vars.jokerlike_consumable_editions) and self.config.center.consumeable then
-    return
-end
-
     if self.edition then
         local edition = G.P_CENTERS[self.edition.key]
         if edition.calculate and type(edition.calculate) == 'function' then
@@ -1725,7 +1712,6 @@ function SMODS.calculate_card_areas(_type, context, return_table, args)
                 else
                     local f = SMODS.trigger_effects(effects, _card)
                     for k,v in pairs(f) do flags[k] = v end
-                    if flags.bunc_new_dollars_mod then context.mod = flags.bunc_new_dollars_mod end
                     if flags.numerator then context.numerator = flags.numerator end
                     if flags.denominator then context.denominator = flags.denominator end
                     if flags.cards_to_draw then context.amount = flags.cards_to_draw end
@@ -1749,7 +1735,6 @@ function SMODS.calculate_card_areas(_type, context, return_table, args)
                         local effects = {eval_card(card, context)}
                         local f = SMODS.trigger_effects(effects, card)
                         for k,v in pairs(f) do flags[k] = v end
-                        if flags.bunc_new_dollars_mod then context.mod = flags.bunc_new_dollars_mod end
                         if flags.numerator then context.numerator = flags.numerator end
                         if flags.denominator then context.denominator = flags.denominator end
                         if flags.cards_to_draw then context.amount = flags.cards_to_draw end
@@ -1777,7 +1762,6 @@ function SMODS.calculate_card_areas(_type, context, return_table, args)
                     SMODS.calculate_quantum_enhancements(card, effects, context)
                     local f = SMODS.trigger_effects(effects, card)
                     for k,v in pairs(f) do flags[k] = v end
-                    if flags.bunc_new_dollars_mod then context.mod = flags.bunc_new_dollars_mod end
                     if flags.numerator then context.numerator = flags.numerator end
                     if flags.denominator then context.denominator = flags.denominator end
                     if flags.cards_to_draw then context.amount = flags.cards_to_draw end
@@ -1816,7 +1800,6 @@ function SMODS.calculate_card_areas(_type, context, return_table, args)
             else
                 local f = SMODS.trigger_effects(effects, area.scored_card)
                 for k,v in pairs(f) do flags[k] = v end
-                if flags.bunc_new_dollars_mod then context.mod = flags.bunc_new_dollars_mod end
                 if flags.numerator then context.numerator = flags.numerator end
                 if flags.denominator then context.denominator = flags.denominator end
             end
@@ -1942,8 +1925,7 @@ function SMODS.score_card(card, context)
 end
 
 function SMODS.calculate_main_scoring(context, scoring_hand)
-    --print(#context.cardarea.cards, #context.scoring_hand)
-    for _, card in ipairs(G.FUNCS.vhp_get_real_context_cardarea_cards(context)) do
+    for _, card in ipairs(context.cardarea.cards) do
         local in_scoring = scoring_hand and SMODS.in_scoring(card, context.scoring_hand)
         --add cards played to list
         if scoring_hand and not SMODS.has_no_rank(card) and in_scoring then
@@ -2369,9 +2351,7 @@ function SMODS.change_voucher_limit(mod)
     G.GAME.modifiers.extra_vouchers = (G.GAME.modifiers.extra_vouchers or 0) + mod
     if mod > 0 and G.shop then
         for i=1, mod do
-            if (G.GAME.starting_params.vouchers_in_shop + (G.GAME.modifiers.extra_vouchers or 0)) > #G.shop_vouchers.cards then
-                SMODS.add_voucher_to_shop()
-            end
+            SMODS.add_voucher_to_shop()
         end
     end
 end
@@ -2391,9 +2371,7 @@ function SMODS.change_booster_limit(mod)
     G.GAME.modifiers.extra_boosters = (G.GAME.modifiers.extra_boosters or 0) + mod
     if mod > 0 and G.shop then
         for i = 1, mod do
-            if (G.shop_booster.config.card_limit + (G.GAME.modifiers.extra_boosters or 0)) > #G.shop_booster.cards then
-                SMODS.add_booster_to_shop()
-            end
+            SMODS.add_booster_to_shop()
         end
     end
 end

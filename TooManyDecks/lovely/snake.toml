@@ -1,0 +1,15 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = -1
+
+
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = '''if G.GAME.blind.name == 'The Serpent' and
+        not G.GAME.blind.disabled and'''
+position = "at"
+payload = '''if ((G.GAME.SGTMD_MOD and G.GAME.SGTMD_MOD.limitdraw and G.GAME.blind.in_blind) or (G.GAME.blind.name == 'The Serpent' and
+        not G.GAME.blind.disabled)) and'''
+match_indent = true

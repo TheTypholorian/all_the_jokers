@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '80376c6c2a10f5b1125cfd797c4b4ac13c6ba50a798026181d96dd164b205253'
+LOVELY_INTEGRITY = 'abb8c39f3ad5d5a074e96666dcfc352747ac3cfc1f71db9c4d3e5b645d1cf83b'
 
 --Moves the tutorial to the next step in queue
 --
@@ -2220,44 +2220,6 @@ end
     local dont_dissolve = nil
     local delay_fac = 1
 
-    
-    -- BUNCO DOMINO PATCH START
-    
-    local pre_cardarea = card.area
-    local pre_card_pos
-    local pre_card_left
-    local pre_card_right
-    
-    if card.area then
-        for i = 1, #card.area.cards do
-            if card.area.cards[i] == card then
-                pre_card_pos = i
-            end
-        end
-    end
-    
-    if pre_cardarea and pre_cardarea.cards[pre_card_pos - 1] then pre_card_left = pre_cardarea.cards[pre_card_pos - 1] end
-    if pre_cardarea and pre_cardarea.cards[pre_card_pos + 1] then pre_card_right = pre_cardarea.cards[pre_card_pos + 1] end
-    
-    local function call_getting_booster_card()
-        G.E_MANAGER:add_event(Event{func = function()
-            if G.jokers ~= nil then
-                for _, v in ipairs(SMODS.find_card('j_bunc_domino')) do
-                    v:calculate_joker({getting_booster_card = true,
-                    card = card,
-                    pre_cardarea = pre_cardarea,
-                    pre_card_pos = pre_card_pos,
-                    pre_card_left = pre_card_left,
-                    pre_card_right = pre_card_right})
-                    break
-                end
-            end
-            return true
-        end})
-    end
-    
-    -- BUNCO DOMINO PATCH END
-    
     if card:check_use() then 
       G.E_MANAGER:add_event(Event({func = function()
         e.disable_button = nil
@@ -2299,10 +2261,6 @@ end
       G.STATES.PLAY_TAROT
       
     G.CONTROLLER.locks.use = true
-    if card.ability.consumeable or card.ability.set == 'Enhanced' or card.ability.set == 'Default' or card.ability.set == 'Joker' then
-        call_getting_booster_card()
-    end
-    
     if G.booster_pack and not G.booster_pack.alignment.offset.py and (card.ability.consumeable or not (G.GAME.pack_choices and G.GAME.pack_choices > 1)) then
       G.booster_pack.alignment.offset.py = G.booster_pack.alignment.offset.y
       G.booster_pack.alignment.offset.y = G.ROOM.T.y + 29
@@ -2373,26 +2331,6 @@ end
           dont_dissolve = true
       end
       if (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.PLANET_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.SMODS_BOOSTER_OPENED) then
-      if card.ability.set=='Spell' and area==G.pack_cards then -- betmma_spells
-          area:remove_from_highlighted(card)
-          play_sound('cardSlide2', nil, 0.3)
-          dont_dissolve = true
-          area:remove_card(card)
-          G.betmma_spells:emplace(card)
-          nc=false
-      else
-          G.TEMP_FLAG_TO_LET_BELOW_PATCH_READ=1
-      end
-      if card.ability.set=='Ability' then -- betmma_abilities
-          area:remove_from_highlighted(card)
-          play_sound('cardSlide2', nil, 0.3)
-          dont_dissolve = true
-          if card.area~=G.betmma_abilities and G.betmma_abilities then
-              area:remove_card(card)
-              G.betmma_abilities:emplace(card)
-          end
-          nc=false
-      end
         card.T.x = G.hand.T.x + G.hand.T.w/2 - card.T.w/2
         card.T.y = G.hand.T.y + G.hand.T.h/2 - card.T.h/2 - 0.5
         discover_card(card.config.center)
@@ -2647,13 +2585,6 @@ end
                   if area == G.consumeables or area == G.hand then
                     G.booster_pack.alignment.offset.y = G.booster_pack.alignment.offset.py
                     G.booster_pack.alignment.offset.py = nil
-                  elseif card.ability.set=='Ability' then -- betmma_abilities
-                      G.booster_pack.alignment.offset.y = G.booster_pack.alignment.offset.py
-                      G.booster_pack.alignment.offset.py = nil
-                  elseif card.ability.set=='Spell' and G.TEMP_FLAG_TO_LET_BELOW_PATCH_READ then -- betmma_spells
-                      G.TEMP_FLAG_TO_LET_BELOW_PATCH_READ=nil
-                      G.booster_pack.alignment.offset.y = G.booster_pack.alignment.offset.py
-                      G.booster_pack.alignment.offset.py = nil
                   elseif G.GAME.pack_choices and G.GAME.pack_choices > 1 then
                     if G.booster_pack.alignment.offset.py then 
                       G.booster_pack.alignment.offset.y = G.booster_pack.alignment.offset.py
@@ -2670,10 +2601,6 @@ end
                   if G.shop then 
                     G.shop.alignment.offset.y = G.shop.alignment.offset.py
                     G.shop.alignment.offset.py = nil
-                  end
-                  if G.morshu_save then
-                      G.morshu_save.alignment.offset.y = G.morshu_save.alignment.offset.py
-                      G.morshu_save.alignment.offset.py = nil
                   end
                   if G.blind_select then
                     G.blind_select.alignment.offset.y = G.blind_select.alignment.offset.py
@@ -2793,27 +2720,6 @@ end
 G.FUNCS.buy_from_shop = function(e)
     local c1 = e.config.ref_table
     if c1 and c1:is(Card) then
-    
-    -- BUNCO DOMINO PATCH START
-    
-    local pre_cardarea = c1.area
-    local pre_card_pos
-    local pre_card_left
-    local pre_card_right
-    
-    if c1.area then
-        for i = 1, #c1.area.cards do
-            if c1.area.cards[i] == c1 then
-                pre_card_pos = i
-            end
-        end
-    end
-    
-    if pre_cardarea and pre_cardarea.cards[pre_card_pos - 1] then pre_card_left = pre_cardarea.cards[pre_card_pos - 1] end
-    if pre_cardarea and pre_cardarea.cards[pre_card_pos + 1] then pre_card_right = pre_cardarea.cards[pre_card_pos + 1] end
-    
-    -- BUNCO DOMINO PATCH END
-    
       if e.config.id ~= 'buy_and_use' then
         if not G.FUNCS.check_for_buy_space(c1) then
           e.disable_button = nil
@@ -2846,19 +2752,7 @@ G.FUNCS.buy_from_shop = function(e)
             table.insert(G.playing_cards, c1)
           elseif e.config.id ~= 'buy_and_use' then
             if c1.ability.consumeable then
-                  if not (#G.consumeables.cards < G.consumeables.config.card_limit + ((c1.edition and c1.edition.negative) and 1 or 0)) and c1.betmma_forbidden_area_bought then
-                      G.jokers:emplace(c1)
-                  else
-                          if c1.ability.set=='Ability' and G.betmma_abilities then -- betmma_abilities
-                              G.betmma_abilities:emplace(c1)
-                          else
-                              if c1.ability.set=='Spell' and G.betmma_spells then -- betmma_spells
-                                  G.betmma_spells:emplace(c1)
-                              else
-                                  G.consumeables:emplace(c1)
-                              end
-                          end
-                  end
+              G.consumeables:emplace(c1)
             else
               G.jokers:emplace(c1)
             end
@@ -2885,19 +2779,6 @@ G.FUNCS.buy_from_shop = function(e)
 
           SMODS.calculate_context({buying_card = true, card = c1})
 
-          
-          if G.jokers ~= nil then
-              for _, v in ipairs(SMODS.find_card('j_bunc_domino')) do
-                  v:calculate_joker({buying_card = true,
-                  card = c1,
-                  pre_cardarea = pre_cardarea,
-                  pre_card_pos = pre_card_pos,
-                  pre_card_left = pre_card_left,
-                  pre_card_right = pre_card_right})
-                  break
-              end
-          end
-          
           if G.GAME.modifiers.inflation then 
             G.GAME.inflation = G.GAME.inflation + 1
             G.E_MANAGER:add_event(Event({func = function()
@@ -3062,10 +2943,6 @@ end
                 if G.shop and G.shop.alignment.offset.py then 
                   G.shop.alignment.offset.y = G.shop.alignment.offset.py
                   G.shop.alignment.offset.py = nil
-                end
-                if G.morshu_save and G.morshu_save.alignment.offset.py then
-                    G.morshu_save.alignment.offset.y = G.morshu_save.alignment.offset.py
-                    G.morshu_save.alignment.offset.py = nil
                 end
                 if G.blind_select and G.blind_select.alignment.offset.py then
                   G.blind_select.alignment.offset.y = G.blind_select.alignment.offset.py
@@ -3365,12 +3242,6 @@ end
       }))
     local _tag = e.UIBox:get_UIE_by_ID('tag_container')
     G.GAME.skips = (G.GAME.skips or 0) + 1
-    
-    G.PROFILES[G.SETTINGS.profile].skips_total = (G.PROFILES[G.SETTINGS.profile].skips_total or 0) + 1
-    if G.PROFILES[G.SETTINGS.profile].skips_total then
-        check_for_unlock({type = 'blind_skipped', skips_total = G.PROFILES[G.SETTINGS.profile].skips_total})
-    end
-    
         if G.GAME.minty_hyperfix.active then
             G.GAME.minty_hyperfix.value = (G.GAME.minty_hyperfix.value or 0) + 1
         end
@@ -3402,9 +3273,11 @@ end
                     for i = 1, #G.GAME.tags do
                         G.GAME.tags[i]:apply_to_run({type = 'immediate'})
                     end
-                    for i = 1, #G.GAME.tags do
-                        if G.GAME.tags[i]:apply_to_run({type = 'new_blind_choice'}) then break end
-                    end
+        if G.GAME.selected_back.name ~= "b_SGTMD_throwback" then
+        for i = 1, #G.GAME.tags do
+            if G.GAME.tags[i]:apply_to_run({type = 'new_blind_choice'}) then break end
+        end
+    end
                 end
                 if _tag.config.ref_table.key == 'tag_hit_memory' then
                     if G.blind_select then 
@@ -3496,45 +3369,6 @@ end
     end
   end
 
-  
-  G.FUNCS.reroll_booster_pack_button = function(e)
-      if (not G.GAME.rerolled_pack) and G.GAME.used_vouchers['v_bunc_shell_game'] and (G.pack_cards and
-      G.STATE == G.STATES.SMODS_BOOSTER_OPENED or (G.STATE == G.STATES.PLANET_PACK or G.STATE == G.STATES.STANDARD_PACK or G.STATE == G.STATES.BUFFOON_PACK or (G.hand and (G.hand.cards[1] or (G.hand.config.card_limit <= 0))))) then
-          e.config.colour = G.C.GREEN
-          e.config.button = 'reroll_booster_pack'
-          e.children[1].children[1].config.shadow = true
-          if e.children[2] then e.children[2].children[1].config.shadow = true end
-      else
-          e.config.colour = G.C.UI.BACKGROUND_INACTIVE
-          e.config.button = nil
-          e.children[1].children[1].config.shadow = false
-          if e.children[2] then e.children[2].children[1].config.shadow = false end
-      end
-  end
-  
-  G.FUNCS.reroll_booster_pack = function(e)
-      if G.pack_cards and
-      G.STATE == G.STATES.SMODS_BOOSTER_OPENED or (G.STATE == G.STATES.PLANET_PACK or G.STATE == G.STATES.STANDARD_PACK or G.STATE == G.STATES.BUFFOON_PACK or (G.hand and (G.hand.cards[1] or (G.hand.config.card_limit <= 0)))) then
-          stop_use()
-  
-          local last_pack = G.GAME.last_booster_pack
-          last_pack.cost = 0
-          last_pack.rerolled = true
-  
-          for i = #G.pack_cards.cards, 1, -1 do
-              local c = G.pack_cards:remove_card(G.pack_cards.cards[i])
-              c:remove()
-              c = nil
-          end
-  
-          G.E_MANAGER:add_event(Event({blocking = false, trigger = 'after', func = function()
-              play_sound('other1')
-              last_pack:open()
-              return true
-          end}))
-      end
-  end
-  
   G.FUNCS.reroll_boss_button = function(e)
     local reroll_cost = to_big((G.GAME.selected_back.effect.center.key == "b_jokerhub_film_deck") and 5 or 10)
     if ((G.GAME.dollars-G.GAME.bankrupt_at) - reroll_cost >= to_big(0)) and
@@ -3715,18 +3549,11 @@ if Handy.insta_cash_out.is_skipped and e.config.button then return end
                 G.round_eval = nil
               end
               G.GAME.current_round.jokers_purchased = 0
-              if used_voucher and used_voucher('garbage_bag') then
-                  G.GAME.betmma_discards_left_ref=G.GAME.current_round.discards_left or 0
-              end
-              if used_voucher and used_voucher('handbag') then
-                  G.GAME.betmma_hands_left_ref=G.GAME.current_round.hands_left or 0
-              end
               if not G.GAME.modifiers["no_hand_discard_reset"] then
               if not G.GAME.modifiers["ante_hand_discard_reset"] or boss_ded then
               if not G.GAME.modifiers.carryover_discards then
                   if G.GAME.selected_back.name ~= "b_ruina_hokma" then
                       G.GAME.current_round.discards_left = math.max(0, G.GAME.round_resets.discards + G.GAME.round_bonus.discards)
-                      G.GAME.current_round.bunc_actual_discards_left = G.GAME.current_round.discards_left
                   end
               end
               if not G.GAME.modifiers.carryover_hands then
@@ -3737,12 +3564,6 @@ if Handy.insta_cash_out.is_skipped and e.config.button then return end
               end
               elseif G.GAME.current_round.hands_left and (G.GAME.current_round.hands_left <= 0) then
                   G.GAME.current_round.hands_left = 1
-              end
-              if used_voucher and used_voucher('garbage_bag') then
-                  G.GAME.current_round.discards_left = G.GAME.current_round.discards_left + G.GAME.betmma_discards_left_ref
-              end
-              if used_voucher and used_voucher('handbag') then
-                  G.GAME.current_round.hands_left = G.GAME.current_round.hands_left + G.GAME.betmma_hands_left_ref
               end
               if G.GAME.akyrs_always_skip_shops then
                   G.STATE = G.STATES.BLIND_SELECT

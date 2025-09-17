@@ -1,0 +1,18 @@
+{
+    "id": "StrangePencil",
+    "name": "Strange Pencil",
+    "author": [
+        "DigitalDetective47"
+    ],
+    "description": "A collection of random stuff that I've created and drawn in Paint.",
+    "prefix": "pencil",
+    "main_file": "strangePencil.lua",
+    "badge_colour": "FF9E49",
+    "badge_text_colour": "404040",
+    "version": "0.3.1",
+    "priority": 1e10,
+    "dependencies": [
+        "Steamodded (>=1.0.0~ALPHA-1428g)",
+        "StrangeLib (>=2.1)"
+    ]
+}

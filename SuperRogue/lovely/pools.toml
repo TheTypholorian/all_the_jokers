@@ -1,0 +1,102 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 1
+
+# Fix add_to_pool hook not working
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = '''
+if v.in_pool and type(v.in_pool) == 'function' then
+    add = in_pool and (add or pool_opts.override_base_checks)
+end
+'''
+position = 'at'
+payload = '''
+add = in_pool and (add or pool_opts.override_base_checks)
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = '''=[SMODS _ "src/overrides.lua"]'''
+pattern = '''
+if v.in_pool and type(v.in_pool) == 'function' then
+	local res, pool_opts = SMODS.add_to_pool(v)
+	pool_opts = pool_opts or {}
+	add = res and (add or pool_opts.override_base_checks)
+end
+'''
+position = 'at'
+payload = '''
+local res, pool_opts = SMODS.add_to_pool(v)
+pool_opts = pool_opts or {}
+add = res and (add or pool_opts.override_base_checks)
+'''
+match_indent = true
+times = 1
+
+# Prevent boss blinds from disabled mods from spawning (Weirder than the other ones for some reason)
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+pattern = '''
+for k, v in pairs(G.GAME.banned_keys) do
+    if eligible_bosses[k] then eligible_bosses[k] = nil end
+end
+'''
+position = 'after'
+payload = '''
+for k, v in pairs(eligible_bosses) do
+    if G.P_BLINDS[k] and not SuperRogue.is_object_mod_active(G.P_BLINDS[k]) then eligible_bosses[k] = nil end
+end
+'''
+match_indent = true
+times = 1
+
+# Prevent shop from attempting to generate cards from unavailable pools
+[[patches]]
+[patches.pattern]
+target = 'functions/UI_definitions.lua'
+pattern = '''
+total_rate = total_rate + G.GAME[v:lower()..'_rate']
+'''
+position = 'at'
+payload = '''
+if SuperRogue.is_pool_available(v) then
+    total_rate = total_rate + G.GAME[v:lower()..'_rate']
+end
+'''
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = 'functions/UI_definitions.lua'
+pattern = '''
+table.insert(rates, { type = v, val = G.GAME[v:lower()..'_rate'] })
+'''
+position = 'at'
+payload = '''
+if SuperRogue.is_pool_available(v) then
+    table.insert(rates, { type = v, val = G.GAME[v:lower()..'_rate'] })
+end
+'''
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+pattern = '''
+_pool[#_pool+1] = SMODS.ObjectTypes[_type].default
+'''
+position = 'at'
+payload = '''
+if SuperRogue.is_object_mod_active(SMODS.ObjectTypes[_type]) then
+    _pool[#_pool+1] = SMODS.ObjectTypes[_type].default
+end
+'''
+match_indent = true
+times = 1

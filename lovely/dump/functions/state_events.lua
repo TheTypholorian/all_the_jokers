@@ -1,9 +1,9 @@
-LOVELY_INTEGRITY = '2aa523ba47972d92561319c2b38fc0ed4a02e24a78278483eefe1b34d9df2d47'
+LOVELY_INTEGRITY = '221b33d86ebee6542c991a91c577e845a83f04da2aef2f839a03238fc7d6dafb'
 
 function win_game()
     if (not G.GAME.seeded and not G.GAME.challenge) or SMODS.config.seeded_unlocks then
+        if G.GAME.selected_back.effect.center.calculate then G.GAME.selected_back.effect.center.calculate(G.GAME.selected_back.effect.center,nil,{win = true}) end
         set_joker_win()
-        set_stand_win()
         set_voucher_win()
         set_deck_rounds()
         set_deck_win()
@@ -94,19 +94,6 @@ function win_game()
 end
 
 function end_round()
-if G.GAME.blind:get_type() == 'Boss' then
-    G.GAME.overscore = 0
-else
-    if type(G.GAME.chips) ~= 'table' then
-        if G.GAME.chips - G.GAME.blind.chips >= 0 then
-            G.GAME.overscore = (G.GAME.overscore or 0) + G.GAME.chips - G.GAME.blind.chips
-        end
-    else
-        if G.GAME.chips - G.GAME.blind.chips >= to_big(0) then
-            G.GAME.overscore = (G.GAME.overscore or 0) + G.GAME.chips - G.GAME.blind.chips
-        end
-    end
-end
     G.E_MANAGER:add_event(Event({
       trigger = 'after',
       delay = 0.2,
@@ -138,41 +125,7 @@ end
                 end
             }))
             end
-        end        
-        if G.hand.crackers_highlighted and #G.hand.crackers_highlighted >= 1 then
-        
-            ease_discard(-1)
-        
-            for i = 1, #G.hand.crackers_highlighted do
-                if not G.hand.crackers_highlighted[i].highlighted then
-                    G.hand:add_to_highlighted(G.hand.crackers_highlighted[i], true)
-                end
-                G.hand.crackers_highlighted[i].marked_cracker = true
-            end
-        
-            if #G.play.cards ~= 0 then
-                for i=1, #G.hand.highlighted do
-                    if G.hand.highlighted[i] and G.hand.highlighted[i].config.center == G.P_CENTERS.m_bunc_cracker then
-                        if G.hand.highlighted[i]:is_face() then inc_career_stat('c_face_cards_played', 1) end
-                        G.hand.highlighted[i].base.times_played = G.hand.highlighted[i].base.times_played + 1
-                        G.hand.highlighted[i].ability.played_this_ante = true
-                        G.GAME.round_scores.cards_played.amt = G.GAME.round_scores.cards_played.amt + 1
-                        draw_card(G.hand, G.play, i*100/#G.hand.highlighted, 'up', nil, G.hand.highlighted[i])
-                    end
-                end
-            end
-        
-            G.E_MANAGER:add_event(Event({func = function()
-                if #G.play.cards == 0 then
-                    G.GAME.ignore_hand_played = true
-                    G.FUNCS.play_cards_from_highlighted()
-                end
-            return true end}))
-        
-            return
         end
-        
-
         G.RESET_JIGGLES = true
         G.GAME.blind_attack = nil
         local skill_saved = false
@@ -585,39 +538,6 @@ end
                             _handname = k
                         end
                     end
-                    
-                    if G.GAME.played_ranks ~= nil then
-                        local max_rank = nil
-                        local max_count = -1
-                    
-                        for _, rank in ipairs(SMODS.Rank.obj_buffer) do
-                            count = G.GAME.played_ranks[rank] or 0
-                            -- tiebreak with highest rank
-                            if count >= max_count then
-                                max_count = count
-                                max_rank = rank
-                            end
-                        end
-                    
-                        G.GAME.current_round.most_played_rank = max_rank
-                    end
-                    
-                    
-                    
-                    local lowestValue = math.huge
-                    local leastPlayedHand = ''
-                    
-                    for i = #G.handlist, 1, -1 do
-                        local v = G.handlist[i]
-                        local playedCount = G.GAME.hands and G.GAME.hands[v] and G.GAME.hands[v].played or 0
-                        if (playedCount < lowestValue) and G.GAME.hands[v].visible then
-                            lowestValue = G.GAME.hands[v].visible and playedCount or lowestValue
-                            leastPlayedHand = G.GAME.hands[v].visible and v or leastPlayedHand
-                        end
-                    end
-                    
-                    G.GAME.current_round.least_played_poker_hand = leastPlayedHand
-                    
                     G.GAME.current_round.most_played_poker_hand = _handname
                 end
 
@@ -636,11 +556,6 @@ end
                 end
 
                 check_for_unlock({type = 'round_win'})
-                
-                if not G.GAME.blind.disabled then
-                    check_for_unlock({type = 'defeat_blind', blind = G.GAME.blind})
-                end
-                
                 set_joker_usage()
                 if game_won and not G.GAME.win_notified then
                     G.GAME.win_notified = true
@@ -902,38 +817,13 @@ function new_round()
             if not G.GAME.modifiers["ante_hand_discard_reset"] then
             if not G.GAME.modifiers.carryover_discards then
                 if G.GAME.selected_back.name ~= "b_ruina_hokma" then
-                    
-                    local deck_size = 0
-                    
-                    G.GAME.last_deck_size = G.GAME.last_deck_size
-                    
-                    for k, v in pairs(G.playing_cards) do
-                        deck_size = deck_size + 1
-                    end
-                    
-                    if G.GAME.last_deck_size ~= deck_size then
-                        local difference = deck_size - G.GAME.last_deck_size
-                    
-                        check_for_unlock({type = 'round_deck_size', round_deck_size_diff = difference})
-                    end
-                    
-                    G.GAME.last_deck_size = deck_size
-                    
-                    G.GAME.bunc_money_spend_this_round = 0
                     G.GAME.current_round.discards_left = math.max(0, G.GAME.round_resets.discards + G.GAME.round_bonus.discards)
-                    G.GAME.current_round.bunc_actual_discards_left = G.GAME.current_round.discards_left
                 end
             end
             if not G.GAME.modifiers.carryover_hands then
                 G.GAME.current_round.hands_left = (math.max(1, G.GAME.round_resets.hands + G.GAME.round_bonus.next_hands))
             end
             end
-            end
-            if used_voucher and used_voucher('garbage_bag') then
-                G.GAME.current_round.discards_left = G.GAME.current_round.discards_left + (G.GAME.betmma_discards_left_ref or 0)
-            end
-            if used_voucher and used_voucher('handbag') then
-                G.GAME.current_round.hands_left = G.GAME.current_round.hands_left + (G.GAME.betmma_hands_left_ref or 0)
             end
             G.GAME.current_round.hands_played = 0
             G.GAME.current_round.discards_used = 0
@@ -1079,9 +969,6 @@ end
 G.FUNCS.draw_from_deck_to_hand = function(e)
     if not (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.SMODS_BOOSTER_OPENED) and
         G.hand.config.card_limit <= 0 and #G.hand.cards == 0 and not G.PROFILES[G.SETTINGS.profile].cry_none then
-        if next(find_joker('2 Kings 2:23-24')) then
-            check_for_unlock({ type = "shebear_mauling" })
-        end
         G.STATE = G.STATES.GAME_OVER; G.STATE_COMPLETE = false 
         return true
     end
@@ -1108,48 +995,8 @@ G.FUNCS.draw_from_deck_to_hand = function(e)
     if G.GAME.modifiers.cry_forced_draw_amount and (G.GAME.current_round.hands_played > 0 or G.GAME.current_round.discards_used > 0) then
     	hand_space = math.min(#G.deck.cards, G.GAME.modifiers.cry_forced_draw_amount)
     end
-    if G.GAME.vhp_draw_extra then
-        hand_space = math.min(#G.deck.cards, hand_space + G.GAME.vhp_draw_extra)
-        G.GAME.vhp_draw_extra = nil
-    end
-    if G.GAME.blind and (G.GAME.blind.name == "The Jaw") and not G.GAME.blind.disabled then
-            if ((to_big and to_big(G.GAME.dollars - G.GAME.bankrupt_at) or (G.GAME.dollars - G.GAME.bankrupt_at)) < (to_big and to_big(hand_space) or hand_space)) then
-                hand_space = (G.GAME.dollars - G.GAME.bankrupt_at)
-                if to_big and to_number then
-                    hand_space = to_number(hand_space)
-                end
-                if ((to_big and to_big(G.GAME.dollars - G.GAME.bankrupt_at) or (G.GAME.dollars - G.GAME.bankrupt_at)) ~= (to_big and to_big(0) or 0)) then
-                    ease_dollars(G.GAME.bankrupt_at-G.GAME.dollars)
-                    delay(0.1)
-                end
-            else
-                if (hand_space ~= 0) then
-                    ease_dollars(-hand_space)
-                    delay(0.1)
-                end
-            end
-            if not (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK) and
-                (hand_space <= 0) and (#G.hand.cards == 0) then 
-                if next(find_joker('2 Kings 2:23-24')) then
-                    check_for_unlock({ type = "shebear_mauling" })
-                end
-                G.STATE = G.STATES.GAME_OVER; G.STATE_COMPLETE = false 
-                return true
-            end
-        end
-    if G.GAME.grim_hand_size_bonus then
-        hand_space = hand_space + G.GAME.grim_hand_size_bonus
-        G.GAME.grim_hand_size_bonus = 0
-    end
-    if G.GAME.blind.in_blind and 
-    next(find_joker('j_kino_insomnia')) and
-    (G.GAME.current_round.hands_played > 0 or
-    G.GAME.current_round.discards_used > 0) then 
-    	SMODS.calculate_context({insomnia_awake = true})
-    	return
-    end
-    if ((G.GAME.blind.name == 'The Serpent') or (G.GAME.blind.name == 'bl_reverse_blank' and G.GAME.blank_blind == 'bl_serpent')) and
-        not G.GAME.blind.disabled and
+    if ((G.GAME.SGTMD_MOD and G.GAME.SGTMD_MOD.limitdraw and G.GAME.blind.in_blind) or (G.GAME.blind.name == 'The Serpent' and
+            not G.GAME.blind.disabled)) and
         (G.GAME.current_round.hands_played > 0 or
         G.GAME.current_round.discards_used > 0) then
             hand_space = math.min(#G.deck.cards, 3)
@@ -1202,41 +1049,6 @@ end
 end
 
 G.FUNCS.discard_cards_from_highlighted = function(e, hook)
-
-G.hand.crackers_highlighted = {}
-local crackers_in_hand = false
-
-for i = 1, #G.hand.cards do
-    if G.hand.cards[i] and G.hand.cards[i].highlighted
-    and G.hand.cards[i].config.center == G.P_CENTERS.m_bunc_cracker
-    and not G.hand.cards[i].debuff then
-        crackers_in_hand = true
-        break
-    end
-end
-
-for i = 1, #G.hand.cards do
-    if G.hand.cards[i] and G.hand.cards[i].highlighted
-    and (((G.hand.cards[i].config.center == G.P_CENTERS.m_bunc_cracker) and not G.hand.cards[i].debuff) or (crackers_in_hand and #SMODS.find_card('j_bunc_pica', false) > 0)) then
-        table.insert(G.hand.crackers_highlighted, G.hand.cards[i])
-        G.hand:remove_from_highlighted(G.hand.cards[i], true)
-    end
-end
-
-
-if G.GAME.blind and G.GAME.blind.name == 'bl_bunc_final_dagger' and not G.GAME.blind.disabled then
-    G.GAME.blind:wiggle()
-    G.GAME.blind.antiscore = true
-    G.FUNCS.play_cards_from_highlighted()
-    return
-end
-
-
-if G.GAME.blind and G.GAME.blind.name == 'bl_bunc_paling' and not G.GAME.blind.disabled then
-    G.GAME.blind:wiggle()
-    delay(0.7)
-end
-
    if G.GAME.modifiers.dungeon then
     G.GAME.hit_limit = #G.hand.cards - 1
     if G.GAME.hit_limit < 1 then
@@ -1286,19 +1098,6 @@ if G.GAME.blind and (G.GAME.blind.name == "The Sink") and not G.GAME.blind.disab
         end
         local cards = {}
         local destroyed_cards = {}
-        
-        if G.GAME.blind and G.GAME.blind.name == 'bl_bunc_paling' and not G.GAME.blind.disabled then
-            for i=1, highlighted_count do
-                G.E_MANAGER:add_event(Event({func = function()
-                    if G.hand.highlighted[i] and not G.hand.highlighted[i].removed then
-                        G.hand.highlighted[i]:juice_up()
-                    end
-                return true end }))
-                ease_dollars(-1)
-                delay(0.23)
-            end
-        end
-        
         for i=1, highlighted_count do
             G.hand.highlighted[i]:calculate_seal({discard = true})
             local removed = false
@@ -1322,26 +1121,19 @@ if G.GAME.blind and (G.GAME.blind.name == "The Sink") and not G.GAME.blind.disab
                 end
             else 
                 G.hand.highlighted[i].ability.discarded = true
-                
-                if G.GAME.blind and G.GAME.blind.name == 'bl_bunc_claw' and not G.GAME.blind.disabled then
-                    draw_card(G.hand, G.deck, i*100/highlighted_count, 'down', false, G.hand.highlighted[i])
-                    G.deck:shuffle('claw'..G.GAME.round_resets.ante)
-                else
-                    local has_line_in_the_sand = false
-                    if G.jokers ~= nil and G.jokers.cards then
-                        for _, j in ipairs(G.jokers.cards) do
-                            if j.config and j.config.center_key == "j_aij_line_in_the_sand" then
-                                has_line_in_the_sand = true
-                            end
+                local has_line_in_the_sand = false
+                if G.jokers ~= nil and G.jokers.cards then
+                    for _, j in ipairs(G.jokers.cards) do
+                        if j.config and j.config.center_key == "j_aij_line_in_the_sand" then
+                            has_line_in_the_sand = true
                         end
                     end
-                    if has_line_in_the_sand then
-                        draw_card(G.hand, G.jest_super_discard, i*100/highlighted_count, 'down', false, G.hand.highlighted[i])
-                    else
-                    draw_card(G.hand, G.discard, i*100/highlighted_count, 'down', false, G.hand.highlighted[i])
-                    end
                 end
-                
+                if has_line_in_the_sand then
+                    draw_card(G.hand, G.jest_super_discard, i*100/highlighted_count, 'down', false, G.hand.highlighted[i])
+                else
+                draw_card(G.hand, G.discard, i*100/highlighted_count, 'down', false, G.hand.highlighted[i])
+                end
             end
         end
 
@@ -1373,41 +1165,6 @@ if G.GAME.blind and (G.GAME.blind.name == "The Sink") and not G.GAME.blind.disab
             return true end }))
             ease_discard(-1)
             G.GAME.current_round.discards_used = G.GAME.current_round.discards_used + 1
-            
-            if G.hand.crackers_highlighted and #G.hand.crackers_highlighted >= 1 then
-                for i = 1, #G.hand.crackers_highlighted do
-                    if not G.hand.crackers_highlighted[i].highlighted then
-                        G.hand:add_to_highlighted(G.hand.crackers_highlighted[i], true)
-                    end
-                    G.hand.crackers_highlighted[i].marked_cracker = true
-                end
-            
-                G.E_MANAGER:add_event(Event({func = function()
-                    G.GAME.ignore_hand_played = true
-                    G.FUNCS.play_cards_from_highlighted()
-                return true end}))
-            
-                return
-            end
-            
-            
-            if G.GAME.blind and G.GAME.blind.name == 'bl_bunc_swing' and not G.GAME.blind.disabled then
-                G.E_MANAGER:add_event(Event({ func = function()
-                    for k, v in ipairs(G.hand.cards) do
-                        v:flip()
-                    end
-            
-                    G.GAME.blind:wiggle()
-                    G.GAME.blind.triggered = true
-            
-                    if G.GAME.Swing == true then
-                        G.GAME.Swing = false
-                    else
-                        G.GAME.Swing = true
-                    end
-                return true end }))
-            end
-            
             G.STATE = G.STATES.DRAW_TO_HAND
             G.E_MANAGER:add_event(Event({
                 trigger = 'immediate',
@@ -1418,41 +1175,7 @@ if G.SCORING_COROUTINE then return false end
                 end
             }))
         end
-    end    
-    if G.hand.crackers_highlighted and #G.hand.crackers_highlighted >= 1 then
-    
-        ease_discard(-1)
-    
-        for i = 1, #G.hand.crackers_highlighted do
-            if not G.hand.crackers_highlighted[i].highlighted then
-                G.hand:add_to_highlighted(G.hand.crackers_highlighted[i], true)
-            end
-            G.hand.crackers_highlighted[i].marked_cracker = true
-        end
-    
-        if #G.play.cards ~= 0 then
-            for i=1, #G.hand.highlighted do
-                if G.hand.highlighted[i] and G.hand.highlighted[i].config.center == G.P_CENTERS.m_bunc_cracker then
-                    if G.hand.highlighted[i]:is_face() then inc_career_stat('c_face_cards_played', 1) end
-                    G.hand.highlighted[i].base.times_played = G.hand.highlighted[i].base.times_played + 1
-                    G.hand.highlighted[i].ability.played_this_ante = true
-                    G.GAME.round_scores.cards_played.amt = G.GAME.round_scores.cards_played.amt + 1
-                    draw_card(G.hand, G.play, i*100/#G.hand.highlighted, 'up', nil, G.hand.highlighted[i])
-                end
-            end
-        end
-    
-        G.E_MANAGER:add_event(Event({func = function()
-            if #G.play.cards == 0 then
-                G.GAME.ignore_hand_played = true
-                G.FUNCS.play_cards_from_highlighted()
-            end
-        return true end}))
-    
-        return
     end
-    
-
 end
   
 G.FUNCS.play_cards_from_highlighted = function(e)
@@ -1484,62 +1207,8 @@ G.FUNCS.play_cards_from_highlighted = function(e)
                 end
             }))
         end
-    end    
-    if G.hand.crackers_highlighted and #G.hand.crackers_highlighted >= 1 then
-    
-        ease_discard(-1)
-    
-        for i = 1, #G.hand.crackers_highlighted do
-            if not G.hand.crackers_highlighted[i].highlighted then
-                G.hand:add_to_highlighted(G.hand.crackers_highlighted[i], true)
-            end
-            G.hand.crackers_highlighted[i].marked_cracker = true
-        end
-    
-        if #G.play.cards ~= 0 then
-            for i=1, #G.hand.highlighted do
-                if G.hand.highlighted[i] and G.hand.highlighted[i].config.center == G.P_CENTERS.m_bunc_cracker then
-                    if G.hand.highlighted[i]:is_face() then inc_career_stat('c_face_cards_played', 1) end
-                    G.hand.highlighted[i].base.times_played = G.hand.highlighted[i].base.times_played + 1
-                    G.hand.highlighted[i].ability.played_this_ante = true
-                    G.GAME.round_scores.cards_played.amt = G.GAME.round_scores.cards_played.amt + 1
-                    draw_card(G.hand, G.play, i*100/#G.hand.highlighted, 'up', nil, G.hand.highlighted[i])
-                end
-            end
-        end
-    
-        G.E_MANAGER:add_event(Event({func = function()
-            if #G.play.cards == 0 then
-                G.GAME.ignore_hand_played = true
-                G.FUNCS.play_cards_from_highlighted()
-            end
-        return true end}))
-    
-        return
     end
-    
-
     --check the hand first
-    
-    local unlock_all_flipped = true
-    
-    for i = 1, #G.hand.highlighted do
-        if G.hand.highlighted[i].facing ~= 'back' then
-            unlock_all_flipped = false
-        end
-    end
-    
-    if (not G.hand.highlighted) or (#G.hand.highlighted == 0) then unlock_all_flipped = false end
-    
-    if unlock_all_flipped and #G.hand.highlighted >= 5 then
-        check_for_unlock({type = 'play_all_flipped'})
-    end
-    
-    
-    if G.jokers ~= nil then
-        SMODS.calculate_context({bunc_play_cards = true})
-    end
-    
 
     stop_use()
     G.GAME.blind.triggered = false
@@ -1568,67 +1237,8 @@ G.FUNCS.play_cards_from_highlighted = function(e)
     }))
     inc_career_stat('c_cards_played', #G.hand.highlighted)
     inc_career_stat('c_hands_played', 1)
-    
-    if G.GAME.blind and G.GAME.blind.name == 'bl_bunc_swing' and not G.GAME.blind.disabled then
-        G.E_MANAGER:add_event(Event({ func = function()
-            for k, v in ipairs(G.hand.cards) do
-                if not (v.area == G.hand and v.highlighted and v.facing == 'front') then
-                    v:flip()
-                end
-            end
-    
-            G.GAME.blind:wiggle()
-            G.GAME.blind.triggered = true
-    
-            if G.GAME.Swing == true then
-                G.GAME.Swing = false
-            else
-                G.GAME.Swing = true
-            end
-        return true end }))
-    end
-    
-    
-    if G.GAME.blind and G.GAME.blind.name == 'bl_bunc_umbrella' and not G.GAME.blind.disabled then
-        G.E_MANAGER:add_event(Event({func = function()
-    
-            for k, v in ipairs(G.hand.cards) do
-                if v.facing == 'front' and not v.highlighted then
-                    v:flip()
-                end
-            end
-    
-            G.GAME.blind:wiggle()
-            G.GAME.blind.triggered = true
-    
-        return true end }))
-    end
-    
-    
-    SMODS.calculate_context({ bunc_press_play = true })
-    
     if not G.GAME.modifiers.dungeon then
-        
-        local function calculate_discard()
-            for i = 1, #G.hand.cards do
-                eval_card(G.hand.cards[i], {pre_discard = true, full_hand = G.hand.highlighted, hook = hook})
-            end
-            for j = 1, #G.jokers.cards do
-                G.jokers.cards[j]:calculate_joker({pre_discard = true, full_hand = G.hand.highlighted, hook = hook})
-            end
-        end
-        
-        if not G.GAME.ignore_hand_played then
-            if G.GAME.blind.antiscore then
-                ease_discard(-1)
-                calculate_discard()
-            else
-                ease_hands_played(-1)
-            end
-        else
-            G.GAME.ignore_hand_played = nil
-        end
-        
+        ease_hands_played(-1)
     end
     delay(0.4)
 
@@ -1669,11 +1279,6 @@ G.FUNCS.play_cards_from_highlighted = function(e)
                     trigger = 'immediate',
                     func = function()
                         G.FUNCS.evaluate_play(e)
-                        
-                        if G.GAME.blind.antiscore then
-                            G.GAME.blind.antiscore = false
-                        end
-                        
                         return true
                     end
                 }))
@@ -1698,6 +1303,7 @@ G.FUNCS.play_cards_from_highlighted = function(e)
                             end
                         end
                         G.GAME.hands_played = G.GAME.hands_played + 1
+                        StrangeLib.dynablind.update_blind_scores(StrangeLib.dynablind.find_blind("bl_pencil_glove"))
                         G.GAME.current_round.hands_played = G.GAME.current_round.hands_played + 1
                         return true
                             end
@@ -1805,7 +1411,6 @@ function evaluate_play_intro()
         end
     end
     local text,disp_text,poker_hands,scoring_hand,non_loc_disp_text = G.FUNCS.get_poker_hand_info(G.play.cards)
-    G.FUNCS.ach_pepsecretunlock(text)
     local tbl = {}
     for i, v in pairs(G.jokers.cards) do
     	if v.base.nominal and v.base.suit then
@@ -1862,7 +1467,6 @@ function evaluate_play_intro()
                         return true
                         end
                     }))
-                    SMODS.calculate_context({csau_card_destroyed = true, removed = cards_destroyed[i] })
                 end
                 table.remove(G.play.cards, 1)
             end
@@ -1879,13 +1483,9 @@ function evaluate_play_intro()
         	end
         end
         local unsplashed = SMODS.never_scores(G.play.cards[i])
-        local vhp_multiscoring_times = 0
         if not splashed then
             for _, card in pairs(scoring_hand) do
                 if card == G.play.cards[i] then splashed = true end
-                if card == G.play.cards[i] then
-                    vhp_multiscoring_times = vhp_multiscoring_times + 1
-                end
             end
         end
         local effects = {}
@@ -1894,11 +1494,6 @@ function evaluate_play_intro()
         if flags.add_to_hand then splashed = true end
     	if flags.remove_from_hand then unsplashed = true end
         if splashed and not unsplashed then table.insert(final_scoring_hand, G.play.cards[i]) end
-        if splashed and not unsplashed then
-            for _ = 1, vhp_multiscoring_times - 1, 1 do
-                table.insert(final_scoring_hand, G.play.cards[i])
-            end
-        end
     end
     if G.GAME.blind.name == "bl_reverse_ehwaz" then
         final_scoring_hand = G.hand.cards
@@ -1922,12 +1517,6 @@ function evaluate_play_intro()
                 table.insert(final_scoring_hand, G.hand.cards[i])
             end
         end
-    -- Not yet
-    for _, vhp_card in pairs(scoring_hand) do
-        if vhp_card.area == G.hand then
-            table.insert(final_scoring_hand, vhp_card)
-        end
-    end
     scoring_hand = final_scoring_hand
     
     G.GAME.last_played_hand = Kino.get_dummy_codex()
@@ -1941,17 +1530,6 @@ function evaluate_play_intro()
     for i=1, #scoring_hand do
         --Highlight all the cards used in scoring and play a sound indicating highlight
         highlight_card(scoring_hand[i],(i-0.999)/5,'up')
-        
-        local played_rank = scoring_hand[i].base.value
-        
-        if G.GAME.played_ranks == nil then G.GAME.played_ranks = {} end
-        
-        if G.GAME.played_ranks[played_rank] then
-            G.GAME.played_ranks[played_rank] = G.GAME.played_ranks[played_rank] + 1
-        else
-            G.GAME.played_ranks[played_rank] = 1
-        end
-        
     end
 
     percent = 0.3
@@ -2054,11 +1632,6 @@ function evaluate_play_intro()
                 hand_chips = mod_chips(Cryptid.ascend(G.GAME.hands[text].chips))
         AKYRS.base_cm_mod(G.play.cards, {text,disp_text,poker_hands,scoring_hand,non_loc_disp_text}, hand_chips, mult, already_ran)
 
-        
-        for i = 1, #G.GAME.tags do
-            G.GAME.tags[i]:apply_to_run({type = 'hand_played', before = true})
-        end
-        
         local modded = false
 
         SMODS.calculate_context { after_before = true }
@@ -2094,23 +1667,39 @@ function evaluate_play_intro()
         delay(0.3)
         SMODS.calculate_context({initial_scoring_step = true, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands})
         SMODS.calculate_context({full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, jh_scoring_before = true})
-        for _, v in ipairs(SMODS.get_card_areas('playing_cards')) do
-            SMODS.calculate_main_scoring({cardarea = v, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands}, v == G.play and scoring_hand or nil)
-            if v==G.play then
-                local index=1
-                while index<=#G.play.cards do
-                    local card=G.play.cards[index]
-                    if (card.ability.set == 'Default' or card.ability.set == 'Enhanced') and used_voucher('double_flipped_card') and card.facing_ref=='back' then
-                        if (not card.shattered) and (not card.destroyed) then 
-                            draw_card_immediately(G.play,G.hand, 0.1,'down', false, card)
-                            card.facing_ref=card.facing
-                            index=index-1
-                        end
-                    end
-                    index=index+1
-                end
+        if not next(SMODS.find_card('j_mxms_whos_on_first')) then
+            for _, v in ipairs(SMODS.get_card_areas('playing_cards')) do
+                SMODS.calculate_main_scoring({cardarea = v, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands}, v == G.play and scoring_hand or nil)
+                delay(0.3)
             end
-            delay(0.3)
+        end
+        --WAUGH AGAIN
+        if MINTY.omegasplashing then
+            MINTY.say("We Are Omegasplashing")
+            MINTY.omegasplashing = nil
+            for i=1,#G.hand.cards do
+                if G.hand.cards[i].debuff then 
+                    G.GAME.blind.triggered = true
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'immediate',
+                        func = (function() SMODS.juice_up_blind();return true end)
+                    }))
+                    card_eval_status_text(G.hand.cards[i], 'debuff')
+                else
+                    MINTY.say("Aw Yeah It Is A Cards")
+                    SMODS.score_card(G.hand.cards[i], {cardarea = G.play, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands})
+                end
+                delay(0.2)
+            end
+            G.E_MANAGER:add_event(Event({
+                trigger = 'after',
+                func = (function()
+                    for i=1,#G.hand.cards do
+                        G.hand.cards[i]:highlight(false)
+                    end
+                    return true 
+                    end)
+            }))
         end
         --+++++++++++++++++++++++++++++++++++++++++++++++++++++++++--
         for i=1, #G.consumeables.cards do
@@ -2428,11 +2017,6 @@ function evaluate_play_intro()
             mult = mod_mult(mult*(1 + G.GAME.current_round.hands_played * 0.2))
             update_hand_text({delay = 0}, {mult = mult})
         end
-        
-        for i = 1, #G.GAME.tags do
-            G.GAME.tags[i]:apply_to_run({type = 'hand_played', after = true})
-        end
-        
         local nu_chip, nu_mult = G.GAME.selected_back:trigger_effect{context = 'final_scoring_step', chips = hand_chips, mult = mult}
         if G.GAME.ad_halve_scoring then
             local x_mult = 0.5 ^ G.GAME.ad_halve_scoring
@@ -2560,32 +2144,6 @@ function evaluate_play_intro()
           update_hand_text({delay = 0}, {[name] = parameter.default_value})
       end
       check_and_set_high_score('hand',  SMODS.calculate_round_score() )
-      
-      if G.GAME.blind and G.GAME.blind.name == 'bl_bunc_blade' and not G.GAME.blind.disabled then
-      
-          local overscore = G.GAME.blind.chips * 1.5
-      
-          if type(hand_chips) == 'table' then overscore = to_big(overscore) end
-      
-          if (overscore < math.floor(hand_chips*mult) + G.GAME.chips) then
-      
-              mult = mod_mult(0)
-              hand_chips = mod_chips(0)
-      
-              G.E_MANAGER:add_event(Event({
-                  trigger = 'after',
-                  func = (function()
-                      G.GAME.blind:disable()
-                      return true
-                  end)
-              }))
-      
-              local blade_message = G.localization.misc.dictionary.bunc_exceeded_score
-              play_area_status_text(blade_message)
-      
-          end
-      end
-      
 
       check_for_unlock({type = 'chip_score', chips = math.floor( SMODS.calculate_round_score() )})
    
@@ -2601,7 +2159,7 @@ function evaluate_play_intro()
       blocking = false,
       ref_table = G.GAME,
       ref_value = 'chips',
-      ease_to = G.GAME.chips + math.floor( SMODS.calculate_round_score() ) * (G.GAME.blind.antiscore and -1 or 1),
+      ease_to = G.GAME.chips + math.floor( SMODS.calculate_round_score() ),
       delay =  0.5,
       func = (function(t) return math.floor(t) end)
     }))
@@ -2651,9 +2209,6 @@ function evaluate_play_intro()
     -- context.after calculations
     SMODS.calculate_context({full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, after = true})
     
-    calculate_cracker_cards({full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, after = true})
-    
-    
     SMODS.calculate_context({full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, after_debuff = true, ignore_debuff = true})
     G.E_MANAGER:add_event(Event({
     	func = function()
@@ -2696,87 +2251,16 @@ function evaluate_play_intro()
     local play_count = #G.play.cards
     local it = 1
     for k, v in ipairs(G.play.cards) do
-        if next(SMODS.find_card('j_picubed_boomerang')) and (not v.shattered) and (not v.destroyed) then
-            if picubed_boomerang_scoring and picubed_boomerang_scoring[v] then --picubed_boomerang_scoring comes from src/jokers/boomerang.lua
-                draw_card(G.play,G.deck, it*100/play_count,'down', false, v)
-                it = it + 1
-                G.deck:shuffle('boomerang'..G.GAME.round_resets.ante)
-            else
-                    if v.ability.gemslot_timecrystal then
-                        draw_card(G.play,G.deck, it*100/play_count,'down', false, v)
-                    else
-                        if next(SMODS.find_card('j_mxms_maurice')) and SMODS.has_enhancement(v, 'm_wild') then
-                            draw_card(G.play,G.deck, it*100/play_count,'down', false, v)
-                            SMODS.calculate_effect({message = localize('k_saved_ex'), sound = 'mxms_joker'}, SMODS.find_card('j_mxms_maurice')[1])
-                        else
-                            
-                            local cards_to_hand = {}
-                            
-                            if G.jokers ~= nil then
-                                for _, joker in ipairs(G.jokers.cards) do
-                                    if joker.config.center.key == 'j_bunc_cellphone' and joker.ability.extra.active and not joker.debuff then
-                                        for __, card in ipairs(joker.ability.extra.cards_to_hand) do
-                                            table.insert(cards_to_hand, card)
-                                        end
-                                        break
-                                    end
-                                end
-                            end
-                            
-                            if cards_to_hand ~= {} then
-                                local condition = false
-                                for _, card_to_hand in ipairs(cards_to_hand) do
-                                    if v == card_to_hand then
-                                        condition = true
-                                    end
-                                end
-                                if condition then
-                                    draw_card(G.play,G.hand, it*100/play_count,'up', true, v)
-                                else
-                                    draw_card(G.play,G.discard, it*100/play_count,'down', false, v)
-                                end
-                            else
-                                draw_card(G.play,G.discard, it*100/play_count,'down', false, v)
-                            end
-                            
-                        end
-                    end
-                it = it + 1
-            end
-        elseif (not v.shattered) and (not v.destroyed) then 
+        if (not v.shattered) and (not v.destroyed) and (not v.abducted) then 
                 if v.ability.gemslot_timecrystal then
                     draw_card(G.play,G.deck, it*100/play_count,'down', false, v)
                 else
-                    
-                    local cards_to_hand = {}
-                    
-                    if G.jokers ~= nil then
-                        for _, joker in ipairs(G.jokers.cards) do
-                            if joker.config.center.key == 'j_bunc_cellphone' and joker.ability.extra.active and not joker.debuff then
-                                for __, card in ipairs(joker.ability.extra.cards_to_hand) do
-                                    table.insert(cards_to_hand, card)
-                                end
-                                break
-                            end
-                        end
-                    end
-                    
-                    if cards_to_hand ~= {} then
-                        local condition = false
-                        for _, card_to_hand in ipairs(cards_to_hand) do
-                            if v == card_to_hand then
-                                condition = true
-                            end
-                        end
-                        if condition then
-                            draw_card(G.play,G.hand, it*100/play_count,'up', true, v)
-                        else
-                            draw_card(G.play,G.discard, it*100/play_count,'down', false, v)
-                        end
+                    if next(SMODS.find_card('j_mxms_maurice')) and SMODS.has_enhancement(v, 'm_wild') then
+                        draw_card(G.play,G.deck, it*100/play_count,'down', false, v)
+                        SMODS.calculate_effect({message = localize('k_saved_ex'), sound = 'mxms_joker'}, SMODS.find_card('j_mxms_maurice')[1])
                     else
                         draw_card(G.play,G.discard, it*100/play_count,'down', false, v)
                     end
-                    
                 end
             it = it + 1
         end

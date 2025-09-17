@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '083fa247d3c3ed8194dd8c36bf0c8e87e915243c3c31dea6cf3c4772859c4a77'
+LOVELY_INTEGRITY = 'bb186e6f320c3385b6e2117279cb5c2d0cf6197583d4c2b444b88413639a5dc5'
 
 ---@class Node
 Node = Object:extend()
@@ -232,28 +232,7 @@ function Node:set_offset(point, type)
 end
 
 --If the current container is being 'Dragged', usually by a cursor, determine if any drag popups need to be generated and do so
-
-local break_table = {before = nil, after = nil, node = nil}
-
 function Node:drag()
-
-    if G.jokers ~= nil and self:is(Card) and self.area == G.jokers then
-        if next(SMODS.find_card('j_bunc_knight')) then
-            if break_table.before == nil then
-
-                break_table.before = {}
-
-                for _, v in ipairs(G.jokers.cards) do
-                    table.insert(break_table.before, v.ability.name)
-                end
-
-                break_table.after = break_table.before
-                break_table.node = self
-
-            end
-        end
-    end
-
     if self.config and self.config.d_popup then
         if not self.children.d_popup then 
             self.children.d_popup = UIBox{
@@ -280,30 +259,6 @@ end
 
 --Called by the CONTROLLER when this node is no longer being dragged, removes any d_popups
 function Node:stop_drag()
-
-if G.jokers ~= nil and self == break_table.node and next(SMODS.find_card('j_bunc_knight')) then
-    function do_tables_match(a, b)
-        return table.concat(a) == table.concat(b)
-    end
-
-    if break_table.before ~= nil then
-
-        break_table.before = {}
-
-        for _, v in ipairs(G.jokers.cards) do
-            table.insert(break_table.before, v.ability.name)
-        end
-
-        if not do_tables_match(break_table.before, break_table.after) then
-            SMODS.calculate_context({ break_positions = true })
-        end
-
-        break_table.before = nil
-        break_table.after = nil
-
-    end
-end
-
     if self.children.d_popup then
         for k, v in pairs(G.I.POPUP) do
             if v == self.children.d_popup then

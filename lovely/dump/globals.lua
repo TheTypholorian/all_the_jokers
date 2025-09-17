@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '3ce63acc77d3cf272cdef31773b5650364f8e060e04a83b7cfbff7655a8c96b7'
+LOVELY_INTEGRITY = '89ba9873cb7a25b5ca4a6383f9cce1bf29969a705530f61b78f4fc4cb973b004'
 
 VERSION = '1.0.1o'
 VERSION = VERSION..'-FULL'
@@ -387,9 +387,6 @@ function Game:set_globals()
         ETERNAL = HEX('c75985'),
         PERISHABLE = HEX('4f5da1'),
         RENTAL = HEX('b18f43'),
-        BUNCO_VIRTUAL = HEX('69fa93'),
-        BUNCO_VIRTUAL_DARK = HEX('4fb66f'),
-        BUNCO_EXOTIC = HEX('ef9ae7'),
         AKYRS_PLAYABLE = HEX("ee36ff"),
         AKYRS_PISSANDSHITTIUM = HEX("68211d"),
         AKYRS_BOCCHI = HEX("ff61d2"),
@@ -494,7 +491,7 @@ function Game:set_globals()
             contrast = 1
         }
     }
-    G.C.HAND_LEVELS[0] = G.C.JOKER_GREY
+    G.C.HAND_LEVELS[0] = G.C.RED
     G.C.UI_CHIPS = copy_table(G.C.BLUE)
     G.C.UI_MULT = copy_table(G.C.RED)
     --||||||||||||||||||||||||||||||

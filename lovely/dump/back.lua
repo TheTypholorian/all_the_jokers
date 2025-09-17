@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '79fccb7a71144d14eefa0152b282b3bf6e4c47ab37f884f30d314a9525b2db05'
+LOVELY_INTEGRITY = '853fbe3946b58b512594fbf8f6d1ac47049528846a36dd664fdd0c068feb1144'
 
 --Class
 Back = Object:extend()
@@ -183,7 +183,17 @@ function Back:trigger_effect(args)
             }))
         end
     end
-    if self.name == 'Plasma Deck' and args.context == 'final_scoring_step' then
+    local torchgod_exists = function()
+    	local torchgod_card = SMODS.find_card("j_terraria_torchgod")
+    	if torchgod_card ~= {} then
+    		return true
+    	end
+    	return false
+    end
+    local calculate_balance = function()
+    	return torchgod_exists()
+    end
+    if ((self.name == 'Plasma Deck') and args.context == 'final_scoring_step') or (torchgod_exists() and args.context == "joker_main") then
         local tot = args.chips + args.mult
         args.chips = math.floor(tot/2)
         args.mult = math.floor(tot/2)
@@ -195,19 +205,25 @@ function Back:trigger_effect(args)
                 play_sound('gong', 0.94, 0.3)
                 play_sound('gong', 0.94*1.5, 0.2)
                 play_sound('tarot1', 1.5)
-                ease_colour(G.C.UI_CHIPS, {0.8, 0.45, 0.85, 1})
-                ease_colour(G.C.UI_MULT, {0.8, 0.45, 0.85, 1})
-                attention_text({
-                    scale = 1.4, text = text, hold = 2, align = 'cm', offset = {x = 0,y = -2.7},major = G.play
-                })
+                ease_colour(G.C.UI_CHIPS, G.C.PLASMA or {0.8, 0.45, 0.85, 1})
+                ease_colour(G.C.UI_MULT, G.C.PLASMA or {0.8, 0.45, 0.85, 1})
+                if args.context == 'final_scoring_step' then
+                	attention_text({
+                		scale = 1.4, text = text, hold = 2, align = 'cm', offset = {x = 0,y = -2.7},major = G.play
+                	})
+                else 
+                	attention_text({
+                		scale = 0, text = text, hold = 2, align = 'cm', offset = {x = 0,y = -2.7},major = G.play
+                	})
+                end
                 G.E_MANAGER:add_event(Event({
                     trigger = 'after',
                     blockable = false,
                     blocking = false,
                     delay =  4.3,
                     func = (function() 
-                            ease_colour(G.C.UI_CHIPS, G.C.BLUE, 2)
-                            ease_colour(G.C.UI_MULT, G.C.RED, 2)
+                            ease_colour(G.C.UI_CHIPS, G.C.CHIPS, 2)
+                            ease_colour(G.C.UI_MULT, G.C.MULT, 2)
                         return true
                     end)
                 }))
@@ -218,8 +234,8 @@ function Back:trigger_effect(args)
                     no_delete = true,
                     delay =  6.3,
                     func = (function() 
-                        G.C.UI_CHIPS[1], G.C.UI_CHIPS[2], G.C.UI_CHIPS[3], G.C.UI_CHIPS[4] = G.C.BLUE[1], G.C.BLUE[2], G.C.BLUE[3], G.C.BLUE[4]
-                        G.C.UI_MULT[1], G.C.UI_MULT[2], G.C.UI_MULT[3], G.C.UI_MULT[4] = G.C.RED[1], G.C.RED[2], G.C.RED[3], G.C.RED[4]
+                        G.C.UI_CHIPS = copy_table(G.C.CHIPS)
+                        G.C.UI_MULT = copy_table(G.C.MULT)
                         return true
                     end)
                 }))

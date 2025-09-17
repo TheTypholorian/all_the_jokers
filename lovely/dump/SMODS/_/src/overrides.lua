@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '0f0811fe8de2ad6f1a297fffedae98ecb87a4cc16d7f6c2cb6b0636191a635e6'
+LOVELY_INTEGRITY = '5875b3c8b1eab3710c05cc871a3b5269386eb33ce9370fc228d01a75cc01fb2d'
 
 --- STEAMODDED CORE
 --- OVERRIDES
@@ -1906,10 +1906,6 @@ function Card:set_sprites(_center, _front)
 				self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS["Voucher"], G.v_locked.pos)
 			elseif self.config.center.consumeable and self.config.center.demo then
 				self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS["Tarot"], G.c_locked.pos)
-			elseif not self.params.bypass_discovery_center and _center.set == "Edition" and not _center.discovered and _center.key:sub(1, 26) == "e_bunc_consumable_edition_" then
-			    local atlas = G.ASSET_ATLAS[SMODS.UndiscoveredSprites["Tarot"].atlas]
-			    local pos = SMODS.UndiscoveredSprites["Tarot"].pos
-			    self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, atlas, pos)
 			elseif not self.params.bypass_discovery_center and (_center.set == 'Edition' or _center.set == 'Joker' or _center.consumeable or _center.set == 'Voucher' or _center.set == 'Booster') and not _center.discovered then
 				local atlas = G.ASSET_ATLAS[
 					(_center.undiscovered and
@@ -2116,11 +2112,7 @@ function Card:set_edition(edition, immediate, silent, delay)
 	if self.area and self.area == G.jokers then
 		if self.edition then
 			if not G.P_CENTERS['e_' .. (self.edition.type)].discovered then
-				if self.ability.consumeable then
-				    discover_card(G.P_CENTERS['e_bunc_consumable_edition_'..(self.edition.type)])
-				else
-				    discover_card(G.P_CENTERS['e_'..(self.edition.type)])
-				end
+				discover_card(G.P_CENTERS['e_' .. (self.edition.type)])
 			end
 		else
 			if not G.P_CENTERS['e_base'].discovered then
@@ -2185,16 +2177,13 @@ end
 -- OR list of tables { name = key, weight = number }
 function poll_edition(_key, _mod, _no_neg, _guaranteed, _options)
 	local _modifier = 1
-	local edition_poll = pseudorandom(pseudoseed(_key or 'edition_generic'), nil, nil, true) -- Generate the poll value
+	local edition_poll = pseudorandom(pseudoseed(_key or 'edition_generic')) -- Generate the poll value
 	local available_editions = {}                                          -- Table containing a list of editions and their weights
 
 	if not _options then
 		if _key == "wheel_of_fortune" or _key == "aura" then -- set base game edition polling
 			_options = { 'e_negative', 'e_polychrome', 'e_holo', 'e_foil' }
 			if G.GAME and G.GAME.Bakery_charm == 'BakeryCharm_Bakery_Fortuna' then _options = { 'e_negative', 'e_polychrome' } end
-			if BUNCOMOD.content.config.gameplay_reworks and (_key == "wheel_of_fortune" or _key == "aura") then 
-			    table.insert(_options, 'e_bunc_glitter') 
-			end
 		else
 			local unordered_options = get_current_pool("Edition", nil, nil, _key or 'edition_generic')
 			_options = {}
@@ -2401,9 +2390,6 @@ end
 function get_pack(_key, _type)
     if not G.GAME.first_shop_buffoon and not G.GAME.banned_keys['p_buffoon_normal_1'] then
         G.GAME.first_shop_buffoon = true
-        if G.GAME.selected_back_key.key == 'b_picubed_rejuvinationdeck' then
-            return G.P_CENTERS['p_celestial_mega_'..(math.random(1, 2))]
-        end
         return G.P_CENTERS['p_buffoon_normal_'..(math.random(1, 2))]
     end
     local cume, it, center = 0, 0, nil
@@ -2412,11 +2398,9 @@ function get_pack(_key, _type)
 		local add
 		v.current_weight = v.get_weight and v:get_weight() or v.weight or 1
         if (not _type or _type == v.kind) then add = true end
-		if v.in_pool and type(v.in_pool) == 'function' then
-			local res, pool_opts = SMODS.add_to_pool(v)
-			pool_opts = pool_opts or {}
-			add = res and (add or pool_opts.override_base_checks)
-		end
+		local res, pool_opts = SMODS.add_to_pool(v)
+		pool_opts = pool_opts or {}
+		add = res and (add or pool_opts.override_base_checks)
 		if add and not G.GAME.banned_keys[v.key] then cume = cume + (v.current_weight or 1); temp_in_pool[v.key] = true end
     end
     local poll = pseudorandom(pseudoseed((_key or 'pack_generic')..G.GAME.round_resets.ante))*cume

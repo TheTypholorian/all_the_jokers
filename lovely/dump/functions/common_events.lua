@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '88ee8a134536db47ef397b62fc4ac73e6f8b95bc7183a4cd69ae064fb9b5811e'
+LOVELY_INTEGRITY = '3873fa6c6241c0de02e8750d9af2db79161698644752537477aee00ae269504a'
 
 function set_screen_positions()
     if G.STAGE == G.STAGES.RUN then
@@ -120,13 +120,6 @@ end
 
 function ease_discard(mod, instant, silent)
     local _mod = function(mod)
-        if G.GAME.current_round.bunc_actual_discards_left and G.GAME.current_round.bunc_actual_discards_left <= 0 then
-            local new_mod = math.max(0, mod + G.GAME.current_round.bunc_actual_discards_left)
-            G.GAME.current_round.bunc_actual_discards_left = (G.GAME.current_round.bunc_actual_discards_left or G.GAME.current_round.discards_left) + mod
-            mod = new_mod
-        else
-            G.GAME.current_round.bunc_actual_discards_left = (G.GAME.current_round.bunc_actual_discards_left or G.GAME.current_round.discards_left) + mod
-        end
         if math.abs(math.max(G.GAME.current_round.discards_left, mod)) == 0 then return end
         local discard_UI = G.HUD:get_UIE_by_ID('discard_UI_count')
         mod = mod or 0
@@ -219,11 +212,6 @@ function ease_ante(mod, do_skills)
               col = G.C.RED
           end
           G.GAME.round_resets.ante = G.GAME.round_resets.ante + mod
-          
-          if to_big(mod) < to_big(0) then
-              check_for_unlock({type = 'ante_down', ante = G.GAME.round_resets.ante})
-          end
-          
           G.GAME.round_resets.ante_disp = number_format(G.GAME.round_resets.ante)
           if (mod ~= 0) then
               if to_big == nil then
@@ -351,92 +339,6 @@ function ease_colour(old_colour, new_colour, delay)
 end
 
 
-
-local function invert_color(color, invert_red, invert_green, invert_blue)
-    local inverted_color = {
-    1 - (color[1] or 0),
-    1 - (color[2] or 0),
-    1 - (color[3] or 0),
-    color[4] or 1
-    }
-
-    if invert_red then
-        inverted_color[1] = color[1] or 0
-    end
-    if invert_green then
-        inverted_color[2] = color[2] or 0
-    end
-    if invert_blue then
-        inverted_color[3] = color[3] or 0
-    end
-
-    return inverted_color
-end
-
-local function increase_saturation(color, value)
-    -- Extract RGB components
-    local r = color[1] or 0
-    local g = color[2] or 0
-    local b = color[3] or 0
-
-    -- Convert RGB to HSL
-    local max_val = math.max(r, g, b)
-    local min_val = math.min(r, g, b)
-    local delta = max_val - min_val
-
-    local h, s, l = 0, 0, (max_val + min_val) / 2
-
-    if delta ~= 0 then
-        if l < 0.5 then
-            s = delta / (max_val + min_val)
-        else
-            s = delta / (2 - max_val - min_val)
-        end
-
-        if r == max_val then
-            h = (g - b) / delta
-        elseif g == max_val then
-            h = 2 + (b - r) / delta
-        else
-            h = 4 + (r - g) / delta
-        end
-
-        h = h * 60
-        if h < 0 then
-            h = h + 360
-        end
-    end
-
-    -- Increase saturation
-    s = math.min(s + value, 1)
-
-    -- Convert back to RGB
-    local c = (1 - math.abs(2 * l - 1)) * s
-    local x = c * (1 - math.abs((h / 60) % 2 - 1))
-    local m = l - c / 2
-
-    local r_new, g_new, b_new = 0, 0, 0
-
-    if h < 60 then
-        r_new, g_new, b_new = c, x, 0
-    elseif h < 120 then
-        r_new, g_new, b_new = x, c, 0
-    elseif h < 180 then
-        r_new, g_new, b_new = 0, c, x
-    elseif h < 240 then
-        r_new, g_new, b_new = 0, x, c
-    elseif h < 300 then
-        r_new, g_new, b_new = x, 0, c
-    else
-        r_new, g_new, b_new = c, 0, x
-    end
-
-    -- Adjust RGB values
-    r_new, g_new, b_new = (r_new + m), (g_new + m), (b_new + m)
-
-    return {r_new, g_new, b_new, color[4] or 1}
-end
-
 function ease_background_colour_blind(state, blind_override)
     local blindname = ((blind_override or (G.GAME.blind and G.GAME.blind.name ~= '' and G.GAME.blind.name)) or 'Small Blind')
     local blindname = (blindname == '' and 'Small Blind' or blindname)
@@ -468,7 +370,7 @@ function ease_background_colour_blind(state, blind_override)
         ease_background_colour{new_colour = G.C.FILTER, special_colour = G.C.BLACK, contrast = 2}
     elseif state == G.STATES.PLANET_PACK then
         ease_background_colour{new_colour = G.C.BLACK, contrast = 3}
-    elseif G.GAME.won and not BUNCOMOD.content.config.colorful_finishers then
+    elseif G.GAME.won then 
         ease_background_colour{new_colour = (G.GAME.area_data and G.GAME.area_data.endless_color) or G.C.BLIND.won, contrast = 1}
     elseif blindname == 'Small Blind' or blindname == 'Big Blind' or blindname == '' then
         ease_background_colour{new_colour = (G.GAME.area_data and G.GAME.area_data.norm_color) or G.C.BLIND['Small'], contrast = 1}
@@ -477,17 +379,8 @@ function ease_background_colour_blind(state, blind_override)
         local boss_col = G.C.BLACK
         for k, v in pairs(G.P_BLINDS) do
             if v.name == blindname then
-            boss_col = v.boss_colour
                 if v.boss and v.boss.showdown then 
-                    
-                    if BUNCOMOD.content.config.colorful_finishers then
-                        ease_background_colour{new_colour = increase_saturation(mix_colours(boss_col, invert_color(boss_col), 0.3), 1),
-                        special_colour = boss_col,
-                        tertiary_colour = darken(increase_saturation(mix_colours(boss_col, invert_color(boss_col, true, false, false), 0.3), 0.6), 0.4), contrast = 1.7}
-                    else
-                        ease_background_colour{new_colour = G.C.BLUE, special_colour = G.C.RED, tertiary_colour = darken(G.C.BLACK, 0.4), contrast = 3}
-                    end
-                    
+                    ease_background_colour{new_colour = G.C.BLUE, special_colour = G.C.RED, tertiary_colour = darken(G.C.BLACK, 0.4), contrast = 3}
                     return
                 end
                 boss_col = v.boss_colour or G.C.BLACK
@@ -540,18 +433,6 @@ function draw_card(from, to, percent, dir, sort, card, delay, mute, stay_flipped
         delay = delay,
         func = function()
             if card then 
-                
-                local in_area = false
-                for n = 0, #from.cards do
-                    if from.cards[n] == card then
-                        in_area = true
-                        break
-                    end
-                end
-                if not in_area and from == G.deck then
-                    return true
-                end
-                
                 if from then card = from:remove_card(card) end
                 if card then drawn = true end
                 if card and to == G.hand and not card.states.visible then
@@ -576,14 +457,6 @@ function draw_card(from, to, percent, dir, sort, card, delay, mute, stay_flipped
                     G.VIBRATION = G.VIBRATION + 0.6
                 end
                 play_sound('card1', 0.85 + percent*0.2/100, 0.6*(vol or 1))
-                
-                G.E_MANAGER:add_event(Event({blocking = false, trigger = 'after', func = function()
-                    if card and card.ability and card.ability.group then
-                        save_run()
-                    end
-                    return true
-                end}))
-                
             end
             if sort then
                 to:sort()
@@ -634,29 +507,11 @@ function play_area_status_text(text, silent, delay)
 end
 
 function level_up_hand(card, hand, instant, amount)
-
-if G.jokers ~= nil and next(SMODS.find_card('j_bunc_head_in_the_clouds')) then
-    if (amount == nil) or not (amount <= 0) then
-        SMODS.calculate_context({level_up_hand = hand})
-    end
-end
-if hand == 'Head in the Clouds' then hand = 'High Card' end -- Prevents Head in the Clouds triggering itself
-
-if hand == 'bunc_Deal' then return end
     amount = amount or 1
     amount = amount * ((G.GAME.day == 5 and (2 ^ #find_joker("j_reverse_daily_double"))) or 1)
     G.GAME.hands[hand].level = math.max(0, G.GAME.hands[hand].level + amount)
     for name, parameter in pairs(SMODS.Scoring_Parameters) do
         if G.GAME.hands[hand][name] then parameter:level_up_hand(amount, G.GAME.hands[hand]) end
-    end
-    if G.GAME.omni_mult then
-        G.GAME.hands[hand].mult = G.GAME.hands[hand].mult + G.GAME.omni_mult
-    end
-    if G.GAME.omni_chips then
-        G.GAME.hands[hand].chips = G.GAME.hands[hand].chips + G.GAME.omni_chips
-    end
-    if G.GAME.omni_xmult then
-        G.GAME.hands[hand].mult = G.GAME.hands[hand].mult * G.GAME.omni_xmult
     end
     if not instant and not Talisman.config_file.disable_anims then
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
@@ -677,9 +532,6 @@ if hand == 'bunc_Deal' then return end
             return true end }))
         update_hand_text({sound = 'button', volume = 0.7, pitch = 0.9, delay = 0}, {level=G.GAME.hands[hand].level})
         delay(1.3)
-    end
-    if G.vhp_faster_level_up and instant then
-        return
     end
     G.E_MANAGER:add_event(Event({
         trigger = 'immediate',
@@ -1000,28 +852,6 @@ function eval_card(card, context)
                 ret.counters = counters
             end
         end
-        -- evaluate repetition effects of Omnicard and Mirror voucher. calculate over_retriggered_ratio.
-        if used_voucher and used_voucher('omnicard') and SMODS.has_enhancement(card, 'm_wild') then
-            ret.omnicard={
-                message = localize('k_again_ex'),
-                repetitions = 1,
-                card = card
-            }
-        end
-        card.ability.over_retriggered_ratio=1
-        if card.ability.temp_repetition and card.ability.temp_repetition>0 then
-            ret.temp_repetition={
-                message = localize('k_again_ex'),
-                repetitions = card.ability.temp_repetition,
-                card = card
-            }
-            if ret.temp_repetition.repetitions>OVER_RETRIGGER_LIMIT then
-                card.ability.over_retriggered_ratio=ret.temp_repetition.repetitions/OVER_RETRIGGER_LIMIT
-                ret.temp_repetition.repetitions=OVER_RETRIGGER_LIMIT
-                card_eval_status_text(card,'extra',nil,nil,nil,{message=localize('over_retriggered')..tostring(card.ability.over_retriggered_ratio)})
-            end
-            card.ability.temp_repetition=0
-        end
         if card.ability.repetitions and card.ability.repetitions > 0 then
             ret.seals = ret.seals or { card = card, message = localize('k_again_ex') }
             ret.seals.repetitions = (ret.seals.repetitions and ret.seals.repetitions + card.ability.repetitions) or card.ability.repetitions
@@ -1052,7 +882,7 @@ function eval_card(card, context)
         end
     
         local x_mult = card:get_chip_x_mult(context)
-        if TalismanCompat(x_mult) > TalismanCompat(0) then
+        if x_mult > 0 then
             ret.playing_card.x_mult = x_mult
         end
     
@@ -1106,7 +936,7 @@ function eval_card(card, context)
         end
     
         local x_chips = card:get_chip_x_bonus()
-        if TalismanCompat(x_chips) > TalismanCompat(0) then
+        if x_chips > 0 then
             ret.playing_card.x_chips = x_chips
         end
     
@@ -1120,32 +950,10 @@ function eval_card(card, context)
             ret.playing_card.perma_retriggers = perma_retriggers
         end
         -- TARGET: main scoring on played cards
-        if USING_BETMMA_SPELLS and G.betmma_spells then
-            local effects={}
-            for k=1, #G.betmma_spells.cards do
-                --calculate the spell individual card effects
-                local eval = G.betmma_spells.cards[k]:calculate_joker({cardarea = G.play, full_hand = G.play.cards, scoring_hand = context.scoring_hand, scoring_name = context.text, poker_hands = context.poker_hands, other_card = card, individual = true, no_retrigger_anim = true})
-                if eval then 
-                    table.insert(effects, {jokers=eval})
-                end 
-            end
-            
-            SMODS.trigger_effects(effects,card)
-        end
         
         if card.ability.name == "Stone Card" then
             G.GAME.ante_stones_scored = G.GAME.ante_stones_scored + 1
             G.GAME.hands['hnds_stone_ocean'].l_chips = G.GAME.hands['hnds_stone_ocean'].l_chips_base + (G.GAME.hands['hnds_stone_ocean'].l_chips_scaling * G.GAME.ante_stones_scored)
-        end
-        if used_voucher and used_voucher('mirror') and SMODS.has_enhancement(card, 'm_steel') then -- Mirror voucher add temp repetition to card when main scoring
-            local index=1
-            while G.play.cards[index]~=card and index<=#G.play.cards do
-                index=index+1
-            end
-            if index<#G.play.cards then
-                local right_card=G.play.cards[index+1]
-                right_card.ability.temp_repetition=(right_card.ability.temp_repetition or 0)+1
-            end
         end
     end
     if context.end_of_round and context.cardarea == G.hand and context.playing_card_end_of_round then
@@ -1182,12 +990,6 @@ function eval_card(card, context)
             ret.playing_card.akyrs_h_score = akyrs_h_score
         end
         -- TARGET: main scoring on held cards
-        if used_voucher and used_voucher('echo_chamber') then -- Echo Chamber voucher calculate end of round effect on held cards
-            local end_of_round = card:get_end_of_round_effect(context)
-            if end_of_round then
-                ret.end_of_round = end_of_round
-            end
-        end
     end
 
     if card.ability.set == 'Enhanced' then
@@ -1239,12 +1041,6 @@ function eval_card(card, context)
             sendInfoMessage("post ret.edition"..tprint(ret.edition or {}))
         end
     end
-    if card.ability.set=="Joker" and card.ability.betmma_enhancement then -- context.joker_main and 
-        local effects={}
-        local eval = card:calculate_enhancement_betmma(context)
-        table.insert(effects, {jokers=eval})
-        SMODS.trigger_effects(effects,card)
-    end
     if context.final_scoring_step and context.cardarea == G.play and context.full_hand then
         for i = 1, #G.play.cards do
             if G.play.cards[i].ability.set == 'Enhanced' and G.play.cards[i].ability.jest_chaotic_card then
@@ -1274,12 +1070,6 @@ function eval_card(card, context)
         local counters = card:bb_calculate_counter(context)
         if counters then
             ret.counters = counters
-        end
-    end
-    if used_voucher and used_voucher('echo_wall') and context.discard and card==context.other_card then -- Echo Wall voucher calculate end of round effect on discarded cards
-        local end_of_round = card:get_end_of_round_effect(context)
-        if end_of_round then
-            ret.end_of_round = end_of_round
         end
     end
     local post_trig = {}
@@ -2214,12 +2004,6 @@ function check_for_unlock(args)
         end
     end
     if args.type == 'modify_deck' then
-    
-    local enhancement_count = 0
-    for _, v in pairs(G.playing_cards) do
-        if v.config.center ~= G.P_CENTERS.c_base then G.GAME.enhancements_used = true break end
-    end
-    
         if G.deck and G.deck.config.card_limit <= 20 then
             unlock_achievement('tiny_hands')
         end
@@ -2346,12 +2130,6 @@ function check_for_unlock(args)
                 end
             end
             if args.type == 'modify_deck' then
-            
-            local enhancement_count = 0
-            for _, v in pairs(G.playing_cards) do
-                if v.config.center ~= G.P_CENTERS.c_base then G.GAME.enhancements_used = true break end
-            end
-            
                 if card.unlock_condition.extra and card.unlock_condition.extra.suit then
                     local count = 0
                     for _, v in pairs(G.playing_cards) do
@@ -2601,7 +2379,7 @@ end
 
 function unlock_card(card)
     if card.unlocked == false then
-        if not SMODS.config.seeded_unlocks and (G.GAME.seeded or (G.GAME.challenge and not card.challenge_bypass)) then return end
+        if not SMODS.config.seeded_unlocks and (G.GAME.seeded or G.GAME.challenge) then return end
         if card.unlocked or card.wip then return end
         G:save_notify(card)
         card.unlocked = true
@@ -2877,7 +2655,7 @@ function create_unlock_overlay(key)
 end
 
 function discover_card(card)
-    if not SMODS.config.seeded_unlocks and (G.GAME.seeded or (G.GAME.challenge and not card.challenge_bypass)) then return end
+    if not SMODS.config.seeded_unlocks and (G.GAME.seeded or G.GAME.challenge) then return end
     card = card or {}
     if card.discovered or card.wip then return end
     if card and not card.discovered then
@@ -2992,9 +2770,6 @@ _rarity = ({Common = 1, Uncommon = 2, Rare = 3, Legendary = 4})[_rarity] or _rar
 local rarity = _rarity or SMODS.poll_rarity("Joker", 'rarity'..G.GAME.round_resets.ante..(_append or ''))
 	comp_rarity = rarity
 
-                if _append=='BetmmaAssigningRarity' and (_legendary) then
-                    rarity=_legendary
-                end
             _starting_pool, _pool_key = G.P_JOKER_RARITY_POOLS[rarity], 'Joker'..rarity..((not _legendary and _append) or '')
         elseif SMODS.ObjectTypes[_type] and SMODS.ObjectTypes[_type].rarities then
             local rarities = SMODS.ObjectTypes[_type].rarities
@@ -3114,12 +2889,6 @@ local rarity = _rarity or SMODS.poll_rarity("Joker", 'rarity'..G.GAME.round_rese
                 end
             end
 
-            if G.GAME and G.GAME.vhp_playstyle == "silly" and _type == "Planet" and v.pools and v.pools.Polyhedra then
-                add = nil
-            end
-            if G.GAME and G.GAME.vhp_playstyle == "serious" and v.config.hand_type then
-                add = nil
-            end
             if v.no_pool_flag and G.GAME.pool_flags[v.no_pool_flag] then add = nil end
             if v.yes_pool_flag and not G.GAME.pool_flags[v.yes_pool_flag] then add = nil end
             if v.set == 'Joker' and not v.kino_joker and 
@@ -3127,9 +2896,7 @@ local rarity = _rarity or SMODS.poll_rarity("Joker", 'rarity'..G.GAME.round_rese
             G.GAME.modifiers.movie_jokers_only) then add = nil end
             if G.GAME.cry_banished_keys[v.key] then add = nil end
             
-            if v.in_pool and type(v.in_pool) == 'function' then
-                add = in_pool and (add or pool_opts.override_base_checks)
-            end
+            add = in_pool and (add or pool_opts.override_base_checks)
             if G.GAME and G.GAME.modifiers.akyrs_allow_duplicates and v.unlocked then add = true end
                     if _type == "kity" then
                         --if add then MINTY.say("Joker Boy Allowed 1", "TRACE") else MINTY.say("No Joker Allowed 1", "TRACE") end
@@ -3143,40 +2910,11 @@ local rarity = _rarity or SMODS.poll_rarity("Joker", 'rarity'..G.GAME.round_rese
                         if SMODS.Rarities[v.rarity] and SMODS.Rarities[v.rarity].default_weight == 0 then add = nil end --Crude, current weight would be better but idk how to get that
                         --if add then MINTY.say("Joker Boy Allowed 2", "TRACE") else MINTY.say("No Joker Allowed 2", "TRACE") end
                     end
-            if _append == "jud" and v.key == 'j_csau_hell' then
-                add = false
-            end
             if add and not G.GAME.banned_keys[v.key] then 
                 -- Code borrowed from Paperback and tweaked slightly
                 if G.GAME.modifiers.mistigris_boost then
                     if v.mod and v.mod.id == "mistigris" then
                         for i = 1, 2 do
-                            if G.GAME.starting_params.csau_jokers_rate or G.GAME.starting_params.csau_all_rate then
-                                local csau_rate, csau_all_rate
-                                if G.GAME.starting_params.csau_jokers_rate then
-                                    csau_rate = math.ceil(G.GAME.starting_params.csau_jokers_rate-1)
-                                end
-                                if G.GAME.starting_params.csau_all_rate then
-                                    csau_all_rate = math.ceil(G.GAME.starting_params.csau_all_rate-1)
-                                end
-                                if G.GAME.starting_params.csau_jokers_rate and string.sub(v.key, 1, 6) == 'j_csau' then
-                                    for i=1, csau_rate do
-                                        _pool[#_pool + 1] = v.key
-                                        _pool_size = _pool_size + 1
-                                    end
-                                elseif G.GAME.starting_params.csau_all_rate and containsString(v.key, '_csau_') then
-                                    for i=1, csau_all_rate do
-                                        _pool[#_pool + 1] = v.key
-                                        _pool_size = _pool_size + 1
-                                    end
-                                end
-                            end
-                            if next(SMODS.find_card('j_csau_frich')) then
-                                if table.contains(G.P_CENTER_POOLS.Food, v) then
-                                    _pool[#_pool + 1] = v.key
-                                    _pool_size = _pool_size + 1
-                                end
-                            end
                             _pool[#_pool + 1] = v.key
                             _pool_size = _pool_size + 1
                         end
@@ -3186,32 +2924,6 @@ local rarity = _rarity or SMODS.poll_rarity("Joker", 'rarity'..G.GAME.round_rese
                 -- add copies of it to the pool, so that it is more common to get
                 if G.GAME.modifiers.mintyjokerboost and (v.key:find('j_minty_') or ((v.pools and v.pools.MintysSillyMod) and (v.set and v.set.Joker))) then
                   for i = 1, 2 do
-                    if G.GAME.starting_params.csau_jokers_rate or G.GAME.starting_params.csau_all_rate then
-                        local csau_rate, csau_all_rate
-                        if G.GAME.starting_params.csau_jokers_rate then
-                            csau_rate = math.ceil(G.GAME.starting_params.csau_jokers_rate-1)
-                        end
-                        if G.GAME.starting_params.csau_all_rate then
-                            csau_all_rate = math.ceil(G.GAME.starting_params.csau_all_rate-1)
-                        end
-                        if G.GAME.starting_params.csau_jokers_rate and string.sub(v.key, 1, 6) == 'j_csau' then
-                            for i=1, csau_rate do
-                                _pool[#_pool + 1] = v.key
-                                _pool_size = _pool_size + 1
-                            end
-                        elseif G.GAME.starting_params.csau_all_rate and containsString(v.key, '_csau_') then
-                            for i=1, csau_all_rate do
-                                _pool[#_pool + 1] = v.key
-                                _pool_size = _pool_size + 1
-                            end
-                        end
-                    end
-                    if next(SMODS.find_card('j_csau_frich')) then
-                        if table.contains(G.P_CENTER_POOLS.Food, v) then
-                            _pool[#_pool + 1] = v.key
-                            _pool_size = _pool_size + 1
-                        end
-                    end
                     _pool[#_pool + 1] = v.key
                     _pool_size = _pool_size + 1
                   end
@@ -3220,32 +2932,6 @@ local rarity = _rarity or SMODS.poll_rarity("Joker", 'rarity'..G.GAME.round_rese
                 -- If the selected deck AND sleeve is the Silliest Littlest deck and sleeve and this key is a Minty non-Joker,
                 -- add a copy of it to the pool
                 if G.GAME.modifiers.mintyallboost and ((v.key:find('_minty_') and not v.key:find('j_minty_')) or ((v.pools and v.pools.MintysSillyMod) and not (v.set and v.set.Joker))) then
-                    if G.GAME.starting_params.csau_jokers_rate or G.GAME.starting_params.csau_all_rate then
-                        local csau_rate, csau_all_rate
-                        if G.GAME.starting_params.csau_jokers_rate then
-                            csau_rate = math.ceil(G.GAME.starting_params.csau_jokers_rate-1)
-                        end
-                        if G.GAME.starting_params.csau_all_rate then
-                            csau_all_rate = math.ceil(G.GAME.starting_params.csau_all_rate-1)
-                        end
-                        if G.GAME.starting_params.csau_jokers_rate and string.sub(v.key, 1, 6) == 'j_csau' then
-                            for i=1, csau_rate do
-                                _pool[#_pool + 1] = v.key
-                                _pool_size = _pool_size + 1
-                            end
-                        elseif G.GAME.starting_params.csau_all_rate and containsString(v.key, '_csau_') then
-                            for i=1, csau_all_rate do
-                                _pool[#_pool + 1] = v.key
-                                _pool_size = _pool_size + 1
-                            end
-                        end
-                    end
-                    if next(SMODS.find_card('j_csau_frich')) then
-                        if table.contains(G.P_CENTER_POOLS.Food, v) then
-                            _pool[#_pool + 1] = v.key
-                            _pool_size = _pool_size + 1
-                        end
-                    end
                     _pool[#_pool + 1] = v.key
                     _pool_size = _pool_size + 1
                 end
@@ -3257,32 +2943,6 @@ local rarity = _rarity or SMODS.poll_rarity("Joker", 'rarity'..G.GAME.round_rese
                     
                 if kingdom and v.key:find('j_kh_') then
                   for i = 1, 2 do
-                    if G.GAME.starting_params.csau_jokers_rate or G.GAME.starting_params.csau_all_rate then
-                        local csau_rate, csau_all_rate
-                        if G.GAME.starting_params.csau_jokers_rate then
-                            csau_rate = math.ceil(G.GAME.starting_params.csau_jokers_rate-1)
-                        end
-                        if G.GAME.starting_params.csau_all_rate then
-                            csau_all_rate = math.ceil(G.GAME.starting_params.csau_all_rate-1)
-                        end
-                        if G.GAME.starting_params.csau_jokers_rate and string.sub(v.key, 1, 6) == 'j_csau' then
-                            for i=1, csau_rate do
-                                _pool[#_pool + 1] = v.key
-                                _pool_size = _pool_size + 1
-                            end
-                        elseif G.GAME.starting_params.csau_all_rate and containsString(v.key, '_csau_') then
-                            for i=1, csau_all_rate do
-                                _pool[#_pool + 1] = v.key
-                                _pool_size = _pool_size + 1
-                            end
-                        end
-                    end
-                    if next(SMODS.find_card('j_csau_frich')) then
-                        if table.contains(G.P_CENTER_POOLS.Food, v) then
-                            _pool[#_pool + 1] = v.key
-                            _pool_size = _pool_size + 1
-                        end
-                    end
                     _pool[#_pool + 1] = v.key
                     _pool_size = _pool_size + 1
                   end
@@ -3291,32 +2951,6 @@ local rarity = _rarity or SMODS.poll_rarity("Joker", 'rarity'..G.GAME.round_rese
                 -- to the pool, so that it is more common to get
                 if (G.GAME.selected_back_key or {}).key == 'b_bb_aid' and v.key:find('j_bb_') then
                   for i = 1, 4 do
-                    if G.GAME.starting_params.csau_jokers_rate or G.GAME.starting_params.csau_all_rate then
-                        local csau_rate, csau_all_rate
-                        if G.GAME.starting_params.csau_jokers_rate then
-                            csau_rate = math.ceil(G.GAME.starting_params.csau_jokers_rate-1)
-                        end
-                        if G.GAME.starting_params.csau_all_rate then
-                            csau_all_rate = math.ceil(G.GAME.starting_params.csau_all_rate-1)
-                        end
-                        if G.GAME.starting_params.csau_jokers_rate and string.sub(v.key, 1, 6) == 'j_csau' then
-                            for i=1, csau_rate do
-                                _pool[#_pool + 1] = v.key
-                                _pool_size = _pool_size + 1
-                            end
-                        elseif G.GAME.starting_params.csau_all_rate and containsString(v.key, '_csau_') then
-                            for i=1, csau_all_rate do
-                                _pool[#_pool + 1] = v.key
-                                _pool_size = _pool_size + 1
-                            end
-                        end
-                    end
-                    if next(SMODS.find_card('j_csau_frich')) then
-                        if table.contains(G.P_CENTER_POOLS.Food, v) then
-                            _pool[#_pool + 1] = v.key
-                            _pool_size = _pool_size + 1
-                        end
-                    end
                     _pool[#_pool + 1] = v.key
                     _pool_size = _pool_size + 1
                   end
@@ -3329,65 +2963,6 @@ local rarity = _rarity or SMODS.poll_rarity("Joker", 'rarity'..G.GAME.round_rese
                 --    _pool_size = _pool_size + 2
                 --  end
                 --end
-                -- yoinked code and concept from Paperback's Paper deck
-                if (G.GAME.selected_back_key or {}).key == 'b_picubed_myepicdeck' and v.key:find('j_picubed_') then
-                  for i = 1, 2 do
-                    if G.GAME.starting_params.csau_jokers_rate or G.GAME.starting_params.csau_all_rate then
-                        local csau_rate, csau_all_rate
-                        if G.GAME.starting_params.csau_jokers_rate then
-                            csau_rate = math.ceil(G.GAME.starting_params.csau_jokers_rate-1)
-                        end
-                        if G.GAME.starting_params.csau_all_rate then
-                            csau_all_rate = math.ceil(G.GAME.starting_params.csau_all_rate-1)
-                        end
-                        if G.GAME.starting_params.csau_jokers_rate and string.sub(v.key, 1, 6) == 'j_csau' then
-                            for i=1, csau_rate do
-                                _pool[#_pool + 1] = v.key
-                                _pool_size = _pool_size + 1
-                            end
-                        elseif G.GAME.starting_params.csau_all_rate and containsString(v.key, '_csau_') then
-                            for i=1, csau_all_rate do
-                                _pool[#_pool + 1] = v.key
-                                _pool_size = _pool_size + 1
-                            end
-                        end
-                    end
-                    if next(SMODS.find_card('j_csau_frich')) then
-                        if table.contains(G.P_CENTER_POOLS.Food, v) then
-                            _pool[#_pool + 1] = v.key
-                            _pool_size = _pool_size + 1
-                        end
-                    end
-                    _pool[#_pool + 1] = v.key
-                    _pool_size = _pool_size + 1
-                  end
-                end
-                if G.GAME.starting_params.csau_jokers_rate or G.GAME.starting_params.csau_all_rate then
-                    local csau_rate, csau_all_rate
-                    if G.GAME.starting_params.csau_jokers_rate then
-                        csau_rate = math.ceil(G.GAME.starting_params.csau_jokers_rate-1)
-                    end
-                    if G.GAME.starting_params.csau_all_rate then
-                        csau_all_rate = math.ceil(G.GAME.starting_params.csau_all_rate-1)
-                    end
-                    if G.GAME.starting_params.csau_jokers_rate and string.sub(v.key, 1, 6) == 'j_csau' then
-                        for i=1, csau_rate do
-                            _pool[#_pool + 1] = v.key
-                            _pool_size = _pool_size + 1
-                        end
-                    elseif G.GAME.starting_params.csau_all_rate and containsString(v.key, '_csau_') then
-                        for i=1, csau_all_rate do
-                            _pool[#_pool + 1] = v.key
-                            _pool_size = _pool_size + 1
-                        end
-                    end
-                end
-                if next(SMODS.find_card('j_csau_frich')) then
-                    if table.contains(G.P_CENTER_POOLS.Food, v) then
-                        _pool[#_pool + 1] = v.key
-                        _pool_size = _pool_size + 1
-                    end
-                end
                 _pool[#_pool + 1] = v.key
                 _pool_size = _pool_size + 1
             else
@@ -3420,7 +2995,9 @@ local rarity = _rarity or SMODS.poll_rarity("Joker", 'rarity'..G.GAME.round_rese
         if _pool_size == 0 then
             _pool = EMPTY(G.ARGS.TEMP_POOL)
             if SMODS.ObjectTypes[_type] and SMODS.ObjectTypes[_type].default and G.P_CENTERS[SMODS.ObjectTypes[_type].default] then
-                _pool[#_pool+1] = SMODS.ObjectTypes[_type].default
+                if SuperRogue.is_object_mod_active(SMODS.ObjectTypes[_type]) then
+                    _pool[#_pool+1] = SMODS.ObjectTypes[_type].default
+                end
             elseif _type == 'Tarot' or _type == 'Tarot_Planet' then _pool[#_pool + 1] = "c_strength"
             elseif _type == 'Joker' and _rarity == 'cry_cursed' then _pool[#_pool + 1] = "j_cry_monopoly_money"
             elseif _type == 'Planet' then _pool[#_pool + 1] = "c_pluto"
@@ -3444,7 +3021,7 @@ end
 
 function poll_edition(_key, _mod, _no_neg, _guaranteed)
     _mod = _mod or 1
-    local edition_poll = pseudorandom(pseudoseed(_key or 'edition_generic'), nil, nil, true)
+    local edition_poll = pseudorandom(pseudoseed(_key or 'edition_generic'))
     if _guaranteed then
         if edition_poll > 1 - 0.003*25 and not _no_neg then
             return {negative = true}
@@ -3521,22 +3098,6 @@ function create_card(_type, area, legendary, _rarity, skip_materialize, soulable
         center = G.P_CENTERS[forced_key]
         _type = (center.set ~= 'Default' and center.set or _type)
     else
-        
-        if G.jokers ~= nil then
-            if next(SMODS.find_card('j_bunc_doorhanger')) then
-                if _rarity == nil
-                or ((type(_rarity) == 'number') and (_rarity < 0.9))
-                or ((type(_rarity) == 'string') and (_rarity == 'Common')) then
-        
-                    _rarity = 0.9
-        
-                    if pseudorandom('doorhanger'..G.SEED) > 0.98 then
-                        _rarity = 1
-                    end
-                end
-            end
-        end
-        
         local _pool, _pool_key = get_current_pool(_type, _rarity, legendary, key_append)
                 if _type == 'Planet' then
                     local boosted_planet_keys = {
@@ -3650,9 +3211,6 @@ function create_card(_type, area, legendary, _rarity, skip_materialize, soulable
 
         if not SMODS.bypass_create_card_edition and not card.edition then
             local edition = poll_edition('edi'..(key_append or '')..G.GAME.round_resets.ante)
-        if card.config.center.key == 'j_bunc_jmjb' then
-            edition = poll_edition(nil, nil, true, true)
-        end
         card:set_edition(edition)
         check_for_unlock({type = 'have_edition'})
         end
@@ -3709,11 +3267,6 @@ function copy_card(other, new_card, card_scale, playing_card, strip_edition)
     				true,
     				Cryptid.is_card_big(new_card)
     			)
-    
-    if new_card.config.center.key == 'j_bunc_dread' then
-        new_card.ability.extra.level_up_list = {}
-    end
-    
     if other.edition and other.edition.negative and not All_in_Jest.config.no_copy_neg and not G.VIEWING_DECK then
         if other.ability.set == 'Enhanced' or other.ability.set == 'Default' then
             strip_edition = true
@@ -4036,6 +3589,9 @@ function get_new_boss()
     for k, v in pairs(G.GAME.banned_keys) do
         if eligible_bosses[k] then eligible_bosses[k] = nil end
     end
+    for k, v in pairs(eligible_bosses) do
+        if G.P_BLINDS[k] and not SuperRogue.is_object_mod_active(G.P_BLINDS[k]) then eligible_bosses[k] = nil end
+    end
 
     local min_use = 100
     for k, v in pairs(G.GAME.bosses_used) do
@@ -4207,8 +3763,8 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
     	end
     end
     local loc_vars = {}
-    if _c.main_start or main_start then 
-        desc_nodes[#desc_nodes+1] = _c.main_start or main_start 
+    if main_start then 
+        desc_nodes[#desc_nodes+1] = main_start 
     end
     if card and card.config.card and hit_minor_arcana_suits[card.config.card.suit] then
         local vars = hit_minor_arcana_loc_vars(card, info_queue)
@@ -4351,9 +3907,7 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
             --desc_nodes.loc_name.config.align = "cm"
         end
         if specific_vars and specific_vars.pinned then info_queue[#info_queue+1] = {key = 'pinned_left', set = 'Other'} end
-        if specific_vars and specific_vars.sticker and type(specific_vars.sticker) ~= 'number' then
-            info_queue[#info_queue+1] = {key = string.lower(specific_vars.sticker)..'_sticker', set = 'Other', vars = { localize('k_'..string.lower(_c.set)) or localize('k_joker') }}
-        end
+        if specific_vars and specific_vars.sticker then info_queue[#info_queue+1] = {key = string.lower(specific_vars.sticker)..'_sticker', set = 'Other'} end
     elseif specific_vars and specific_vars.dsix_infected then
         localize{type = 'other', key = 'infection_default', nodes = desc_nodes, vars = {''..(G.GAME and G.GAME.probabilities.normal or 1), 2}}
     elseif specific_vars and specific_vars.debuffed then
@@ -4475,9 +4029,7 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         else
             localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = loc_vars}
         end
-        if specific_vars and specific_vars.sticker and type(specific_vars.sticker) ~= 'number' then
-            info_queue[#info_queue+1] = {key = string.lower(specific_vars.sticker)..'_sticker', set = 'Other', vars = { localize('k_'..string.lower(_c.set)) or localize('k_joker') }}
-        end
+        if specific_vars and specific_vars.sticker then info_queue[#info_queue+1] = {key = string.lower(specific_vars.sticker)..'_sticker', set = 'Other'} end
     elseif _c.set == 'Joker' then
         if cfg and not card then
             local ability = copy_table(cfg)
@@ -4607,20 +4159,6 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         end
     SMODS.localize_perma_bonuses(specific_vars, desc_nodes)
     AKYRS.mod_card_displays(_c,card,desc_nodes,specific_vars)
-        if card and card.ability.perma_mult then
-            if TalismanCompat(card.ability.perma_mult)>TalismanCompat(0) then
-                localize{type = 'other', key = 'card_extra_mult', nodes = desc_nodes, vars = {card.ability.perma_mult}}
-            elseif TalismanCompat(card.ability.perma_mult)<TalismanCompat(0) then
-                localize{type = 'other', key = 'card_extra_mult_neg', nodes = desc_nodes, vars = {card.ability.perma_mult}}
-            end
-        end
-        if card and card.ability.perma_p_dollars then
-            if TalismanCompat(card.ability.perma_p_dollars)>TalismanCompat(0) then
-                localize{type = 'other', key = 'card_extra_p_dollars', nodes = desc_nodes, vars = {card.ability.perma_p_dollars}}
-            elseif TalismanCompat(card.ability.perma_p_dollars)<TalismanCompat(0) then
-                localize{type = 'other', key = 'card_extra_p_dollars_neg', nodes = desc_nodes, vars = {card.ability.perma_p_dollars}}
-            end
-        end
     if specific_vars and specific_vars.bonus_retriggers then
         localize{type = 'other', key = 'card_extra_retriggers', nodes = desc_nodes, vars = {specific_vars.bonus_retriggers}}
     end
@@ -4643,20 +4181,6 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
             localize{type = 'other', key = 'card_extra_chips', nodes = desc_nodes, vars = {SMODS.signed((specific_vars and specific_vars.bonus_chips) or cfg.bonus)}}
         end
     SMODS.localize_perma_bonuses(specific_vars, desc_nodes)
-        if card and card.ability.perma_mult then
-            if TalismanCompat(card.ability.perma_mult)>TalismanCompat(0) then
-                localize{type = 'other', key = 'card_extra_mult', nodes = desc_nodes, vars = {card.ability.perma_mult}}
-            elseif TalismanCompat(card.ability.perma_mult)<TalismanCompat(0) then
-                localize{type = 'other', key = 'card_extra_mult_neg', nodes = desc_nodes, vars = {card.ability.perma_mult}}
-            end
-        end
-        if card and card.ability.perma_p_dollars then
-            if TalismanCompat(card.ability.perma_p_dollars)>TalismanCompat(0) then
-                localize{type = 'other', key = 'card_extra_p_dollars', nodes = desc_nodes, vars = {card.ability.perma_p_dollars}}
-            elseif TalismanCompat(card.ability.perma_p_dollars)<TalismanCompat(0) then
-                localize{type = 'other', key = 'card_extra_p_dollars_neg', nodes = desc_nodes, vars = {card.ability.perma_p_dollars}}
-            end
-        end
     if specific_vars and specific_vars.bonus_retriggers then
         localize{type = 'other', key = 'card_extra_retriggers', nodes = desc_nodes, vars = {specific_vars.bonus_retriggers}}
     end
@@ -4735,12 +4259,7 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
     elseif _c.set == 'Tarot' then
        if _c.name == "The Fool" then
             local fool_c = G.GAME.last_tarot_planet and G.P_CENTERS[G.GAME.last_tarot_planet] or nil
-            local last_tarot_planet = localize('k_none')
-            if fool_c == 'c_csau_arrow' then
-                last_tarot_planet = fool_c and localize{type = 'name_text', key = fool_c.key, set = fool_c.set, vars = { G.GAME.modifiers.max_stands or 1, (card.area.config.collection and localize('k_stand')) or (G.GAME.modifiers.max_stands > 1 and localize('b_stand_cards') or localize('k_stand')) }} or localize('k_none')
-            else
-                last_tarot_planet = fool_c and localize{type = 'name_text', key = fool_c.key, set = fool_c.set} or localize('k_none')
-            end
+            local last_tarot_planet = fool_c and localize{type = 'name_text', key = fool_c.key, set = fool_c.set} or localize('k_none')
             local colour = (not fool_c or fool_c.name == 'The Fool') and G.C.RED or G.C.GREEN
             main_end = {
                 {n=G.UIT.C, config={align = "bm", padding = 0.02}, nodes={
@@ -4856,65 +4375,6 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
     	localize{type = 'other', key = 'cry_multiuse', nodes = loc, vars = {cfg.cry_multiuse}}
     	desc_nodes[#desc_nodes+1] = loc[1]
     end
-    if _c.set == "Joker" and card and card.ability.betmma_enhancement then
-        info_queue[#info_queue+1] = G.P_CENTERS[card.ability.betmma_enhancement]
-    end
-    if (_c.set == 'Default' or _c.set == 'Enhanced') and card and card.ability and type(card.ability) == 'table' and card.ability.temporary_extra_chips and not card.debuff then
-        localize{type = 'other', key = 'bunc_temporary_extra_chips', nodes = desc_nodes, vars = {card.ability.temporary_extra_chips}}
-    end
-    if (_c.set == 'Default' or _c.set == 'Enhanced') and card and card.ability and type(card.ability) == 'table' and card.ability.group then
-        localize{type = 'other', key = card.greyed and 'bunc_drawn_linked_cards' or 'bunc_linked_cards', nodes = desc_nodes, vars = {}}
-        if not (card.area.config.type == 'title' and card.greyed) then
-            main_end = main_end or {}
-            local all_cards_from_group = {}
-            if card and card.area then
-                if card.area.config.type == 'title' then
-                    for i = 1, #G.playing_cards do
-                        local check_card = G.playing_cards[i]
-                        if check_card.ability and type(check_card.ability) == 'table' and check_card.ability.group then
-                            if check_card.ability.group.id == card.ability.group.id then
-                                table.insert(all_cards_from_group, check_card)
-                            end
-                        end
-                    end
-                else
-                    for i = 1, #card.area.cards do
-                        local check_card = card.area.cards[i]
-                        if check_card.ability and type(check_card.ability) == 'table' and check_card.ability.group then
-                            if check_card.ability.group.id == card.ability.group.id then
-                                table.insert(all_cards_from_group, check_card)
-                            end
-                        end
-                    end
-                end
-            end
-            local cardarea = CardArea(
-                0,
-                0,
-                2.85 * G.CARD_W,
-                0.75 * G.CARD_H,
-                {card_limit = #all_cards_from_group, type = 'title', highlight_limit = 0}
-            )
-            for k, v in ipairs(all_cards_from_group) do
-                local group_card = copy_card(v, nil, 0.5)
-                group_card.fake_card = true
-                group_card.states.hover.can = false
-                group_card:juice_up(0.3, 0.2)
-                if k == 1 then play_sound('paper1', 0.95 + math.random() * 0.1, 0.3) end
-                ease_value(group_card.T, 'scale', 0.25, nil, 'REAL', true, 0.2)
-                cardarea:emplace(group_card)
-                if (v.facing == 'back') and v.area ~= G.deck then
-                    group_card.sprite_facing = 'back'
-                end
-            end
-            table.insert(main_end, {n=G.UIT.R, config = {align = "cm", colour = G.C.CLEAR, r = 0.0}, nodes={
-                {n=G.UIT.C, config = {align = "cm"}, nodes={
-                    {n=G.UIT.O, config = {object = cardarea}}
-                }}
-            }})
-            info_queue[#info_queue+1] = {set = 'Other', key = 'bunc_linked_group'}
-        end
-    end
     if main_end then 
         desc_nodes[#desc_nodes+1] = main_end 
     end
@@ -5002,10 +4462,6 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
                 info_queue[#info_queue + 1] = G.P_CENTERS[ed_key]
             end
             if G.P_CENTERS['e_'..ed_key] and G.P_CENTERS['e_'..ed_key].set == 'Edition' then
-                if _c.consumeable and (v == 'foil' or v == 'holo' or v == 'polychrome' or v == 'bunc_glitter') then
-                    v = "bunc_consumable_edition_" .. v
-                    ed_key = "bunc_consumable_edition_" .. ed_key
-                end
                 local t = {key = 'e_'..v, set = 'Edition', config = {}}
                 if localize(SMODS.merge_defaults(t, {type = 'name_text'})) == 'ERROR' then t.key = 'e_'..ed_key end
                 info_queue[#info_queue + 1] = t
@@ -5014,7 +4470,6 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
                     t.vars = res.vars
                     t.key = res.key or t.key
                     t.set = res.set or t.set
-                    t.main_start = res.main_start or t.main_start
                 end
             end
             local seal = G.P_SEALS[v] or G.P_SEALS[SMODS.Seal.badge_to_key[v] or '']

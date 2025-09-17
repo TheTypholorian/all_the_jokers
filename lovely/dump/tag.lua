@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'b7d0144c4f2a2f8ba149046f0461ff75ae931d8167e126790970fbda101536e4'
+LOVELY_INTEGRITY = '786e10f2ee00d921a8f9ada989194d04ef9d4ae48c4fa5bd99cb182c4ea973d6'
 
 --Class
 Tag = Object:extend()
@@ -59,85 +59,6 @@ function Tag:nope()
             return true
         end)
     }))
-end
-
-
-function Tag:instayep(message, _colour, func, delay)
-    stop_use()
-    if delay then
-        G.E_MANAGER:add_event(Event({
-        delay = delay,
-        trigger = 'after',
-        func = (function()
-            attention_text({
-                text = message,
-                colour = G.C.WHITE,
-                scale = 1, 
-                hold = 0.3/G.SETTINGS.GAMESPEED,
-                cover = self.HUD_tag,
-                cover_colour = _colour or G.C.GREEN,
-                align = 'cm',
-                })
-            play_sound('generic1', 0.9 + math.random()*0.1, 0.8)
-            play_sound('holo1', 1.2 + math.random()*0.1, 0.4)
-            return true
-        end)
-        }))
-        G.E_MANAGER:add_event(Event({
-            func = (function()
-                self.HUD_tag.states.visible = false
-                return true
-            end)
-        }))
-        G.E_MANAGER:add_event(Event({
-            func = func
-        }))
-        G.E_MANAGER:add_event(Event({
-            trigger = 'after',
-            delay = 0.7,
-            func = (function()
-                self:remove()
-                return true
-            end)
-        }))
-    else
-        attention_text({
-            text = message,
-            colour = G.C.WHITE,
-            scale = 1,
-            hold = 0.3/G.SETTINGS.GAMESPEED,
-            cover = self.HUD_tag,
-            cover_colour = _colour or G.C.GREEN,
-            align = 'cm',
-            })
-        play_sound('generic1', 0.9 + math.random()*0.1, 0.8)
-        play_sound('holo1', 1.2 + math.random()*0.1, 0.4)
-
-        G.E_MANAGER:add_event(Event({
-            blockable = false,
-            blocking = false,
-            trigger = 'after',
-            func = (function()
-                self.HUD_tag.states.visible = false
-                return true
-            end)
-        }))
-        G.E_MANAGER:add_event(Event({
-            blockable = false,
-            blocking = false,
-            func = func
-        }))
-        G.E_MANAGER:add_event(Event({
-            blockable = false,
-            blocking = false,
-            trigger = 'after',
-            delay = 0.7,
-            func = (function()
-                self:remove()
-                return true
-            end)
-        }))
-    end
 end
 
 function Tag:yep(message, _colour, func)
@@ -392,7 +313,7 @@ function Tag:apply_to_run(_context)
                 self.triggered = true
                 return true
             end
-            if self.name == 'Boss Tag' and not BUNCOMOD.content.config.gameplay_reworks then
+            if self.name == 'Boss Tag' then
                 local lock = self.ID
                 G.CONTROLLER.locks[lock] = true
                 self:yep('+', G.C.GREEN,function() 
@@ -442,7 +363,7 @@ function Tag:apply_to_run(_context)
                 end)
             end
         elseif _context.type == 'tag_add' then 
-            if self.name == 'Double Tag' and _context.tag.key ~= 'tag_double' and _context.tag.key ~= 'tag_bunc_triple' then
+            if self.name == 'Double Tag' and _context.tag.key ~= 'tag_double' then
                 local lock = self.ID
                 G.CONTROLLER.locks[lock] = true
                 self:yep('+', G.C.BLUE,function()
@@ -633,8 +554,7 @@ function Tag:juice_up(_scale, _rot)
 end
 
 function Tag:generate_UI(_size)
-    local _sizeX = (G.P_TAGS[self.key].width and G.P_TAGS[self.key].width/34 * (_size or 1) * 0.6) or _size or 0.8
-        local _sizeY = (G.P_TAGS[self.key].height and G.P_TAGS[self.key].height/34 * (_size or 1) * 0.6) or _size or 0.8
+    _size = _size or 0.8
 
     local tag_sprite_tab = nil
 
@@ -649,11 +569,11 @@ function Tag:generate_UI(_size)
     	end
     end
     
-    local tag_sprite = Sprite(0,0,_sizeX*1,_sizeY*1,tagatlas, (self.hide_ability) and G.tag_undiscovered.pos or self.pos)
+    local tag_sprite = Sprite(0,0,_size*1,_size*1,tagatlas, (self.hide_ability) and G.tag_undiscovered.pos or self.pos)
     tag_sprite.tilt_var = {mx = 0, my = 0, dx = 0, dy = 0, amt = 0}
     tag_sprite.T.scale = 1
     tag_sprite_tab = {n= G.UIT.C, config={align = "cm", ref_table = self, group = self.tally}, nodes={
-        {n=G.UIT.O, config={w=_sizeX*1,h=_sizeY*1, colour = G.C.BLUE, object = tag_sprite, focus_with_object = true}},
+        {n=G.UIT.O, config={w=_size*1,h=_size*1, colour = G.C.BLUE, object = tag_sprite, focus_with_object = true}},
     }}
     tag_sprite:define_draw_steps({
         {shader = 'dissolve', shadow_height = 0.05},

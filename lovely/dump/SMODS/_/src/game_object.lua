@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'f35e369ea2fc7b9fd20113a2c15a92f6971eb2d10775c3ef356611787f3bdba9'
+LOVELY_INTEGRITY = '223098dee35f8896abb8bf791b00a8798508d01b4614b9bc82df699464bd3ca5'
 
 --- STEAMODDED CORE
 --- MODULE API
@@ -624,20 +624,6 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
             -- should only need to do this once per injection routine
         end,
         post_inject_class = function(self)
-            local reordered_stakes = {}
-            for i = 1, #G.P_CENTER_POOLS[self.set] do
-                local new_order = i
-                for j = 1, #reordered_stakes do
-                    if G.P_CENTER_POOLS[self.set][reordered_stakes[j]].key == G.P_CENTER_POOLS[self.set][i].above_stake then
-                        new_order = j + 1
-                        break
-                    end
-                end
-                table.insert(reordered_stakes, new_order, i)
-            end
-            for index, value in ipairs(reordered_stakes) do
-                G.P_CENTER_POOLS[self.set][value].order = index
-            end
             table.sort(G.P_CENTER_POOLS[self.set], function(a, b) return a.order < b.order end)
             for _,stake in pairs(G.P_CENTER_POOLS.Stake) do
                 local applied = SMODS.build_stake_chain(stake)
@@ -1535,19 +1521,8 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
                         }),}},
                     {n=G.UIT.C,config={align = "tm", padding = 0.05, minw = 2.4}, nodes={
                         {n=G.UIT.R,config={minh =0.2}, nodes={}},
-                        
-                        (G.GAME.used_vouchers['v_bunc_shell_game'] and not G.GAME.rerolled_pack and
-                        UIBox_button({label = {localize('k_reroll')}, padding = 0.07, minh = 0.7, minw = 1.8, r = 0.15, one_press = true, button = 'reroll_booster_pack', func = 'reroll_booster_pack_button'}) or nil),
-                        G.GAME.used_vouchers['v_bunc_shell_game'] and {n=G.UIT.R,config = {minh = 0.07}, nodes={}},
-                        {n=G.UIT.R, config = {align = G.GAME.used_vouchers['v_bunc_shell_game'] and 'cm' or 'tm', padding = G.GAME.used_vouchers['v_bunc_shell_game'] and 0.07 or 0.2, minh = G.GAME.used_vouchers['v_bunc_shell_game'] and 0.7 or 1.2, minw = 1.8, r = 0.15, colour = G.C.GREY, one_press = true, button = 'skip_booster', hover = true, shadow = true, func = 'can_skip_booster'}, nodes = {
-                        
+                        {n=G.UIT.R,config={align = "tm",padding = 0.2, minh = 1.2, minw = 1.8, r=0.15,colour = G.C.GREY, one_press = true, button = 'skip_booster', hover = true,shadow = true, func = 'can_skip_booster'}, nodes = {
                             {n=G.UIT.T, config={text = localize('b_skip'), scale = 0.5, colour = G.C.WHITE, shadow = true, focus_args = {button = 'y', orientation = 'bm'}, func = 'set_button_pip'}}}}}}}}}}}}
-                            if (self.group_key=='k_arcana_pack' or self.group_key=='k_spectral_pack') and used_voucher and used_voucher('recycle_area') then
-                                local new={n=G.UIT.C,config={align = "tm",padding = 0.2, minh = 1.2, minw = 1.8, r=0.15,colour = G.C.RED, one_press = true, button = 'uselessLOL discard_booster', hover = true,shadow = true, func = 'can_discard_booster'}, nodes = {
-                                    {n=G.UIT.T, config={text = localize('b_discard'), scale = 0.5, colour = G.C.WHITE, shadow = true, focus_args = {button = 'y', orientation = 'bm'}, func = 'set_button_pip'}}
-                                    }}
-                                table.insert(t.nodes[1].nodes[3].nodes[3].nodes,2,new)
-                            end
             return t
         end,
         take_ownership_by_kind = function(self, kind, obj, silent)

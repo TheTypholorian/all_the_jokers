@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '252198eb2f3330e4c693870169c5bd4a956133c990051795ac6b9643c93669dc'
+LOVELY_INTEGRITY = '3edf059c1826e526d8fdb243ea6c4de91097369fb8a509814c29ab2b451ddc77'
 
 SMODS.DrawSteps = {}
 SMODS.DrawStep = SMODS.GameObject:extend {
@@ -154,30 +154,13 @@ SMODS.DrawStep {
             self.children.center:draw_shader('negative', nil, self.ARGS.send_to_shader)
         elseif not self:should_draw_base_shader() then
             -- Don't render base dissolve shader.
-        elseif not self.greyed and (get_betmma_shaders and get_betmma_shaders(self)) then 
-            --do nothing
         elseif not self.greyed then
             self.children.center:draw_shader('dissolve')
         end
 
          --If the card is not yet discovered
-         if draw_betmma_shaders~=nil then
-             draw_betmma_shaders(self)
-         end
          if not self.config.center.discovered and (self.ability.consumeable or self.config.center.unlocked) and not self.config.center.demo and not self.bypass_discovery_center and (self.ability.set ~= "BakeryCharm" or self.config.center.unlocked) then
             local shared_sprite = (self.ability.set == 'Edition' or self.ability.set == 'Joker') and G.shared_undiscovered_joker or G.shared_undiscovered_tarot
-            
-            if self.ability.set == 'Edition' and self.config.center.key:sub(1, 26) == "e_bunc_consumable_edition_" then
-                shared_sprite = G.shared_undiscovered_tarot
-            end
-            
-            
-            if not G.shared_undiscovered_polymino then G.shared_undiscovered_polymino = Sprite(0, 0, G.CARD_W, G.CARD_H, G.ASSET_ATLAS['bunc_bunco_polyminoes_undiscovered'], {x = 1, y = 0}) end
-            
-            if self.ability.set == 'Polymino' then
-                shared_sprite = G.shared_undiscovered_polymino
-            end
-            
             local scale_mod = -0.05 + 0.05*math.sin(1.8*G.TIMERS.REAL)
             local rotate_mod = 0.03*math.sin(1.219*G.TIMERS.REAL)
 
@@ -216,8 +199,6 @@ SMODS.DrawStep {
             end
         elseif not self:should_draw_base_shader() then
             -- Don't render base dissolve shader.
-        elseif not self.greyed and (get_betmma_shaders and get_betmma_shaders(self)) then 
-            --do nothing
         elseif not self.greyed then
             if self.children.front and (self.ability.delayed or not self:should_hide_front()) then
                 self.children.front:draw_shader('dissolve')
@@ -225,21 +206,6 @@ SMODS.DrawStep {
         end
 
         local center = self.config.center
-        if self.ability.set == 'Joker' and self.ability.betmma_enhancement then
-            local center = G.P_CENTERS[self.ability.betmma_enhancement]
-            local sprite=Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[self.ability.betmma_enhancement_atlas], center.pos)
-            --sprite.VT.scale=0.95
-            sprite.states.hover = self.states.hover
-            sprite.states.click = self.states.click
-            sprite.states.drag = self.states.drag
-            sprite.states.collide.can = false
-            sprite:set_role({major = self, role_type = 'Glued', draw_major = self})
-            love.graphics.setBlendMode("multiply", 'premultiplied')
-            sprite:draw_shader('dissolve', nil, nil, nil, self.children.center)
-            love.graphics.setBlendMode("alpha")
-            --self.ability.betmma_enhancement_sprite:draw()
-            sprite:remove()             
-        end
         if center.set == 'Default' or center.set == 'Enhanced' and not center.replace_base_card then
             if not center.no_suit then
                 local suit = SMODS.Suits[self.base.suit] or {}
@@ -548,6 +514,6 @@ function Card:draw(layer)
     self.hover_tilt = 1
     if not self.states.visible then return end
     for _, k in ipairs(SMODS.DrawStep.obj_buffer) do
-        if SMODS.DrawSteps[k]:check_conditions(self, layer) and not (self.draw_bypass and self.draw_bypass[k]) then SMODS.DrawSteps[k].func(self, layer) end
+        if SMODS.DrawSteps[k]:check_conditions(self, layer) then SMODS.DrawSteps[k].func(self, layer) end
     end
 end

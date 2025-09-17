@@ -1,0 +1,86 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = -1
+
+# Resize the CardArea and Cards
+[[patches]]
+[patches.pattern]
+target = '=[SMODS galdur "galdur.lua"]'
+pattern = "Galdur.run_setup.deck_select_areas[i] = CardArea(G.ROOM.T.w,G.ROOM.T.h, G.CARD_W, G.CARD_H, "
+position = "at"
+payload = '''Galdur.run_setup.deck_select_areas[i] = CardArea(G.ROOM.T.w,G.ROOM.T.h, G.CARD_W*.8, G.CARD_H*.8, '''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = '=[SMODS galdur "galdur.lua"]'
+pattern = "local card = Card(Galdur.run_setup.deck_select_areas[i].T.x,Galdur.run_setup.deck_select_areas[i].T.y, G.CARD_W, G.CARD_H, G.P_CENTER_POOLS.Back[count], G.P_CENTER_POOLS.Back[count],"
+position = "at"
+payload = '''local card = Card(Galdur.run_setup.deck_select_areas[i].T.x,Galdur.run_setup.deck_select_areas[i].T.y, G.CARD_W*.8, G.CARD_H*.8, G.P_CENTER_POOLS.Back[count], G.P_CENTER_POOLS.Back[count],'''
+match_indent = true
+
+
+# Make 18 instead of 12
+
+[[patches]]
+[patches.pattern]
+target = '=[SMODS galdur "galdur.lua"]'
+pattern = "if #G.P_CENTER_POOLS.Back > 12 then"
+position = "at"
+payload = '''if #G.P_CENTER_POOLS.Back > 18 then'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = '=[SMODS galdur "galdur.lua"]'
+pattern = "local total_pages = math.ceil(#G.P_CENTER_POOLS.Back / 12)"
+position = "at"
+payload = '''local total_pages = math.ceil(#G.P_CENTER_POOLS.Back / 18)'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = '=[SMODS galdur "galdur.lua"]'
+pattern = "local count = 1 + (page - 1) * 12"
+position = "at"
+payload = '''local count = 1 + (page - 1) * 18'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = '=[SMODS galdur "galdur.lua"]'
+pattern = "for i=1, 12 do"
+position = "at"
+payload = '''for i=1, 18 do'''
+match_indent = true
+times = 2
+
+[[patches]]
+[patches.pattern]
+target = '=[SMODS galdur "galdur.lua"]'
+pattern = '''local count = 1
+    for i=1, 2 do'''
+position = "at"
+payload = '''local count = 1
+    for i=1, 3 do'''
+match_indent = true
+
+
+# Card Sleeves Area
+
+[[patches]]
+[patches.pattern]
+target = '=[SMODS CardSleeves "CardSleeves.lua"]'
+pattern = '''sleeve_card_areas[i] = CardArea(G.ROOM.T.x + 0.2*G.ROOM.T.w/2,G.ROOM.T.h, 0.95*G.CARD_W, 0.945*G.CARD_H,'''
+position = "at"
+payload = '''sleeve_card_areas[i] = CardArea(G.ROOM.T.x + 0.2*G.ROOM.T.w/2,G.ROOM.T.h, 0.7*G.CARD_W, 0.7*G.CARD_H,'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = '=[SMODS CardSleeves "CardSleeves.lua"]'
+pattern = '''local sleeve_count_vertical = 2'''
+position = "at"
+payload = '''local sleeve_count_vertical = 3'''
+match_indent = true

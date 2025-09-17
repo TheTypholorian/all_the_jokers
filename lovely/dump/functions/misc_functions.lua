@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '0a83d0426d0f4915e7c34681d911243ca321846ab116ada5c0344a879c50705d'
+LOVELY_INTEGRITY = 'e75a36c809cc4c6b77c98e6c339240747fc7069fdf7877a4c97c3a1183768c17'
 
 --Updates all display information for all displays for a given screenmode. Returns the key for the resolution option cycle
 --
@@ -1788,9 +1788,6 @@ function loc_colour(_c, _default)
     edition = G.C.EDITION,
     dark_edition = G.C.DARK_EDITION,
     legendary = G.C.RARITY[4],
-    bunco_virtual = G.C.BUNCO_VIRTUAL,
-    bunco_virtual_dark = G.C.BUNCO_VIRTUAL_DARK,
-    bunco_exotic = G.C.BUNCO_EXOTIC,
     jest_inherent = HEX("b7e1d7"),
     jest_glitter = HEX("ff97ff"),
     enhanced = G.C.SECONDARY_SET.Enhanced
@@ -2135,49 +2132,6 @@ end
         local assembled_string = ''
         for _, subpart in ipairs(part.strings) do
           assembled_string = assembled_string..(type(subpart) == 'string' and subpart or (Cryptid.pluralize and Cryptid.pluralize(subpart[1], args.vars)) or format_ui_value(args.vars[tonumber(subpart[1])]) or 'ERROR')
-        end
-        
-        local function add_symbol(text, symbol)
-            local leading_spaces = string.match(text, "^%s*")
-        
-            _, word_amount = text:gsub("%S+","")
-        
-            if word_amount == 1 then
-                if #leading_spaces > 0 then
-                    return leading_spaces..symbol..string.sub(text, #leading_spaces + 1)
-                else
-                    return symbol..text
-                end
-            else
-                return text
-            end
-        end
-        
-        local suit_symbols = {
-            Diamonds = '♦',
-            Hearts = '♥',
-            Spades = '♠',
-            Clubs = '♣',
-            bunc_Fleurons = '✤',
-            bunc_Halberds = '✠',
-            paperback_Crowns = '♛',
-            paperback_Stars = '★',
-        }
-        local found_strings = {}
-        
-        -- Ordering the symbol insertion so that symbols appear in the order the words appear in the text
-        for key, symbol in pairs(suit_symbols) do
-            local result = string.find(assembled_string, localize(key, 'suits_singular')) or string.find(assembled_string, localize(key, 'suits_plural'))
-            if result then
-                table.insert(found_strings, {result, symbol})
-            end
-        end
-        table.sort(found_strings, function(a, b)
-            return a[1] > b[1]
-        end)
-        
-        for _, v in ipairs(found_strings) do
-            assembled_string = add_symbol(assembled_string, v[2])
         end
         local desc_scale = (SMODS.Fonts[part.control.f] or G.FONTS[tonumber(part.control.f)] or G.LANG.font).DESCSCALE
         if G.F_MOBILE_UI then desc_scale = desc_scale*1.5 end

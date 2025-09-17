@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '7dd0b9efbf2034ee49841900e7414385afe59f0d3000f9678cfa3f683e8c7b52'
+LOVELY_INTEGRITY = '682cfc9ff619b87476c5961353696c6347c03fe169f8a7bd1aa337eebfcdb9c2'
 
 ---@class Controller
 Controller = Object:extend()
@@ -799,18 +799,6 @@ function Controller:key_press_update(key, dt)
     if string.sub(key, 1, 2) == 'kp' then key = string.sub(key, 3) end
     if key == 'enter' then key = 'return' end
 
-        if csau_enabled['enableEasterEggs'] then
-            if key == mgt[mgt_num] then
-                if key == "o" then
-                    G.debug_background_toggle = not G.debug_background_toggle
-                    mgt_num = 1
-                else
-                    mgt_num = mgt_num + 1
-                end
-            else
-                mgt_num = 1
-            end
-    	end
     if self.text_input_hook then
         if key == "escape" then
         	G.cry_edeck_select = nil
@@ -911,9 +899,6 @@ function Controller:key_press_update(key, dt)
                         end
                     end
                     found_index = found_index + 1
-                    while G.P_CENTER_POOLS.Edition[found_index] and G.P_CENTER_POOLS.Edition[found_index].skip_debug do
-                      found_index = found_index + 1
-                    end
                     if found_index > #G.P_CENTER_POOLS.Edition then found_index = found_index - #G.P_CENTER_POOLS.Edition end
                     local _edition = G.P_CENTER_POOLS.Edition[found_index].key
                     _card:set_edition(_edition, true, true)

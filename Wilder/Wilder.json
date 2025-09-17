@@ -1,0 +1,17 @@
+{
+	"id": "Wilder",
+	"name": "Wilder",
+	"display_name": "Wilder",
+	"author": ["Sir. Gameboy"],
+	"description": "Allows The Lovers tarot card to convert two cards instead of one.",
+	"prefix": "wilder",
+	"main_file": "Wilder.lua",
+	"priority": 0,
+	"badge_colour": "DDDDDD",
+	"badge_text_colour": "FF0000",
+	"version": "1.0.0",
+	"dependencies": [
+        "Steamodded (>=1.*)",
+		"Lovely (>=0.6)"
+    ]
+}
